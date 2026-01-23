@@ -1,0 +1,80 @@
+<section class="section" id="section-5">
+            <div class="w-full h-full px-4 md:px-8 flex flex-col justify-center">
+                <div class="text-center mb-8">
+                    <div class="inline-block px-3 py-1 bg-[#ff4655] text-white font-mono text-xs tracking-widest mb-2">LIVE EVENT</div>
+                    <h2 class="font-teko text-5xl md:text-7xl font-bold uppercase leading-none">SECURE YOUR ACCESS</h2>
+                </div>
+
+                <!-- 5-Column Grid/Flex for Tickets -->
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-4 w-full max-w-[1400px] mx-auto h-[60vh] overflow-y-auto md:overflow-visible pr-2 md:pr-0 pb-10 md:pb-0">
+
+                    <!-- Tier 1: Iron -->
+                    <div class="ticket-card rank-iron bg-white/5 p-6 flex flex-col relative angled-box interactive-element">
+                        <h3 class="font-teko text-3xl text-gray-400">IRON</h3>
+                        <div class="text-2xl font-bold my-2">LKR 800</div>
+                        <div class="text-xs font-mono opacity-60 mb-4">The Grind Begins</div>
+                        <ul class="text-xs opacity-70 space-y-2 mb-auto font-mono">
+                            <li><i class="fa-solid fa-check text-gray-400 mr-2"></i>General Entry</li>
+                            <li><i class="fa-solid fa-check text-gray-400 mr-2"></i>Event Badge</li>
+                        </ul>
+                        <button onclick="openTicketModal('IRON TICKET')" class="w-full border border-white/20 text-white py-2 font-teko text-lg hover:bg-white hover:text-black transition-colors mt-4 angled-btn">SELECT</button>
+                    </div>
+
+                    <!-- Tier 2: Bronze -->
+                    <div class="ticket-card rank-bronze bg-white/5 p-6 flex flex-col relative angled-box interactive-element">
+                        <h3 class="font-teko text-3xl text-[#cd7f32]">BRONZE</h3>
+                        <div class="text-2xl font-bold my-2">LKR 1,200</div>
+                        <div class="text-xs font-mono opacity-60 mb-4">Step Up</div>
+                        <ul class="text-xs opacity-70 space-y-2 mb-auto font-mono">
+                            <li><i class="fa-solid fa-check text-[#cd7f32] mr-2"></i>Everything in Iron</li>
+                            <li><i class="fa-solid fa-check text-[#cd7f32] mr-2"></i>Vinyl Sticker Pack</li>
+                            <li><i class="fa-solid fa-check text-[#cd7f32] mr-2"></i>Lanyard</li>
+                        </ul>
+                        <button onclick="openTicketModal('BRONZE TICKET')" class="w-full border border-white/20 text-white py-2 font-teko text-lg hover:bg-white hover:text-black transition-colors mt-4 angled-btn">SELECT</button>
+                    </div>
+
+                    <!-- Tier 3: Silver -->
+                    <div class="ticket-card rank-silver bg-white/5 p-6 flex flex-col relative angled-box interactive-element">
+                        <h3 class="font-teko text-3xl text-gray-200">SILVER</h3>
+                        <div class="text-2xl font-bold my-2">LKR 1,600</div>
+                        <div class="text-xs font-mono opacity-60 mb-4">Ranked Ready</div>
+                        <ul class="text-xs opacity-70 space-y-2 mb-auto font-mono">
+                            <li><i class="fa-solid fa-check text-gray-200 mr-2"></i>Everything in Bronze</li>
+                            <li><i class="fa-solid fa-check text-gray-200 mr-2"></i>A3 Event Poster</li>
+                            <li><i class="fa-solid fa-check text-gray-200 mr-2"></i>Priority Queue</li>
+                        </ul>
+                        <button onclick="openTicketModal('SILVER TICKET')" class="w-full border border-white/20 text-white py-2 font-teko text-lg hover:bg-white hover:text-black transition-colors mt-4 angled-btn">SELECT</button>
+                    </div>
+
+                    <!-- Tier 4: Gold -->
+                    <div class="ticket-card rank-gold bg-white/5 p-6 flex flex-col relative angled-box interactive-element transform md:scale-105 z-10 shadow-lg border border-white/10">
+                        <div class="absolute top-0 right-0 bg-[#eec758] text-black px-2 py-0.5 text-[10px] font-bold">BEST VALUE</div>
+                        <h3 class="font-teko text-4xl text-[#eec758]">GOLD</h3>
+                        <div class="text-2xl font-bold my-2">LKR 2,000</div>
+                        <div class="text-xs font-mono opacity-60 mb-4">High Elo Status</div>
+                        <ul class="text-xs opacity-70 space-y-2 mb-auto font-mono">
+                            <li><i class="fa-solid fa-check text-[#eec758] mr-2"></i>Everything in Silver</li>
+                            <li><i class="fa-solid fa-check text-[#eec758] mr-2"></i>VIP Seating Area</li>
+                            <li><i class="fa-solid fa-check text-[#eec758] mr-2"></i>Free Beverage</li>
+                            <li><i class="fa-solid fa-check text-[#eec758] mr-2"></i>Raffle Entry (Peripherals)</li>
+                        </ul>
+                        <button onclick="openTicketModal('GOLD TICKET')" class="w-full bg-[#eec758] text-black py-2 font-teko text-lg hover:bg-white transition-colors mt-4 angled-btn">SELECT</button>
+                    </div>
+
+                    <!-- Tier 5: Radiant -->
+                    <div class="ticket-card rank-radiant bg-white/10 p-6 flex flex-col relative angled-box interactive-element">
+                        <h3 class="font-teko text-3xl text-[#ffffaa] drop-shadow-[0_0_5px_rgba(255,255,170,0.5)]">RADIANT</h3>
+                        <div class="text-2xl font-bold my-2">LKR 2,500</div>
+                        <div class="text-xs font-mono opacity-60 mb-4">The Top Frag</div>
+                        <ul class="text-xs opacity-70 space-y-2 mb-auto font-mono">
+                            <li><i class="fa-solid fa-check text-[#ffffaa] mr-2"></i>All Gold Perks</li>
+                            <li><i class="fa-solid fa-check text-[#ffffaa] mr-2"></i>Exclusive Jersey</li>
+                            <li><i class="fa-solid fa-check text-[#ffffaa] mr-2"></i>Backstage Access</li>
+                            <li><i class="fa-solid fa-check text-[#ffffaa] mr-2"></i>Meet & Greet</li>
+                        </ul>
+                        <button onclick="openTicketModal('RADIANT TICKET')" class="w-full border border-[#ffffaa] text-[#ffffaa] py-2 font-teko text-lg hover:bg-[#ffffaa] hover:text-black transition-colors mt-4 angled-btn">SELECT</button>
+                    </div>
+
+                </div>
+            </div>
+        </section>

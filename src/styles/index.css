@@ -1,0 +1,279 @@
+@import "tailwindcss";
+
+@layer base {
+    body {
+        @apply bg-[#0f1923] text-white overflow-x-hidden;
+        font-family: 'Rajdhani', sans-serif;
+    }
+}
+
+/* --- TACTICAL OVERLAYS --- */
+.scanlines {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom,
+            rgba(18, 16, 16, 0) 50%,
+            rgba(0, 0, 0, 0.1) 50%);
+    background-size: 100% 4px;
+    z-index: 100;
+    pointer-events: none;
+    opacity: 0.3;
+}
+
+.grain {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
+    opacity: 0.05;
+    z-index: 101;
+    pointer-events: none;
+}
+
+/* --- CUSTOM CURSOR --- */
+#cursor-dot,
+#cursor-ring {
+    pointer-events: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    border-radius: 50%;
+    z-index: 9999;
+    transition: transform 0.1s ease-out, width 0.3s ease, height 0.3s ease, border-color 0.3s ease;
+}
+
+#cursor-dot {
+    width: 4px;
+    height: 4px;
+    background: #ff4655;
+}
+
+#cursor-ring {
+    width: 30px;
+    height: 30px;
+    border: 1px solid rgba(255, 70, 85, 0.5);
+}
+
+body.cursor-hover #cursor-ring {
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 70, 85, 0.1);
+    border-color: #ff4655;
+}
+
+/* --- HUD ELEMENTS --- */
+.hud-bracket {
+    position: fixed;
+    width: 40px;
+    height: 40px;
+    z-index: 50;
+    pointer-events: none;
+}
+
+/* SVG Line Drawing Animation */
+.hud-bracket path {
+    stroke: rgba(255, 70, 85, 0.4);
+    stroke-width: 1.5;
+    fill: none;
+    transition: stroke-dashoffset 1s ease-out;
+}
+
+/* Glitch Effect */
+.glitch {
+    position: relative;
+    display: inline-block;
+}
+
+.glitch::before,
+.glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+}
+
+.glitch::before {
+    left: 2px;
+    text-shadow: -1px 0 #ff4655;
+    clip: rect(44px, 450px, 56px, 0);
+    animation: glitch-anim 2s infinite linear alternate-reverse;
+}
+
+.glitch::after {
+    left: -2px;
+    text-shadow: -1px 0 #00f;
+    clip: rect(44px, 450px, 56px, 0);
+    animation: glitch-anim2 2s infinite linear alternate-reverse;
+}
+
+@keyframes glitch-anim {
+    0% {
+        clip: rect(31px, 9999px, 94px, 0);
+    }
+
+    20% {
+        clip: rect(62px, 9999px, 42px, 0);
+    }
+
+    100% {
+        clip: rect(13px, 9999px, 22px, 0);
+    }
+}
+
+@keyframes glitch-anim2 {
+    0% {
+        clip: rect(65px, 9999px, 100px, 0);
+    }
+
+    20% {
+        clip: rect(25px, 9999px, 45px, 0);
+    }
+
+    100% {
+        clip: rect(85px, 9999px, 10px, 0);
+    }
+}
+
+/* --- NETWORK MESH --- */
+.mesh-line {
+    stroke: rgba(255, 255, 255, 0.1);
+    stroke-width: 1;
+    transition: stroke 0.3s;
+}
+
+.mesh-line.active {
+    stroke: rgba(255, 70, 85, 0.6);
+    stroke-width: 2;
+}
+
+.mesh-node {
+    clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.mesh-node:hover {
+    border-color: #ff4655;
+    background: rgba(255, 70, 85, 0.1);
+}
+
+/* --- GRID BACKGROUND --- */
+/* --- UTILITIES --- */
+.angled-box {
+    clip-path: polygon(10px 0, 100% 0,
+            100% calc(100% - 10px), calc(100% - 10px) 100%,
+            0 100%, 0 10px);
+}
+
+/* --- INPUTS --- */
+.vct-input {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 14px 18px;
+    outline: none;
+    transition: all 0.2s;
+}
+
+.vct-input:focus {
+    border-color: #ff4655;
+    background: rgba(255, 70, 85, 0.05);
+    box-shadow: 0 0 0 2px rgba(255, 70, 85, 0.1);
+}
+
+.modal-sponsor .vct-input:focus {
+    border-color: #eec758;
+    background: rgba(238, 199, 88, 0.05);
+    box-shadow: 0 0 0 2px rgba(238, 199, 88, 0.1);
+}
+
+/* --- MODALS --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(15, 25, 35, 0.95);
+    backdrop-filter: blur(8px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.modal-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.modal-content {
+    background-color: #0f1923;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 2.5rem;
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+    transform: scale(0.9) translateY(20px);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.modal-overlay.open .modal-content {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+}
+
+.modal-sponsor .modal-content {
+    border: 1px solid #eec758;
+    max-width: 600px;
+    box-shadow: 0 0 30px rgba(238, 199, 88, 0.1);
+}
+
+/* --- MARQUEE --- */
+.mini-marquee-container {
+    width: 250px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+}
+
+.mini-marquee-content {
+    display: flex;
+    gap: 2rem;
+    animation: scroll-mini 15s linear infinite;
+}
+
+@keyframes scroll-mini {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+.bg-grid {
+    background-image:
+        linear-gradient(rgba(255, 70, 85, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 70, 85, 0.08) 1px, transparent 1px);
+    background-size: 40px 40px;
+}
+
+.bg-radial-glow {
+    background: radial-gradient(circle at center, rgba(255, 70, 85, 0.1) 0%, transparent 70%);
+}

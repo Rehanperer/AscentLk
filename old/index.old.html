@@ -1,0 +1,1809 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:title" content="ASCENT 2026 | Where Legends Ascend" />
+    <meta property="og:description"
+        content="The Biggest Student-Led Esports Tournament in Sri Lanka. Witness the rise of legends." />
+    <meta property="og:image" content="img/ASCENT2026.svg" />
+    <title>ASCENT 2026 | Where Legends Ascend</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Teko:wght@300;400;500;600;700&family=Rajdhani:wght@500;600;700&display=swap"
+        rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <style>
+        :root {
+            --vct-red: #ff4655;
+            --vct-dark: #0f1923;
+            --vct-light: #ece8e1;
+            --vct-gold: #eec758;
+        }
+
+        body {
+            background-color: var(--vct-dark);
+            color: var(--vct-light);
+            font-family: 'Rajdhani', sans-serif;
+            overflow: hidden;
+            /* Hide default scrollbars */
+            margin: 0;
+            height: 100vh;
+            /* Fallback */
+            height: 100dvh;
+            /* Mobile friendly height */
+            width: 100vw;
+
+            /* Hide default cursor on desktop where custom cursor is active */
+            @media (pointer: fine) {
+                cursor: none;
+            }
+        }
+
+        /* Custom Scroll Container */
+        #scroll-container {
+            display: flex;
+            flex-direction: row;
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-behavior: smooth;
+            /* Scroll Snap */
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        #scroll-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Hide scrollbar for IE, Edge and Firefox */
+        #scroll-container {
+            -ms-overflow-style: none;
+            /* IE and Edge */
+            scrollbar-width: none;
+            /* Firefox */
+        }
+
+        .section {
+            min-width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-right: 1px solid rgba(255, 70, 85, 0.2);
+            /* Scroll Snap Align */
+            scroll-snap-align: start;
+            scroll-snap-stop: always;
+        }
+
+        /* VCT Typography */
+        .font-teko {
+            font-family: 'Teko', sans-serif;
+        }
+
+        /* Glitch Effect */
+        .glitch {
+            position: relative;
+        }
+
+        .glitch::before,
+        .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .glitch::before {
+            left: 2px;
+            text-shadow: -1px 0 #ff4655;
+            clip: rect(24px, 550px, 90px, 0);
+            animation: glitch-anim-2 3s infinite linear alternate-reverse;
+        }
+
+        .glitch::after {
+            left: -2px;
+            text-shadow: -1px 0 #00ffff;
+            clip: rect(85px, 550px, 140px, 0);
+            animation: glitch-anim 2.5s infinite linear alternate-reverse;
+        }
+
+        @keyframes glitch-anim {
+            0% {
+                clip: rect(65px, 9999px, 69px, 0);
+            }
+
+            5% {
+                clip: rect(44px, 9999px, 15px, 0);
+            }
+
+            10% {
+                clip: rect(98px, 9999px, 66px, 0);
+            }
+
+            15% {
+                clip: rect(11px, 9999px, 63px, 0);
+            }
+
+            20% {
+                clip: rect(56px, 9999px, 7px, 0);
+            }
+
+            25% {
+                clip: rect(87px, 9999px, 83px, 0);
+            }
+
+            30% {
+                clip: rect(2px, 9999px, 35px, 0);
+            }
+
+            35% {
+                clip: rect(9px, 9999px, 20px, 0);
+            }
+
+            40% {
+                clip: rect(38px, 9999px, 95px, 0);
+            }
+
+            45% {
+                clip: rect(74px, 9999px, 4px, 0);
+            }
+
+            50% {
+                clip: rect(23px, 9999px, 26px, 0);
+            }
+
+            55% {
+                clip: rect(96px, 9999px, 10px, 0);
+            }
+
+            60% {
+                clip: rect(52px, 9999px, 87px, 0);
+            }
+
+            65% {
+                clip: rect(61px, 9999px, 29px, 0);
+            }
+
+            70% {
+                clip: rect(31px, 9999px, 3px, 0);
+            }
+
+            75% {
+                clip: rect(83px, 9999px, 48px, 0);
+            }
+
+            80% {
+                clip: rect(10px, 9999px, 61px, 0);
+            }
+
+            85% {
+                clip: rect(44px, 9999px, 92px, 0);
+            }
+
+            90% {
+                clip: rect(55px, 9999px, 76px, 0);
+            }
+
+            95% {
+                clip: rect(34px, 9999px, 5px, 0);
+            }
+
+            100% {
+                clip: rect(86px, 9999px, 18px, 0);
+            }
+        }
+
+        @keyframes glitch-anim-2 {
+            0% {
+                clip: rect(12px, 9999px, 61px, 0);
+            }
+
+            20% {
+                clip: rect(85px, 9999px, 14px, 0);
+            }
+
+            40% {
+                clip: rect(24px, 9999px, 73px, 0);
+            }
+
+            60% {
+                clip: rect(5px, 9999px, 37px, 0);
+            }
+
+            80% {
+                clip: rect(66px, 9999px, 92px, 0);
+            }
+
+            100% {
+                clip: rect(38px, 9999px, 51px, 0);
+            }
+        }
+
+        /* Particle Canvas */
+        #particle-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        /* Grid Background Pattern */
+        .bg-grid {
+            background-image:
+                linear-gradient(rgba(255, 70, 85, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 70, 85, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
+        /* Angled Borders */
+        .angled-box {
+            clip-path: polygon(10px 0, 100% 0,
+                    100% calc(100% - 10px), calc(100% - 10px) 100%,
+                    0 100%, 0 10px);
+        }
+
+        .angled-btn {
+            position: relative;
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+            transition: all 0.2s ease;
+            overflow: hidden;
+        }
+
+        .angled-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            clip-path: inherit;
+            pointer-events: none;
+        }
+
+        .angled-btn:hover {
+            transform: translateX(5px);
+            background-color: #fff;
+            color: #0f1923;
+        }
+
+        .angled-btn:hover::before {
+            border-color: #000;
+        }
+
+        /* Card Hover */
+        .school-card {
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .school-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--vct-red);
+        }
+
+        /* Navigation Dots */
+        .nav-dots {
+            position: fixed;
+            bottom: 30px;
+            left: 40px;
+            /* MOVED TO BOTTOM LEFT */
+            /* transform: translateX(-50%); REMOVED CENTER TRANSFORM */
+            display: flex;
+            gap: 10px;
+            z-index: 50;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            background-color: rgba(236, 232, 225, 0.3);
+            transform: skew(-20deg);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .dot.active {
+            background-color: var(--vct-red);
+            width: 30px;
+        }
+
+        /* Scroll Hint */
+        .scroll-hint {
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0.7;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 0.4;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.4;
+            }
+        }
+
+        /* --- UPDATED: ADAPTIVE CURSOR --- */
+        #cursor-dot {
+            width: 8px;
+            height: 8px;
+            background-color: white;
+            position: fixed;
+            top: 0;
+            left: 0;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: width 0.2s, height 0.2s;
+            display: none;
+            mix-blend-mode: difference;
+        }
+
+        #cursor-ring {
+            width: 40px;
+            height: 40px;
+            border: 1px solid white;
+            position: fixed;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 9998;
+            transform: translate(-50%, -50%);
+            transition: width 0.2s, height 0.2s, transform 0.1s linear;
+            display: none;
+            mix-blend-mode: difference;
+        }
+
+        /* Cursor Hover State */
+        body.cursor-hover #cursor-dot {
+            width: 12px;
+            height: 12px;
+        }
+
+        body.cursor-hover #cursor-ring {
+            width: 60px;
+            height: 60px;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Theme Switching */
+        body.theme-red #header-logo-text {
+            color: #000000 !important;
+        }
+
+        body.theme-red #register-btn {
+            background-color: #000000 !important;
+            color: #ffffff !important;
+        }
+
+        body.theme-red #register-btn:hover {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+        }
+
+        body.theme-red .dot {
+            background-color: rgba(0, 0, 0, 0.3) !important;
+        }
+
+        body.theme-red .dot.active {
+            background-color: #000000 !important;
+        }
+
+        /* Marquee */
+        .marquee-container {
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+            -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+        }
+
+        .marquee-content {
+            display: flex;
+            gap: 2rem;
+            animation: scroll 40s linear infinite;
+        }
+
+        @keyframes scroll {
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        .carousel-logo {
+            width: 80px;
+            height: 80px;
+        }
+
+        /* Mini Marquee */
+        .mini-marquee-container {
+            width: 250px;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+        }
+
+        .mini-marquee-content {
+            display: flex;
+            gap: 1.5rem;
+            /* Smoother, slower animation */
+            animation: scroll-mini 20s linear infinite;
+        }
+
+        @keyframes scroll-mini {
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        /* Ticket Card Rank Colors */
+        .ticket-card {
+            transition: all 0.3s ease;
+        }
+
+        .ticket-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .rank-iron {
+            border-top: 4px solid #484b4e;
+        }
+
+        .rank-bronze {
+            border-top: 4px solid #8c513a;
+        }
+
+        .rank-silver {
+            border-top: 4px solid #aebac4;
+        }
+
+        .rank-gold {
+            border-top: 4px solid #eec758;
+        }
+
+        .rank-radiant {
+            border-top: 4px solid #ffffaa;
+            background: linear-gradient(135deg, rgba(255, 255, 170, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+        }
+
+        .rank-radiant:hover {
+            box-shadow: 0 0 20px rgba(255, 255, 170, 0.2);
+            border-color: #ffffaa;
+        }
+
+        /* --- MODAL STYLES --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(15, 25, 35, 0.95);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background-color: #0f1923;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2.5rem;
+            /* Increased padding */
+            width: 90%;
+            max-width: 500px;
+            /* Animation Initial State */
+            transform: scale(0.9) translateY(20px);
+            opacity: 0;
+            transition: none;
+            /* Handled by animation */
+            position: relative;
+        }
+
+        /* NEW ANIMATION */
+        @keyframes modalPop {
+            0% {
+                opacity: 0;
+                transform: scale(0.9) translateY(20px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .modal-overlay.open .modal-content {
+            animation: modalPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        .modal-sponsor .modal-content {
+            border: 1px solid var(--vct-gold);
+            max-width: 600px;
+            box-shadow: 0 0 30px rgba(238, 199, 88, 0.1);
+        }
+
+        /* Base Input Styling */
+        .vct-input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            /* Darker background */
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 14px 18px;
+            /* Bigger touch target */
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 500;
+            font-size: 1.1rem;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        /* Ticket Modal Specific Input Styling */
+        #ticket-modal .vct-input:focus {
+            border-color: var(--vct-red);
+            background: rgba(255, 70, 85, 0.05);
+            box-shadow: 0 0 0 2px rgba(255, 70, 85, 0.1);
+        }
+
+        /* Sponsor Modal Specific Input Styling */
+        .modal-sponsor .vct-input:focus {
+            border-color: var(--vct-gold);
+            background: rgba(238, 199, 88, 0.05);
+            box-shadow: 0 0 0 2px rgba(238, 199, 88, 0.1);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            opacity: 0.5;
+            transition: opacity 0.2s;
+        }
+
+        .close-modal:hover {
+            opacity: 1;
+        }
+
+        /* --- REDESIGNED SECTION 4: NETWORK MESH --- */
+        .network-container {
+            width: min(100vw, 800px);
+            height: min(100vw, 800px);
+            position: relative;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Center Hub */
+        .hub-core {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: clamp(140px, 20vw, 220px);
+            height: clamp(140px, 20vw, 220px);
+            background: radial-gradient(circle, rgba(255, 70, 85, 0.2) 0%, rgba(15, 25, 35, 1) 70%);
+            border: 1px solid rgba(255, 70, 85, 0.5);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+            box-shadow: 0 0 50px rgba(255, 70, 85, 0.2);
+            animation: pulse-core 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse-core {
+
+            0%,
+            100% {
+                box-shadow: 0 0 50px rgba(255, 70, 85, 0.2);
+                border-color: rgba(255, 70, 85, 0.5);
+            }
+
+            50% {
+                box-shadow: 0 0 80px rgba(255, 70, 85, 0.4);
+                border-color: rgba(255, 70, 85, 0.8);
+            }
+        }
+
+        /* Mesh Lines (SVG) */
+        .mesh-line {
+            stroke: rgba(255, 255, 255, 0.1);
+            stroke-width: 1;
+            transition: stroke 0.3s;
+        }
+
+        .mesh-line.active {
+            stroke: rgba(255, 70, 85, 0.6);
+            stroke-width: 2;
+            filter: drop-shadow(0 0 5px rgba(255, 70, 85, 0.5));
+        }
+
+        /* Network Nodes */
+        .mesh-node {
+            position: absolute;
+            /* Positioning is handled by top/left classes */
+            transform: translate(-50%, -50%);
+            width: clamp(100px, 15vw, 140px);
+            padding: clamp(6px, 1.5vw, 10px);
+            background: rgba(15, 25, 35, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+            z-index: 10;
+            cursor: pointer;
+            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0;
+            /* animation set in inline style via JS or delay classes */
+        }
+
+        .mesh-node:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+            border-color: #ff4655;
+            background: rgba(255, 70, 85, 0.1);
+            z-index: 30;
+        }
+
+        @keyframes expand-out {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Node Positions (Relative to 800x800 container) */
+        /* Center is 400, 400 */
+        .pos-1 {
+            top: 15%;
+            left: 50%;
+            animation: expand-out 0.6s 0.1s forwards;
+        }
+
+        /* Top */
+        .pos-2 {
+            top: 28%;
+            left: 80%;
+            animation: expand-out 0.6s 0.2s forwards;
+        }
+
+        /* Top Right */
+        .pos-3 {
+            top: 72%;
+            left: 80%;
+            animation: expand-out 0.6s 0.3s forwards;
+        }
+
+        /* Bottom Right */
+        .pos-4 {
+            top: 85%;
+            left: 50%;
+            animation: expand-out 0.6s 0.4s forwards;
+        }
+
+        /* Bottom */
+        .pos-5 {
+            top: 72%;
+            left: 20%;
+            animation: expand-out 0.6s 0.5s forwards;
+        }
+
+        /* Bottom Left */
+        .pos-6 {
+            top: 28%;
+            left: 20%;
+            animation: expand-out 0.6s 0.6s forwards;
+        }
+
+        /* Top Left */
+
+        /* Removed mobile-gauntlet styles as mesh is unified */
+        @media (max-width: 768px) {
+            .hub-core {
+                font-size: 0.8rem;
+            }
+
+            .hub-core .font-teko {
+                font-size: 3rem;
+            }
+
+            .hub-core div:first-child,
+            .hub-core div:last-child {
+                font-size: 9px;
+            }
+
+            .mesh-node .font-teko {
+                font-size: 1.2rem;
+            }
+
+            .mesh-node div:first-child,
+            .mesh-node div:last-child {
+                font-size: 8px;
+            }
+        }
+
+        /* --- TACTICAL OVERLAYS --- */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom,
+                    rgba(18, 16, 16, 0) 50%,
+                    rgba(0, 0, 0, 0.1) 50%);
+            background-size: 100% 4px;
+            z-index: 100;
+            pointer-events: none;
+            opacity: 0.3;
+        }
+
+        .grain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("https://www.transparenttextures.com/patterns/carbon-fibre.png");
+            /* Subtle pattern */
+            opacity: 0.03;
+            z-index: 101;
+            pointer-events: none;
+        }
+
+        .diagonal-stripes {
+            position: absolute;
+            inset: 0;
+            background-image: repeating-linear-gradient(45deg,
+                    transparent,
+                    transparent 20px,
+                    rgba(255, 70, 85, 0.02) 20px,
+                    rgba(255, 70, 85, 0.02) 40px);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* --- HUD ELEMENTS --- */
+        .hud-bracket {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            z-index: 90;
+            pointer-events: none;
+        }
+
+        .hud-bracket svg {
+            width: 100%;
+            height: 100%;
+            stroke: rgba(255, 255, 255, 0.4);
+            stroke-width: 1;
+            fill: none;
+            stroke-dasharray: 100;
+            stroke-dashoffset: 100;
+            transition: stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .hud-bracket.active svg {
+            stroke-dashoffset: 0;
+            stroke: rgba(255, 70, 85, 0.8);
+        }
+
+        .hud-bracket-tl {
+            top: 20px;
+            left: 20px;
+        }
+
+        .hud-bracket-tr {
+            top: 20px;
+            right: 20px;
+        }
+
+        .hud-bracket-bl {
+            bottom: 20px;
+            left: 20px;
+        }
+
+        .hud-bracket-br {
+            bottom: 20px;
+            right: 20px;
+        }
+
+        .tactical-readout {
+            position: fixed;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.4);
+            z-index: 90;
+            pointer-events: none;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: none;
+            /* Hide on mobile to prevent overlap */
+        }
+
+        @media (min-width: 768px) {
+            .tactical-readout {
+                display: block;
+            }
+        }
+
+        /* Hero REC Indicator */
+        .rec-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: monospace;
+            font-size: 12px;
+            color: #ff4655;
+            margin-bottom: 20px;
+        }
+
+        .rec-dot {
+            width: 8px;
+            height: 8px;
+            background: #ff4655;
+            border-radius: 50%;
+            animation: blink 1s steps(2, start) infinite;
+        }
+
+        @keyframes blink {
+            to {
+                visibility: hidden;
+            }
+        }
+
+        /* --- SCAN PULSE --- */
+        #scan-pulse {
+            position: fixed;
+            top: 0;
+            left: -10%;
+            width: 5%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255, 70, 85, 0.4), transparent);
+            z-index: 150;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        #scan-pulse.active {
+            animation: scan-move 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes scan-move {
+            0% {
+                left: -10%;
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                left: 110%;
+                opacity: 0;
+            }
+        }
+
+        /* Large Background Text */
+        .bg-text {
+            position: absolute;
+            font-family: 'Teko', sans-serif;
+            font-size: 20vw;
+            color: rgba(255, 255, 255, 0.02);
+            white-space: nowrap;
+            z-index: 0;
+            pointer-events: none;
+            user-select: none;
+            font-weight: 800;
+        }
+    </style>
+</head>
+
+<body class="bg-grid">
+
+    <!-- Custom Cursor Elements -->
+    <div id="cursor-dot"></div>
+    <div id="cursor-ring"></div>
+
+    <!-- Screen Overlays -->
+    <div class="scanlines"></div>
+    <div class="grain"></div>
+    <div id="scan-pulse"></div>
+
+    <!-- HUD Brackets -->
+    <div class="hud-bracket hud-bracket-tl"><svg viewBox="0 0 40 40">
+            <path d="M 40 1 L 1 1 L 1 40" />
+        </svg></div>
+    <div class="hud-bracket hud-bracket-tr"><svg viewBox="0 0 40 40">
+            <path d="M 0 1 L 39 1 L 39 40" />
+        </svg></div>
+    <div class="hud-bracket hud-bracket-bl"><svg viewBox="0 0 40 40">
+            <path d="M 40 39 L 1 39 L 1 0" />
+        </svg></div>
+    <div class="hud-bracket hud-bracket-br"><svg viewBox="0 0 40 40">
+            <path d="M 0 39 L 39 39 L 39 0" />
+        </svg></div>
+
+    <!-- Tactical Readouts -->
+    <div class="tactical-readout top-1/2 left-4 -translate-y-1/2 -rotate-90">SYS_AUTH: // ASCENT_PROTOCOL_v01</div>
+    <div class="tactical-readout bottom-1/2 right-4 translate-y-1/2 rotate-90">LOC_ID: // COLOMBO_SL_NODE_07</div>
+
+    <!-- Fixed Overlays -->
+    <div class="fixed top-0 left-0 w-full p-4 md:p-6 z-50 flex justify-between items-start pointer-events-none">
+        <div class="flex flex-col">
+            <span id="header-logo-text"
+                class="font-teko text-xl md:text-2xl tracking-widest text-[#ff4655] font-bold transition-colors duration-300">ASCENT
+                // 2026</span>
+            <span class="text-[10px] md:text-xs tracking-wider opacity-60 mix-blend-difference text-white">WHERE LEGENDS
+                ASCEND</span>
+        </div>
+
+        <div class="flex items-start gap-4 pointer-events-auto">
+            <div class="flex gap-4">
+                <div class="w-8 h-8 md:w-10 md:h-10 bg-white/5 border border-white/20 flex items-center justify-center rounded-sm hover:border-[#ff4655] transition-colors cursor-pointer interactive-element"
+                    title="Club">
+                    <img src="img/SVG.svg" class="w-6 h-6 object-contain opacity-80" alt="Club">
+                </div>
+                <div class="w-8 h-8 md:w-10 md:h-10 bg-white/5 border border-white/20 flex items-center justify-center rounded-sm hover:border-[#ff4655] transition-colors cursor-pointer interactive-element"
+                    title="Valorant">
+                    <img src="img/Valorant.svg" class="w-6 h-6 object-contain opacity-80" alt="Valorant">
+                </div>
+                <div class="w-8 h-8 md:w-10 md:h-10 bg-white/5 border border-white/20 flex items-center justify-center rounded-sm hover:border-[#ff4655] transition-colors cursor-pointer interactive-element"
+                    title="Event">
+                    <img src="img/ASCENT2026.svg" class="w-6 h-6 object-contain opacity-80" alt="Ascent">
+                </div>
+            </div>
+
+            <div id="register-btn" onclick="openTicketModal('GENERAL REGISTRATION')"
+                class="bg-[#ff4655] text-white px-3 py-1 md:px-4 font-bold font-teko text-base md:text-lg angled-box cursor-pointer hover:bg-white hover:text-black transition-colors duration-300 interactive-element">
+                REGISTER NOW
+            </div>
+        </div>
+    </div>
+
+    <div class="nav-dots" id="nav-dots"></div>
+
+    <div id="scroll-container">
+
+        <!-- SECTION 1: HERO -->
+        <section class="section" id="section-1">
+            <div class="bg-text opacity-5">ASCENT</div>
+            <div class="diagonal-stripes"></div>
+            <canvas id="particle-canvas"></canvas>
+            <div class="relative z-10 flex flex-col items-center justify-center text-center px-4 w-full">
+                <div class="rec-indicator">
+                    <div class="rec-dot"></div>
+                    <span>REC // PHASE_01_QUALIFIERS</span>
+                </div>
+                <h2
+                    class="text-[#ff4655] text-sm md:text-xl font-bold tracking-[0.3em] md:tracking-[0.5em] mb-2 md:mb-4 animate-bounce scramble-text">
+                    TOURNAMENT // 01</h2>
+
+                <h1 class="font-teko text-6xl md:text-9xl font-bold tracking-tighter leading-none mb-4 md:mb-8 glitch scramble-text"
+                    data-text="ASCENT 2026">
+                    ASCENT 2026
+                </h1>
+
+                <div class="w-full max-w-xs md:max-w-2xl h-1 bg-[#ff4655] mb-4 md:mb-8 relative overflow-hidden">
+                    <div class="absolute top-0 left-0 h-full w-1/3 bg-white animate-[slide_2s_infinite_linear]"></div>
+                </div>
+
+                <p class="max-w-xl text-xs md:text-lg opacity-80 mb-8 md:mb-12 font-medium tracking-wide scramble-text">
+                    WHERE LEGENDS ASCEND. THE ULTIMATE STUDENT-LED ESPORTS GAUNTLET IN SRI LANKA.
+                </p>
+
+                <div class="absolute bottom-10 right-10 hidden md:flex flex-col items-end opacity-70">
+                    <div class="text-[10px] uppercase tracking-widest mb-2 text-[#ff4655]">Powered By</div>
+                    <div class="mini-marquee-container border-t border-white/20 pt-2">
+                        <div class="mini-marquee-content" id="mini-sponsor-track">
+                            <img src="img/Aivance.svg" class="h-6 w-auto grayscale brightness-200">
+                            <img src="img/StarGarments.svg" class="h-6 w-auto grayscale brightness-200">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="scroll-hint hidden md:flex absolute bottom-10 left-1/2 transform -translate-x-1/2">
+                    <span class="uppercase text-sm tracking-widest">Scroll</span>
+                    <i class="fa-solid fa-arrow-right-long text-[#ff4655] ml-2"></i>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: COUNTDOWN (RED) -->
+        <section class="section bg-[#ff4655] relative overflow-hidden" id="section-2">
+            <div class="bg-text opacity-10" style="color: black;">OPENING</div>
+            <div class="diagonal-stripes opacity-20"></div>
+            <div
+                class="absolute top-0 right-0 w-full h-full opacity-10 font-teko font-bold text-[15rem] md:text-[30rem] leading-none text-black select-none pointer-events-none overflow-hidden whitespace-nowrap -rotate-12 translate-x-1/4">
+                JAN 26
+            </div>
+
+            <div
+                class="relative z-10 flex flex-col lg:flex-row w-full max-w-6xl px-4 md:px-8 items-center gap-8 md:gap-12 justify-center">
+                <div class="w-full lg:w-1/2 text-center lg:text-left">
+                    <div class="inline-block px-3 py-1 bg-black text-white font-mono text-xs md:text-sm mb-4">status:
+                        PENDING</div>
+                    <h2 class="font-teko text-5xl md:text-8xl font-bold text-black leading-[0.9] mb-4 md:mb-6">
+                        REGISTRATION<br>OPENS IN
+                    </h2>
+                    <p class="text-black/80 font-semibold text-base md:text-xl max-w-md mx-auto lg:mx-0">
+                        Prepare your roster. The battle for the Ascent trophy begins on January 26th. Don't miss the
+                        drop.
+                    </p>
+                </div>
+
+                <div class="w-full lg:w-1/2 flex gap-2 md:gap-4 lg:gap-8 justify-center">
+                    <div class="flex flex-col items-center">
+                        <div
+                            class="w-14 h-16 md:w-24 md:h-32 bg-black angled-box flex items-center justify-center mb-2">
+                            <span id="days" class="font-teko text-3xl md:text-7xl text-white">00</span>
+                        </div>
+                        <span
+                            class="font-mono text-[10px] md:text-sm text-black font-bold uppercase tracking-widest">Days</span>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div
+                            class="w-14 h-16 md:w-24 md:h-32 bg-white angled-box flex items-center justify-center mb-2">
+                            <span id="hours" class="font-teko text-3xl md:text-7xl text-[#ff4655]">00</span>
+                        </div>
+                        <span
+                            class="font-mono text-[10px] md:text-sm text-black font-bold uppercase tracking-widest">Hours</span>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div
+                            class="w-14 h-16 md:w-24 md:h-32 bg-black angled-box flex items-center justify-center mb-2">
+                            <span id="minutes" class="font-teko text-3xl md:text-7xl text-white">00</span>
+                        </div>
+                        <span
+                            class="font-mono text-[10px] md:text-sm text-black font-bold uppercase tracking-widest">Minutes</span>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div
+                            class="w-14 h-16 md:w-24 md:h-32 bg-white angled-box flex items-center justify-center mb-2">
+                            <span id="seconds" class="font-teko text-3xl md:text-7xl text-[#ff4655]">00</span>
+                        </div>
+                        <span
+                            class="font-mono text-[10px] md:text-sm text-black font-bold uppercase tracking-widest">Seconds</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: SCHOOLS -->
+        <section class="section" id="section-3">
+            <div class="bg-text opacity-5">TEAMS</div>
+            <div class="diagonal-stripes"></div>
+            <div class="w-full max-w-full px-0 flex flex-col h-full justify-center">
+                <div
+                    class="w-full max-w-7xl mx-auto px-6 flex justify-between items-end mb-12 border-b border-white/10 pb-4">
+                    <div class="flex flex-col">
+                        <span class="text-[#ff4655] font-bold tracking-widest text-xs mb-2 scramble-text">ELIGIBLE
+                            INSTITUTIONS</span>
+                        <h2 class="font-teko text-5xl md:text-7xl font-bold leading-none scramble-text">PARTICIPATING
+                            SCHOOLS</h2>
+                    </div>
+                    <div class="hidden md:block text-right">
+                        <div class="text-3xl font-teko scramble-text">SEASON 2026</div>
+                        <div class="text-xs tracking-[0.4em] text-white/40 scramble-text">AUTH_REQUIRED // GAUNTLET_v2
+                        </div>
+                    </div>
+                </div>
+
+                <div class="marquee-container py-12 bg-black/20 border-y border-white/5 backdrop-blur-sm">
+                    <div class="marquee-content" id="carousel-track">
+                        <!-- Logos injected via JS -->
+                    </div>
+                </div>
+
+                <div class="text-center mt-6 text-xl font-teko tracking-widest text-[#ff4655] animate-pulse">
+                    <span id="school-count-display">0</span>/24 SCHOOLS CONFIRMED
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: TOURNAMENT FORMAT (EXPANDING MESH) -->
+        <section class="section bg-[#0f1923] relative overflow-hidden" id="section-4">
+            <!-- Background elements -->
+            <div class="absolute inset-0 bg-grid opacity-30 pointer-events-none"></div>
+
+
+            <!-- UNIFIED Mesh Network (Mobile + Desktop) -->
+            <div class="network-container items-center justify-center">
+
+                <!-- SVG Lines (Mesh Background) -->
+                <svg class="absolute top-0 left-0 w-full h-full pointer-events-none z-0" viewBox="0 0 800 800"
+                    preserveAspectRatio="xMidYMid meet" style="overflow: visible;">
+                    <defs>
+                        <linearGradient id="mesh-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:rgba(255, 70, 85, 0.1)" />
+                            <stop offset="50%" style="stop-color:rgba(255, 70, 85, 0.5)" />
+                            <stop offset="100%" style="stop-color:rgba(255, 70, 85, 0.1)" />
+                        </linearGradient>
+                    </defs>
+
+                    <!-- Center to Nodes -->
+                    <line x1="400" y1="400" x2="400" y2="120" class="mesh-line center-link-1" />
+                    <line x1="400" y1="400" x2="640" y2="224" class="mesh-line center-link-2" />
+                    <line x1="400" y1="400" x2="640" y2="576" class="mesh-line center-link-3" />
+                    <line x1="400" y1="400" x2="400" y2="680" class="mesh-line center-link-4" />
+                    <line x1="400" y1="400" x2="160" y2="576" class="mesh-line center-link-5" />
+                    <line x1="400" y1="400" x2="160" y2="224" class="mesh-line center-link-6" />
+
+                    <!-- Outer Ring Connections -->
+                    <line x1="400" y1="120" x2="640" y2="224" class="mesh-line outer-link" />
+                    <line x1="640" y1="224" x2="640" y2="576" class="mesh-line outer-link" />
+                    <line x1="640" y1="576" x2="400" y2="680" class="mesh-line outer-link" />
+                    <line x1="400" y1="680" x2="160" y2="576" class="mesh-line outer-link" />
+                    <line x1="160" y1="576" x2="160" y2="224" class="mesh-line outer-link" />
+                    <line x1="160" y1="224" x2="400" y2="120" class="mesh-line outer-link" />
+                </svg>
+
+                <!-- Central Hub -->
+                <div class="hub-core">
+                    <div class="text-[#ff4655] text-xs font-mono tracking-[0.3em] uppercase mb-1">Total Prize</div>
+                    <div
+                        class="font-teko text-7xl text-white font-bold leading-none drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]">
+                        300K</div>
+                    <div class="text-white/30 text-[14px] font-mono uppercase mt-2">LKR Currency</div>
+                </div>
+
+                <!-- Node 1: Countdown (Top) -->
+                <div class="mesh-node pos-1">
+                    <div class="text-[14px] text-[#ff4655] uppercase tracking-widest mb-1">Live Event</div>
+                    <div id="orbit-countdown" class="font-teko text-3xl leading-none">00d 00h</div>
+                    <div class="text-[14px] opacity-50 mt-1">July 17, 2026</div>
+                </div>
+
+                <!-- Node 2: Qualifiers (Top Right) -->
+                <div class="mesh-node pos-2">
+                    <div class="text-[14px] text-white/50 uppercase tracking-widest mb-1">Phase 01</div>
+                    <div class="font-teko text-2xl leading-none">QUALIFIERS</div>
+                    <div class="text-[14px] opacity-60 mt-1 font-mono">Swiss Online</div>
+                </div>
+
+                <!-- Node 3: Groups (Bottom Right) -->
+                <div class="mesh-node pos-3">
+                    <div class="text-[14px] text-white/50 uppercase tracking-widest mb-1">Phase 02</div>
+                    <div class="font-teko text-2xl leading-none">GROUPS</div>
+                    <div class="text-[14px] opacity-60 mt-1 font-mono">LAN Studio</div>
+                </div>
+
+                <!-- Node 4: Finals (Bottom) -->
+                <div class="mesh-node pos-4" style="border-color: rgba(255,70,85,0.8);">
+                    <div class="text-[14px] text-[#ff4655] uppercase tracking-widest mb-1">Phase 03</div>
+                    <div class="font-teko text-2xl leading-none">FINALS</div>
+                    <div class="text-[14px] opacity-60 mt-1 font-mono">Grand Stage</div>
+                </div>
+
+                <!-- Node 5: Format (Bottom Left) -->
+                <div class="mesh-node pos-5">
+                    <div class="text-[14px] text-white/50 uppercase tracking-widest mb-1">System</div>
+                    <div class="font-teko text-2xl leading-none">DBL ELIM</div>
+                    <div class="text-[14px] opacity-60 mt-1 font-mono">Competitive</div>
+                </div>
+
+                <!-- Node 6: Region (Top Left) -->
+                <div class="mesh-node pos-6">
+                    <div class="text-[14px] text-white/50 uppercase tracking-widest mb-1">Region</div>
+                    <div class="font-teko text-2xl leading-none">SRI LANKA</div>
+                    <div class="text-[14px] opacity-60 mt-1 font-mono">National</div>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="section" id="section-5">
+            <div class="bg-text opacity-5">SOON</div>
+            <div class="diagonal-stripes"></div>
+            <div class="w-full h-full px-4 md:px-8 flex flex-col justify-center items-center relative z-10">
+                <div class="absolute inset-0 bg-grid opacity-20 pointer-events-none"></div>
+                <div class="text-center max-w-4xl mx-auto">
+                    <h2 class="font-teko text-6xl md:text-8xl font-bold uppercase leading-none mb-6 text-white glitch"
+                        data-text="COMING SOON">
+                        COMING SOON
+                    </h2>
+
+                    <p
+                        class="font-mono text-lg md:text-2xl text-[#ff4655] tracking-widest uppercase mb-8 border-y border-[#ff4655]/30 py-4">
+                        Wishlist and Preorder Tickets Later
+                    </p>
+
+                    <button onclick="openTicketModal('WAITLIST')"
+                        class="px-10 py-3 bg-white/5 border border-white/20 text-white font-teko text-xl hover:bg-[#ff4655] hover:text-black transition-all duration-300 angled-btn">
+                        NOTIFY ME
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 6: SPONSORS & CONTACT -->
+        <section class="section relative" id="section-6">
+            <div class="bg-text opacity-5">CONTACT</div>
+            <div class="diagonal-stripes"></div>
+            <div class="absolute right-0 bottom-0 w-2/3 h-full bg-gradient-to-l from-[#ff4655]/10 to-transparent"></div>
+
+            <div class="z-10 w-full max-w-6xl px-8 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h2 class="font-teko text-6xl md:text-8xl font-bold uppercase leading-none mb-4">PARTNER<br>WITH US
+                    </h2>
+                    <p class="text-lg md:text-xl text-gray-400 mb-8 max-w-md">
+                        Join the fastest growing student esports league. Elevate your brand where legends ascend.
+                    </p>
+
+                    <div class="flex flex-col sm:flex-row gap-6">
+                        <div onclick="openSponsorModal()"
+                            class="bg-white/5 border border-white/20 px-8 py-4 font-bold font-teko text-2xl interactive-element cursor-pointer hover:bg-[#ff4655] hover:border-[#ff4655] transition-all group overflow-hidden relative">
+                            <div
+                                class="absolute top-0 left-0 w-full h-1 bg-[#ff4655] -translate-x-full group-hover:translate-x-0 transition-transform duration-500">
+                            </div>
+                            BECOME A SPONSOR
+                        </div>
+                        <button onclick="openTicketModal('GENERAL INQUIRY')"
+                            class="border border-white/30 text-white px-8 py-4 font-bold font-teko text-2xl angled-btn hover:bg-white hover:text-black transition-all interactive-element">
+                            CONTACT US
+                        </button>
+                    </div>
+                </div>
+
+                <div class="border-l border-white/10 pl-0 md:pl-12 flex flex-col gap-8">
+                    <div class="text-right">
+                        <h3 class="font-teko text-4xl text-[#ff4655] mb-4">FOLLOW THE ACTION</h3>
+                        <div class="flex gap-6 justify-end text-3xl">
+                            <a href="https://instagram.com/ascent.2026" target="_blank"
+                                class="w-12 h-12 border border-white/20 flex items-center justify-center hover:bg-[#ff4655] hover:border-[#ff4655] transition-all interactive-element angled-box">
+                                <i class="fa-brands fa-instagram"></i>
+                            </a>
+                            <a href="https://youtube.com/@ascent2026" target="_blank"
+                                class="w-12 h-12 border border-white/20 flex items-center justify-center hover:bg-[#ff4655] hover:border-[#ff4655] transition-all interactive-element angled-box">
+                                <i class="fa-brands fa-youtube"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="text-right mt-8">
+                        <div class="text-sm font-mono opacity-50 uppercase tracking-widest mb-2">Inquiries</div>
+                        <a href="mailto:ascent2026s@gmail.com"
+                            class="text-xl hover:text-[#ff4655] transition-colors interactive-element">ascent2026s@gmail.com</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="absolute bottom-6 w-full text-center">
+                <div class="text-[10px] md:text-xs text-white/30 font-mono tracking-widest">
+                    COPYRIGHT © ASCENT 2026. ALL RIGHTS RESERVED.
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- TICKET / CONTACT MODAL -->
+    <div id="ticket-modal" class="modal-overlay">
+        <div class="modal-content angled-box relative overflow-hidden">
+            <!-- Decorative accent line -->
+            <div class="absolute top-0 left-0 w-1 h-full bg-[#ff4655]"></div>
+
+            <div class="close-modal text-white" onclick="closeModals()">&times;</div>
+            <h2 id="modal-title" class="font-teko text-4xl text-white mb-6 border-b border-white/10 pb-2 pl-4">SECURE
+                YOUR SPOT</h2>
+            <form onsubmit="handleFormSubmit(event, 'ticket-modal')" class="flex flex-col gap-5 pl-4">
+                <div>
+                    <label class="block text-xs uppercase tracking-widest mb-2 opacity-70 text-[#ff4655] font-bold">Full
+                        Name</label>
+                    <input type="text" required class="vct-input interactive-element" placeholder="Jett Windwalker">
+                </div>
+                <div>
+                    <label
+                        class="block text-xs uppercase tracking-widest mb-2 opacity-70 text-[#ff4655] font-bold">Email
+                        Address</label>
+                    <input type="email" required class="vct-input interactive-element" placeholder="agent@valorant.com">
+                </div>
+                <button type="submit"
+                    class="bg-[#ff4655] text-white py-3 font-teko text-xl font-bold angled-btn hover:bg-white hover:text-black transition-colors mt-4 interactive-element">CONFIRM
+                    REGISTRATION</button>
+            </form>
+            <div class="success-message hidden mt-4 text-center">
+                <i class="fa-solid fa-check-circle text-[#ff4655] text-5xl mb-4"></i>
+                <p class="font-teko text-3xl text-white">RECEIVED</p>
+                <p class="text-sm opacity-70 font-mono">We'll get in touch within 2 days.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SPONSOR MODAL -->
+    <div id="sponsor-modal" class="modal-overlay modal-sponsor">
+        <div class="modal-content angled-box">
+            <div class="close-modal" onclick="closeModals()">&times;</div>
+            <div class="text-center mb-6">
+                <div
+                    class="inline-block px-2 py-0.5 bg-[#eec758] text-black text-[10px] font-bold tracking-widest mb-2">
+                    PARTNERSHIP</div>
+                <h2 class="font-teko text-5xl text-[#eec758] leading-none">JOIN THE ALLIANCE</h2>
+            </div>
+            <form onsubmit="handleFormSubmit(event, 'sponsor-modal')" class="flex flex-col gap-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs uppercase tracking-widest mb-2 opacity-70 text-[#eec758]">Full
+                            Name</label>
+                        <input type="text" required class="vct-input interactive-element">
+                    </div>
+                    <div>
+                        <label
+                            class="block text-xs uppercase tracking-widest mb-2 opacity-70 text-[#eec758]">Company</label>
+                        <input type="text" required class="vct-input interactive-element">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label
+                            class="block text-xs uppercase tracking-widest mb-2 opacity-70 text-[#eec758]">Email</label>
+                        <input type="email" required class="vct-input interactive-element">
+                    </div>
+                    <div>
+                        <label class="block text-xs uppercase tracking-widest mb-2 opacity-70 text-[#eec758]">Role /
+                            Position</label>
+                        <input type="text" required class="vct-input interactive-element">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs uppercase tracking-widest mb-2 opacity-70 text-[#eec758]">Message
+                        (Optional)</label>
+                    <textarea rows="2" class="vct-input interactive-element"></textarea>
+                </div>
+                <button type="submit"
+                    class="border border-[#eec758] text-[#eec758] py-3 font-teko text-xl font-bold angled-btn hover:bg-[#eec758] hover:text-black transition-colors mt-2 interactive-element">SEND
+                    INQUIRY</button>
+            </form>
+            <div class="success-message hidden mt-4 text-center">
+                <i class="fa-solid fa-handshake text-[#eec758] text-3xl mb-2"></i>
+                <p class="font-teko text-2xl text-[#eec758]">INQUIRY SENT</p>
+                <p class="text-sm opacity-70">We'll get in touch within 2 days.</p>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // --- CONFIGURATION & CONSTANTS ---
+        const CONFIG = {
+            TARGET_DATE: new Date("January 26, 2026 00:00:00").getTime(),
+            START_DATE: new Date("July 17, 2026 00:00:00").getTime(),
+            TOTAL_SCHOOL_SLOTS: 24,
+            SOCIAL_LINKS: {
+                instagram: "https://instagram.com/ascent.2026",
+                youtube: "https://youtube.com/@ascent2026"
+            }
+        };
+
+        const SCHOOLS_DATA = [
+            { name: "Ethos", status: "Q" },
+            { name: "Gateway", status: "C" },
+            { name: "British", status: "C" },
+            { name: "Stafford", status: "N" },
+            { name: "Whycherley", status: "N" },
+            { name: "Lycium", status: "N" },
+            { name: "Museus", status: "N" },
+            { name: "Vishaka", status: "N" },
+            { name: "HFC", status: "N" },
+            { name: "CIS", status: "N" },
+            { name: "St.Peter's", status: "C" },
+            { name: "St.Joseph's", status: "C" },
+            { name: "Nalanda", status: "C" },
+            { name: "Ananda", status: "N" },
+            { name: "Bishops", status: "N" },
+            { name: "Moir", status: "N" },
+            { name: "Thomas", status: "N" },
+            { name: "Royal", status: "N" },
+            { name: "Ladies", status: "N" },
+            { name: "Trinity", status: "N" },
+            { name: "St.Bridget's", status: "N" },
+            { name: "Isipathana", status: "N" },
+            { name: "D.S. Senanayake", status: "N" }
+        ];
+
+        class TextScramble {
+            constructor(el) {
+                this.el = el;
+                this.chars = '!<>-_\\/[]{}—=+*^?#________';
+                this.update = this.update.bind(this);
+            }
+            setText(newText) {
+                const oldText = this.el.innerText;
+                const length = Math.max(oldText.length, newText.length);
+                const promise = new Promise((resolve) => this.resolve = resolve);
+                this.queue = [];
+                for (let i = 0; i < length; i++) {
+                    const from = oldText[i] || '';
+                    const to = newText[i] || '';
+                    const start = Math.floor(Math.random() * 40);
+                    const end = start + Math.floor(Math.random() * 40);
+                    this.queue.push({ from, to, start, end });
+                }
+                cancelAnimationFrame(this.frameRequest);
+                this.frame = 0;
+                this.update();
+                return promise;
+            }
+            update() {
+                let output = '';
+                let complete = 0;
+                for (let i = 0, n = this.queue.length; i < n; i++) {
+                    let { from, to, start, end, char } = this.queue[i];
+                    if (this.frame >= end) {
+                        complete++;
+                        output += to;
+                    } else if (this.frame >= start) {
+                        if (!char || Math.random() < 0.28) {
+                            char = this.randomChar();
+                            this.queue[i].char = char;
+                        }
+                        output += `<span class="opacity-50 text-[#ff4655]">${char}</span>`;
+                    } else {
+                        output += from;
+                    }
+                }
+                this.el.innerHTML = output;
+                if (complete === this.queue.length) {
+                    this.resolve();
+                } else {
+                    this.frameRequest = requestAnimationFrame(this.update);
+                    this.frame++;
+                }
+            }
+            randomChar() {
+                return this.chars[Math.floor(Math.random() * this.chars.length)];
+            }
+        }
+
+        const scrollContainer = document.getElementById("scroll-container");
+
+        scrollContainer.addEventListener("wheel", (evt) => {
+            if (evt.deltaY !== 0 && Math.abs(evt.deltaY) > Math.abs(evt.deltaX)) {
+                if (window.innerWidth > 768) {
+                    evt.preventDefault();
+                    scrollContainer.scrollLeft += evt.deltaY;
+                }
+            }
+        });
+
+        scrollContainer.addEventListener("scroll", () => {
+            const scrollLeft = scrollContainer.scrollLeft;
+
+            // Parallax HUD Elements
+            const bgTexts = document.querySelectorAll('.bg-text');
+            bgTexts.forEach(txt => {
+                const parent = txt.closest('.section');
+                const offset = scrollLeft - parent.offsetLeft;
+                txt.style.transform = `translateX(${offset * 0.3}px)`;
+            });
+
+            const stripes = document.querySelectorAll('.diagonal-stripes');
+            stripes.forEach(s => {
+                const parent = s.closest('.section');
+                const offset = scrollLeft - parent.offsetLeft;
+                s.style.backgroundPosition = `${offset * 0.1}px 0`;
+            });
+        });
+
+        const sections = document.querySelectorAll('.section');
+        const dotsContainer = document.getElementById('nav-dots');
+
+        sections.forEach((_, index) => {
+            const dot = document.createElement('div');
+            dot.classList.add('dot', 'interactive-element');
+            if (index === 0) dot.classList.add('active');
+            dot.addEventListener('click', () => {
+                sections[index].scrollIntoView({ behavior: 'smooth' });
+            });
+            dotsContainer.appendChild(dot);
+        });
+
+        const observerOptions = { root: scrollContainer, threshold: 0.5 };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const index = Array.from(sections).indexOf(entry.target);
+                    document.querySelectorAll('.dot').forEach(d => d.classList.remove('active'));
+                    document.querySelectorAll('.dot')[index]?.classList.add('active');
+
+                    // Trigger Scanning Pulse
+                    triggerScanPulse();
+
+                    // Animate HUD Brackets
+                    animateBrackets();
+
+                    // Theme Switching
+                    if (entry.target.id === 'section-2') {
+                        document.body.classList.add('theme-red');
+                    } else {
+                        document.body.classList.remove('theme-red');
+                    }
+
+                    // Scramble Headings in Section
+                    const headings = entry.target.querySelectorAll('.scramble-text');
+                    headings.forEach((h, i) => {
+                        if (!h.scramble) h.scramble = new TextScramble(h);
+                        const originalText = h.getAttribute('data-text') || h.innerText;
+                        if (!h.getAttribute('data-text')) h.setAttribute('data-text', originalText);
+                        setTimeout(() => {
+                            h.scramble.setText(originalText);
+                        }, i * 200 + 300);
+                    });
+                }
+            });
+        }, observerOptions);
+
+        function triggerScanPulse() {
+            const pulse = document.getElementById('scan-pulse');
+            if (pulse) {
+                pulse.classList.remove('active');
+                void pulse.offsetWidth; // Trigger reflow
+                pulse.classList.add('active');
+            }
+        }
+
+        function animateBrackets() {
+            const brackets = document.querySelectorAll('.hud-bracket');
+            brackets.forEach(b => {
+                b.classList.remove('active');
+                void b.offsetWidth;
+                b.classList.add('active');
+            });
+        }
+
+        sections.forEach(section => observer.observe(section));
+
+        const targetDate = CONFIG.TARGET_DATE;
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+            if (distance < 0) return;
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            document.getElementById("days").innerText = days < 10 ? "0" + days : days;
+            document.getElementById("hours").innerText = hours < 10 ? "0" + hours : hours;
+            document.getElementById("minutes").innerText = minutes < 10 ? "0" + minutes : minutes;
+            document.getElementById("seconds").innerText = seconds < 10 ? "0" + seconds : seconds;
+        }
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+
+        // --- NEW: START DATE COUNTDOWN FOR ORBIT (JULY 17) ---
+        const startDate = CONFIG.START_DATE;
+        function updateStartCountdown() {
+            const now = new Date().getTime();
+            const distance = startDate - now;
+            if (distance < 0) {
+                const orbitEl = document.getElementById("orbit-countdown");
+                const mobileEl = document.getElementById("mobile-countdown");
+                if (orbitEl) orbitEl.innerText = "LIVE NOW";
+                if (mobileEl) mobileEl.innerText = "LIVE NOW";
+                return;
+            }
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+
+            const timeString = (days < 10 ? "0" + days : days) + "d " + (hours < 10 ? "0" + hours : hours) + "h";
+
+            const orbitEl = document.getElementById("orbit-countdown");
+            const mobileEl = document.getElementById("mobile-countdown");
+
+            if (orbitEl) orbitEl.innerText = timeString;
+            if (mobileEl) mobileEl.innerText = timeString;
+        }
+        setInterval(updateStartCountdown, 60000); // Update every minute
+        updateStartCountdown();
+
+        function createSchoolCard(school, i) {
+            const card = document.createElement('div');
+            card.className = "carousel-logo school-card flex-shrink-0 bg-white/5 border border-white/10 flex flex-col items-center justify-center gap-2 cursor-pointer relative overflow-hidden group interactive-element";
+
+            let statusText = "PENDING";
+            let colorClass = "text-white/50";
+
+            if (school.status === "Q") { statusText = "QUALIFIED"; colorClass = "text-[#ff4655]"; }
+            else if (school.status === "C") { statusText = "CONFIRMED"; colorClass = "text-white font-bold"; }
+            else if (school.status === "I") { statusText = "INVITED"; colorClass = "text-[#eec758]"; }
+
+            // Image path construction
+            const imgPath = `img/schools/${school.name}.png`;
+
+            card.innerHTML = `
+                <div class="absolute top-1 right-1 text-[8px] font-mono ${colorClass}">${statusText}</div>
+                <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-[#ff4655] transition-colors duration-300 relative overflow-hidden">
+                    <!-- Icon Fallback -->
+                    <i class="fa-solid fa-shield-halved text-sm text-white absolute z-0"></i>
+                    <!-- Image -->
+                    <img src="${imgPath}" class="relative z-10 w-full h-full object-contain" onerror="this.style.display='none'">
+                </div>
+                <div class="font-teko text-sm tracking-wide text-center px-1 leading-none">${school.name}</div>
+            `;
+            return card;
+        }
+
+        // --- MINI MARQUEE SEAMLESS LOOP ---
+        const miniTrack = document.getElementById('mini-sponsor-track');
+        if (miniTrack) {
+            const miniChildren = Array.from(miniTrack.children);
+            miniChildren.forEach(child => miniTrack.appendChild(child.cloneNode(true)));
+        }
+
+
+        // Initialize Schools Section
+        const confirmedCount = SCHOOLS_DATA.filter(s => s.status === 'C' || s.status === 'Q').length;
+        const schoolCountDisplay = document.getElementById('school-count-display');
+        if (schoolCountDisplay) schoolCountDisplay.innerText = confirmedCount;
+
+        const carouselTrack = document.getElementById('carousel-track');
+        if (carouselTrack) {
+            SCHOOLS_DATA.forEach((school, i) => {
+                carouselTrack.appendChild(createSchoolCard(school, i));
+            });
+            // Duplicate for infinite scroll
+            SCHOOLS_DATA.forEach((school, i) => {
+                carouselTrack.appendChild(createSchoolCard(school, i));
+            });
+        }
+
+
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 3 + 1;
+                this.speedX = (Math.random() - 0.5) * 2;
+                this.speedY = (Math.random() - 0.5) * 2;
+                this.color = Math.random() > 0.8 ? '#ff4655' : '#ffffff';
+                this.opacity = Math.random() * 0.5 + 0.1;
+            }
+            update() {
+                this.x += this.speedX; this.y += this.speedY;
+                if (this.x > canvas.width) this.x = 0; if (this.x < 0) this.x = canvas.width;
+                if (this.y > canvas.height) this.y = 0; if (this.y < 0) this.y = canvas.height;
+            }
+            draw() {
+                ctx.fillStyle = this.color; ctx.globalAlpha = this.opacity;
+                ctx.fillRect(this.x, this.y, this.size, this.size); ctx.globalAlpha = 1.0;
+            }
+        }
+        function initParticles() { particles = []; for (let i = 0; i < 100; i++) particles.push(new Particle()); }
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particles.length; i++) { particles[i].update(); particles[i].draw(); }
+            ctx.strokeStyle = 'rgba(255, 70, 85, 0.15)'; ctx.lineWidth = 1;
+            for (let a = 0; a < particles.length; a++) {
+                for (let b = a; b < particles.length; b++) {
+                    const dx = particles[a].x - particles[b].x;
+                    const dy = particles[a].y - particles[b].y;
+                    if (Math.sqrt(dx * dx + dy * dy) < 100) { ctx.beginPath(); ctx.moveTo(particles[a].x, particles[a].y); ctx.lineTo(particles[b].x, particles[b].y); ctx.stroke(); }
+                }
+            }
+            requestAnimationFrame(animateParticles);
+        }
+        initParticles(); animateParticles();
+
+        if (window.matchMedia("(pointer: fine)").matches) {
+            const cursorDot = document.getElementById('cursor-dot');
+            const cursorRing = document.getElementById('cursor-ring');
+            cursorDot.style.display = 'block'; cursorRing.style.display = 'block';
+            let mouseX = -100, mouseY = -100, ringX = -100, ringY = -100;
+            document.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; });
+            function animateCursor() {
+                cursorDot.style.left = mouseX + 'px'; cursorDot.style.top = mouseY + 'px';
+                ringX += (mouseX - ringX) * 0.15; ringY += (mouseY - ringY) * 0.15;
+                cursorRing.style.left = ringX + 'px'; cursorRing.style.top = ringY + 'px';
+                requestAnimationFrame(animateCursor);
+            }
+            animateCursor();
+            const interactiveElements = document.querySelectorAll('.interactive-element, a, button, .cursor-pointer, input, textarea, .mesh-node');
+            interactiveElements.forEach(el => {
+                el.addEventListener('mouseenter', () => { document.body.classList.add('cursor-hover'); });
+                el.addEventListener('mouseleave', () => { document.body.classList.remove('cursor-hover'); });
+            });
+        }
+
+        // --- MODAL LOGIC ---
+        function openTicketModal(type) {
+            document.getElementById('ticket-modal').classList.add('open');
+            document.getElementById('modal-title').innerText = type === 'GENERAL INQUIRY' ? 'CONTACT US' : type;
+        }
+
+        function openSponsorModal() {
+            document.getElementById('sponsor-modal').classList.add('open');
+        }
+
+        function closeModals() {
+            document.querySelectorAll('.modal-overlay').forEach(el => el.classList.remove('open'));
+            // Reset forms
+            setTimeout(() => {
+                document.querySelectorAll('form').forEach(f => {
+                    f.reset();
+                    f.style.display = 'flex';
+                });
+                document.querySelectorAll('.success-message').forEach(m => m.classList.add('hidden'));
+            }, 300);
+        }
+
+        function handleFormSubmit(e, modalId) {
+            e.preventDefault();
+            const modal = document.getElementById(modalId);
+            modal.querySelector('form').style.display = 'none';
+            modal.querySelector('.success-message').classList.remove('hidden');
+
+            // Auto close after 3 seconds
+            setTimeout(closeModals, 3000);
+        }
+
+        // Close on outside click
+        window.onclick = function (event) {
+            if (event.target.classList.contains('modal-overlay')) {
+                closeModals();
+            }
+        }
+    </script>
+</body>
+
+</html>
