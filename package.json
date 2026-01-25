@@ -20,6 +20,8 @@
     "vite": "^7.3.1"
   },
   "dependencies": {
+    "@splinetool/react-spline": "^4.1.0",
+    "@splinetool/runtime": "^1.12.39",
     "@tailwindcss/vite": "^4.1.18",
     "framer-motion": "^12.26.2",
     "lucide-react": "^0.562.0",
