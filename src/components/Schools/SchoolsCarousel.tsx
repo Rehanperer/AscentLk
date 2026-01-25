@@ -15,7 +15,7 @@ const SchoolCard: React.FC<{ school: School }> = ({ school }) => {
             <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-[#ff4655] transition-colors duration-300 relative overflow-hidden">
                 <i className="fa-solid fa-shield-halved text-xl text-white"></i>
                 <img
-                    src={`/img/schools/${school.name}.png`}
+                    src={`${import.meta.env.BASE_URL}img/schools/${school.name}.png`}
                     className="absolute inset-0 w-full h-full object-contain opacity-0 group-hover:opacity-100 transition-opacity"
                     alt={school.name}
                     onError={(e) => (e.currentTarget.style.display = 'none')}

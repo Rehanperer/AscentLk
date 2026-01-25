@@ -50,13 +50,13 @@ const App: React.FC = () => {
                 <div className="flex items-start gap-4 pointer-events-auto">
                     <div className="hidden md:flex gap-4">
                         <div className="w-8 h-8 md:w-10 md:h-10 bg-white/5 border border-white/20 flex items-center justify-center rounded-sm hover:border-[#ff4655] transition-colors cursor-pointer interactive-element" title="Club">
-                            <img src="/img/SVG.svg" className="w-6 h-6 object-contain opacity-80" alt="Club" />
+                            <img src={`${import.meta.env.BASE_URL}img/SVG.svg`} className="w-6 h-6 object-contain opacity-80" alt="Club" />
                         </div>
                         <div className="w-8 h-8 md:w-10 md:h-10 bg-white/5 border border-white/20 flex items-center justify-center rounded-sm hover:border-[#ff4655] transition-colors cursor-pointer interactive-element" title="Valorant">
-                            <img src="/img/Valorant.svg" className="w-6 h-6 object-contain opacity-80" alt="Valorant" />
+                            <img src={`${import.meta.env.BASE_URL}img/Valorant.svg`} className="w-6 h-6 object-contain opacity-80" alt="Valorant" />
                         </div>
                         <div className="w-8 h-8 md:w-10 md:h-10 bg-white/5 border border-white/20 flex items-center justify-center rounded-sm hover:border-[#ff4655] transition-colors cursor-pointer interactive-element" title="Event">
-                            <img src="/img/ASCENT2026.svg" className="w-6 h-6 object-contain opacity-80" alt="Ascent" />
+                            <img src={`${import.meta.env.BASE_URL}img/ASCENT2026.svg`} className="w-6 h-6 object-contain opacity-80" alt="Ascent" />
                         </div>
                     </div>
 
@@ -72,12 +72,12 @@ const App: React.FC = () => {
             {/* Hero Section with Scroll Expansion */}
             <ScrollExpandMedia
                 mediaType="video"
-                mediaSrc="/ascent_final.mov"
+                mediaSrc={`${import.meta.env.BASE_URL}ascent_final.mov`}
                 bgImageSrc="grid"
                 title="ASCENT 2026"
                 date="Tournament // 01"
                 scrollToExpand="SCROLL"
-                partners={['/img/StarGarments.svg', '/img/Aivance.svg']}
+                partners={[`${import.meta.env.BASE_URL}img/StarGarments.svg`, `${import.meta.env.BASE_URL}img/Aivance.svg`]}
                 textBlend={false}
             >
                 {/* Children content that shows after expansion */}
