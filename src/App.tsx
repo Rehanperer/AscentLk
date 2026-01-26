@@ -37,7 +37,7 @@ const App: React.FC = () => {
             <div className="grain" />
 
             {/* Nav Overlay */}
-            <nav className="fixed top-0 left-0 w-full p-4 md:p-6 z-[100] flex justify-between items-start pointer-events-none">
+            <nav className="fixed top-0 left-0 w-full p-4 md:p-6 z-[100] flex justify-between items-start pointer-events-none bg-[#0f1923]/40 backdrop-blur-md border-b border-white/5 transition-all duration-300">
                 <div className="flex flex-col">
                     <span className="font-teko text-xl md:text-2xl tracking-widest text-[#ff4655] font-bold transition-colors duration-300">
                         ASCENT // 2026
@@ -121,7 +121,7 @@ const App: React.FC = () => {
                                     <div className="max-w-7xl mx-auto px-6 mb-12 flex justify-between items-end border-b border-white/10 pb-4">
                                         <div>
                                             <ScrambleText text="ELIGIBLE INSTITUTIONS" className="text-[#ff4655] font-bold tracking-widest text-xs mb-2 block" />
-                                            <h2 className="font-teko text-6xl md:text-8xl font-bold leading-none"><ScrambleText text="PARTICIPATING SCHOOLS" triggerOnScroll /></h2>
+                                            <h2 className="font-teko text-4xl md:text-8xl font-bold leading-[0.9] md:leading-none"><ScrambleText text="PARTICIPATING SCHOOLS" triggerOnScroll /></h2>
                                         </div>
                                         <div className="text-right hidden md:block">
                                             <div className="text-3xl font-teko">SEASON 2026</div>
