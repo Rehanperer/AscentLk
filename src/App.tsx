@@ -37,7 +37,7 @@ const App: React.FC = () => {
             <div className="grain" />
 
             {/* Nav Overlay */}
-            <nav className="fixed top-0 left-0 w-full p-4 md:p-6 z-[100] flex justify-between items-start pointer-events-none bg-[#0f1923]/40 backdrop-blur-md border-b border-white/5 transition-all duration-300">
+            <nav className="fixed top-0 left-0 w-full p-4 md:p-6 z-[100] flex justify-between items-start bg-[#0f1923]/80 backdrop-blur-md border-b border-white/5 transition-all duration-300">
                 <div className="flex flex-col">
                     <span className="font-teko text-xl md:text-2xl tracking-widest text-[#ff4655] font-bold transition-colors duration-300">
                         ASCENT // 2026
@@ -47,7 +47,7 @@ const App: React.FC = () => {
                     </span>
                 </div>
 
-                <div className="flex items-start gap-4 pointer-events-auto">
+                <div className="flex items-start gap-4">
                     <div className="hidden md:flex gap-4">
                         <div className="w-8 h-8 md:w-10 md:h-10 bg-white/5 border border-white/20 flex items-center justify-center rounded-sm hover:border-[#ff4655] transition-colors cursor-pointer interactive-element" title="Club">
                             <img src="img/SVG.svg" className="w-6 h-6 object-contain opacity-80" alt="Club" />
