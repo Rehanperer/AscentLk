@@ -7,15 +7,47 @@ interface SponsorModalProps {
 }
 
 const SponsorModal: React.FC<SponsorModalProps> = ({ isOpen, onClose }) => {
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSubmitted, setIsSubmitted] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setIsSubmitted(true);
-        setTimeout(() => {
-            onClose();
-            setTimeout(() => setIsSubmitted(false), 300);
-        }, 3000);
+        setIsSubmitting(true);
+        setError(null);
+
+        const formData = new FormData(e.target as HTMLFormElement);
+        const data = {
+            formType: 'PARTNERSHIP INQUIRY',
+            fullName: formData.get('fullName'),
+            company: formData.get('company'),
+            email: formData.get('email'),
+            role: formData.get('role'),
+            message: formData.get('message'),
+            submittedAt: new Date().toISOString(),
+        };
+
+        try {
+            const response = await fetch('https://ascent-forms-api.ascent2026s.workers.dev', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+            });
+
+            if (!response.ok) throw new Error('Failed to send inquiry. Please try again.');
+
+            setIsSubmitted(true);
+            setTimeout(() => {
+                onClose();
+                setTimeout(() => {
+                    setIsSubmitted(false);
+                    setIsSubmitting(false);
+                }, 300);
+            }, 3000);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Something went wrong');
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -35,29 +67,34 @@ const SponsorModal: React.FC<SponsorModalProps> = ({ isOpen, onClose }) => {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-xs uppercase tracking-widest mb-2 opacity-70 text-[#eec758]">Full Name</label>
-                                    <input type="text" required className="vct-input interactive-element" />
+                                    <input type="text" name="fullName" required className="vct-input interactive-element" />
                                 </div>
                                 <div>
                                     <label className="block text-xs uppercase tracking-widest mb-2 opacity-70 text-[#eec758]">Company</label>
-                                    <input type="text" required className="vct-input interactive-element" />
+                                    <input type="text" name="company" required className="vct-input interactive-element" />
                                 </div>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-xs uppercase tracking-widest mb-2 opacity-70 text-[#eec758]">Email</label>
-                                    <input type="email" required className="vct-input interactive-element" />
+                                    <input type="email" name="email" required className="vct-input interactive-element" />
                                 </div>
                                 <div>
                                     <label className="block text-xs uppercase tracking-widest mb-2 opacity-70 text-[#eec758]">Role / Position</label>
-                                    <input type="text" required className="vct-input interactive-element" />
+                                    <input type="text" name="role" required className="vct-input interactive-element" />
                                 </div>
                             </div>
                             <div>
                                 <label className="block text-xs uppercase tracking-widest mb-2 opacity-70 text-[#eec758]">Message (Optional)</label>
-                                <textarea rows={2} className="vct-input interactive-element"></textarea>
+                                <textarea name="message" rows={2} className="vct-input interactive-element"></textarea>
                             </div>
-                            <button type="submit" className="border border-[#eec758] text-[#eec758] py-3 font-teko text-xl font-bold angled-btn hover:bg-[#eec758] hover:text-black transition-colors mt-2 interactive-element">
-                                SEND INQUIRY
+                            {error && <p className="text-[#ff4655] text-xs font-mono">{error}</p>}
+                            <button
+                                type="submit"
+                                disabled={isSubmitting}
+                                className="border border-[#eec758] text-[#eec758] py-3 font-teko text-xl font-bold angled-btn hover:bg-[#eec758] hover:text-black transition-colors mt-2 interactive-element disabled:opacity-50 disabled:cursor-wait"
+                            >
+                                {isSubmitting ? 'SENDING...' : 'SEND INQUIRY'}
                             </button>
                         </form>
                     </>
