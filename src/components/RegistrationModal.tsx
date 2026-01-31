@@ -32,7 +32,10 @@ const RegistrationModal: React.FC<RegistrationModalProps> = ({ isOpen, onClose, 
                 body: JSON.stringify(data),
             });
 
-            if (!response.ok) throw new Error('Failed to submit. Please try again.');
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.error || errorData.details || 'Failed to submit. Please try again.');
+            }
 
             setIsSubmitted(true);
             setTimeout(() => {

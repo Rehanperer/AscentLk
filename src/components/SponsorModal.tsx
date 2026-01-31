@@ -34,7 +34,10 @@ const SponsorModal: React.FC<SponsorModalProps> = ({ isOpen, onClose }) => {
                 body: JSON.stringify(data),
             });
 
-            if (!response.ok) throw new Error('Failed to send inquiry. Please try again.');
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.error || errorData.details || 'Failed to send inquiry. Please try again.');
+            }
 
             setIsSubmitted(true);
             setTimeout(() => {
