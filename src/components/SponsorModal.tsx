@@ -36,7 +36,8 @@ const SponsorModal: React.FC<SponsorModalProps> = ({ isOpen, onClose }) => {
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.error || errorData.details || 'Failed to send inquiry. Please try again.');
+                const detailedError = errorData.details ? `${errorData.error}: ${errorData.details}` : (errorData.error || 'Failed to send inquiry. Please try again.');
+                throw new Error(detailedError);
             }
 
             setIsSubmitted(true);
