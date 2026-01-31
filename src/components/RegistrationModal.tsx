@@ -34,7 +34,8 @@ const RegistrationModal: React.FC<RegistrationModalProps> = ({ isOpen, onClose, 
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.error || errorData.details || 'Failed to submit. Please try again.');
+                const detailedError = errorData.details ? `${errorData.error}: ${errorData.details}` : (errorData.error || 'Failed to submit. Please try again.');
+                throw new Error(detailedError);
             }
 
             setIsSubmitted(true);
