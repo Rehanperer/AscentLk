@@ -1,14 +1,16 @@
 import React, { useState, Suspense, lazy } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import ScrollExpandMedia from './components/Hero/ScrollExpandMedia';
-import HudBrackets from './components/HudBrackets';
+import ScrollExpandMedia from './components/Hero/ScrollExpandMedia';
 import CustomCursor from './components/CustomCursor';
-import Particles from './components/Particles';
 import ScrambleText from './components/ScrambleText';
 import CountdownSection from './components/CountdownSection';
 import ComingSoonSection from './components/ComingSoonSection';
 import SectionReveal from './components/Effects/SectionReveal';
 import ParallaxBackground from './components/Effects/ParallaxBackground';
+
+// Lazy Load Heavy Components
+import LoadingScreen from './components/LoadingScreen';
 
 // Lazy Load Heavy Components
 const SchoolsCarousel = lazy(() => import('./components/Schools/SchoolsCarousel'));
@@ -19,9 +21,16 @@ const SponsorModal = lazy(() => import('./components/SponsorModal'));
 
 
 const App: React.FC = () => {
+    const [isLoading, setIsLoading] = useState(true);
     const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
     const [ticketModalTitle, setTicketModalTitle] = useState('');
     const [isSponsorModalOpen, setIsSponsorModalOpen] = useState(false);
+
+    // Simulate loading
+    React.useEffect(() => {
+        const timer = setTimeout(() => setIsLoading(false), 2000);
+        return () => clearTimeout(timer);
+    }, []);
 
     const openTicketModal = (title: string) => {
         setTicketModalTitle(title);
@@ -29,42 +38,45 @@ const App: React.FC = () => {
     };
 
     return (
-        <div className="relative min-h-screen bg-[#0f1923]">
+        <div className="relative min-h-screen bg-[#0a1016]">
+            <AnimatePresence>
+                {isLoading && <LoadingScreen key="loader" />}
+            </AnimatePresence>
             <CustomCursor />
-            <HudBrackets />
-            <Particles />
-            <div className="scanlines" />
-            <div className="grain" />
 
             {/* Nav Overlay */}
-            <nav className="fixed top-0 left-0 w-full p-4 md:p-6 z-[100] flex justify-between items-start bg-[#0f1923]/80 backdrop-blur-md border-b border-white/5 transition-all duration-300">
-                <div className="flex flex-col">
-                    <span className="font-teko text-xl md:text-2xl tracking-widest text-[#ff4655] font-bold transition-colors duration-300">
-                        ASCENT // 2026
-                    </span>
-                    <span className="text-[10px] md:text-xs tracking-wider opacity-60 mix-blend-difference text-white uppercase font-medium">
-                        WHERE LEGENDS ASCEND
-                    </span>
+            <nav className="fixed top-0 left-0 w-full p-6 z-[100] flex justify-between items-center mix-blend-difference md:mix-blend-normal">
+                {/* Logo Area */}
+                <div className="relative group cursor-default">
+                    <div className="flex flex-col">
+                        <span className="font-teko text-3xl tracking-widest text-white font-bold leading-none group-hover:text-[#ff4655] transition-colors duration-300">
+                            ASCENT <span className="text-[#ff4655] group-hover:text-white transition-colors duration-300">//</span> 2026
+                        </span>
+                    </div>
                 </div>
 
-                <div className="flex items-start gap-4">
-                    <div className="hidden md:flex gap-4">
-                        <div className="w-8 h-8 md:w-10 md:h-10 bg-white/5 border border-white/20 flex items-center justify-center rounded-sm hover:border-[#ff4655] transition-colors cursor-pointer interactive-element" title="Club">
-                            <img src="img/SVG.svg" className="w-6 h-6 object-contain opacity-80" alt="Club" />
-                        </div>
-                        <div className="w-8 h-8 md:w-10 md:h-10 bg-white/5 border border-white/20 flex items-center justify-center rounded-sm hover:border-[#ff4655] transition-colors cursor-pointer interactive-element" title="Valorant">
-                            <img src="img/Valorant.svg" className="w-6 h-6 object-contain opacity-80" alt="Valorant" />
-                        </div>
-                        <div className="w-8 h-8 md:w-10 md:h-10 bg-white/5 border border-white/20 flex items-center justify-center rounded-sm hover:border-[#ff4655] transition-colors cursor-pointer interactive-element" title="Event">
-                            <img src="img/ASCENT2026.svg" className="w-6 h-6 object-contain opacity-80" alt="Ascent" />
-                        </div>
+                <div className="flex items-center gap-6">
+                    {/* Desktop Icons */}
+                    <div className="hidden md:flex gap-1">
+                        {['Club', 'Valorant', 'Event'].map((item, i) => (
+                            <div key={i} className="w-10 h-10 flex items-center justify-center opacity-40 hover:opacity-100 transition-opacity cursor-pointer interactive-element">
+                                <img
+                                    src={`img/${item === 'Event' ? 'ASCENT2026' : item === 'Club' ? 'SVG' : 'Valorant'}.svg`}
+                                    className="w-5 h-5 object-contain"
+                                    alt={item}
+                                />
+                            </div>
+                        ))}
                     </div>
 
+                    {/* Register Button */}
                     <div
                         onClick={() => openTicketModal('GENERAL REGISTRATION')}
-                        className="bg-[#ff4655] text-white px-4 py-1.5 md:px-6 md:py-2 font-bold font-teko text-base md:text-xl angled-box cursor-pointer hover:bg-white hover:text-black transition-colors duration-300 interactive-element"
+                        className="group cursor-pointer interactive-element"
                     >
-                        REGISTER NOW
+                        <div className="bg-[#ff4655] text-white px-6 py-2.5 font-bold font-teko text-xl tracking-wide rounded-sm hover:bg-white hover:text-[#0a1016] transition-colors duration-300">
+                            REGISTER NOW
+                        </div>
                     </div>
                 </div>
             </nav>
@@ -155,9 +167,15 @@ const App: React.FC = () => {
                             </section>
                         </Suspense>
 
-                        <footer className="py-20 border-t border-white/10 text-center">
-                            <div className="text-[10px] md:text-xs text-white/30 font-mono tracking-widest uppercase">
-                                COPYRIGHT © ASCENT 2026. ALL RIGHTS RESERVED.
+                        <footer className="py-12 border-t border-white/5 text-center">
+                            <div className="flex flex-col md:flex-row justify-center items-center gap-6 md:gap-12 text-[10px] md:text-xs text-white/40 font-medium tracking-wide uppercase mb-8">
+                                <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
+                                <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
+                                <a href="#" className="hover:text-white transition-colors">Code of Conduct</a>
+                                <a href="#" className="hover:text-white transition-colors">Support</a>
+                            </div>
+                            <div className="text-[10px] text-white/20 font-inter tracking-wider">
+                                © 2026 ASCENT ESPORTS. ALL RIGHTS RESERVED.
                             </div>
                         </footer>
                     </div>

@@ -192,7 +192,7 @@ const ScrollExpandMedia = ({
     return (
         <div
             ref={sectionRef}
-            className='transition-colors duration-700 ease-in-out overflow-x-hidden'
+            className='transition-colors duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] overflow-x-hidden'
         >
             <section className='relative flex flex-col items-center justify-start min-h-[100dvh]'>
                 <div className='relative w-full flex flex-col items-center min-h-[100dvh]'>
@@ -231,7 +231,8 @@ const ScrollExpandMedia = ({
                                     maxWidth: isMobileState ? '100vw' : '95vw',
                                     maxHeight: isMobileState ? '100dvh' : '85vh',
                                     boxShadow: '0px 0px 50px rgba(0, 0, 0, 0.4)',
-                                    borderRadius: isMobileState ? `${(1 - scrollProgress) * 32}px` : '24px'
+                                    borderRadius: isMobileState ? `${(1 - scrollProgress) * 32}px` : '4px',
+                                    transition: 'width 0.8s cubic-bezier(0.22, 1, 0.36, 1), height 0.8s cubic-bezier(0.22, 1, 0.36, 1), border-radius 0.5s ease'
                                 }}
                             >
                                 {mediaType === 'video' ? (
@@ -335,21 +336,19 @@ const ScrollExpandMedia = ({
                                 className="absolute bottom-10 left-10 hidden md:flex items-center gap-3 opacity-60 z-20"
                                 style={{ opacity: 1 - scrollProgress }}
                             >
-                                <span className="uppercase text-[10px] tracking-[0.3em] font-mono">Initialization_Sequence</span>
-                                <div className="w-12 h-[1px] bg-[#ff4655]"></div>
+                                <span className="uppercase text-[10px] tracking-[0.3em] font-mono opacity-50">SCROLL TO BEGIN</span>
+                                <div className="w-12 h-[1px] bg-white/20"></div>
                             </motion.div>
 
                             <motion.div
-                                className="absolute bottom-10 right-10 hidden md:flex flex-col items-end z-20"
+                                className="absolute bottom-10 right-10 hidden md:flex flex-col items-end z-20 opacity-40 mix-blend-difference"
                                 style={{ opacity: 1 - scrollProgress }}
                             >
-                                <div className="text-[10px] uppercase tracking-widest mb-2 text-[#ff4655] font-bold">Powered By</div>
-                                <div className="mini-marquee-container border-t border-white/10 pt-3">
-                                    <div className="mini-marquee-content">
-                                        {[...partners, ...partners, ...partners].map((src: string, i: number) => (
-                                            <img key={i} src={src} className="h-4 md:h-5 w-auto grayscale brightness-200 opacity-60 hover:opacity-100 transition-opacity" alt="Partner" />
-                                        ))}
-                                    </div>
+                                <div className="text-[10px] uppercase tracking-widest mb-1 text-white font-medium">Supported By</div>
+                                <div className="flex gap-4">
+                                    {[...partners].map((src: string, i: number) => (
+                                        <img key={i} src={src} className="h-4 w-auto grayscale brightness-200" alt="Partner" />
+                                    ))}
                                 </div>
                             </motion.div>
 
@@ -365,7 +364,7 @@ const ScrollExpandMedia = ({
                                     <ScrambleText text={firstWord} />
                                 </motion.h2>
                                 <motion.h2
-                                    className='text-8xl md:text-8xl lg:text-9xl font-bold text-center text-white font-teko uppercase drop-shadow-2xl glitch'
+                                    className='text-8xl md:text-8xl lg:text-[10rem] font-bold text-center text-white font-teko uppercase drop-shadow-2xl glitch tracking-tighter'
                                     data-text={restOfTitle}
                                     style={{ transform: `translateX(${textTranslateX}vw)` }}
                                 >
