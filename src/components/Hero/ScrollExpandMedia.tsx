@@ -7,7 +7,6 @@ import {
     WheelEvent,
 } from 'react';
 import { motion } from 'framer-motion';
-import Particles from '../Particles';
 import ScrambleText from '../ScrambleText';
 
 interface ScrollExpandMediaProps {
