@@ -109,8 +109,7 @@ const SchoolsCarousel: React.FC = () => {
                     transition={{
                         repeat: Infinity,
                         duration: 40,
-                        ease: "linear",
-                        fill: "forwards"
+                        ease: "linear"
                     }}
                 >
                     {displaySchools.map((school, i) => (
