@@ -71,17 +71,6 @@ const App: React.FC = () => {
                                 </span>
                             </div>
 
-                            {/* HUD Technical Readout - Desktop */}
-                            <div className="hidden lg:flex items-center gap-4 pl-6 border-l border-white/10 font-mono text-[8px] text-white/20 tracking-[0.3em] uppercase">
-                                <div className="flex flex-col">
-                                    <span>SYSTEM_STATUS // ACTIVE</span>
-                                    <span>NODE_01 // SECURE</span>
-                                </div>
-                                <div className="flex flex-col">
-                                    <span>COORD_X: {Math.round(scrollPercent * 1.2)}</span>
-                                    <span>COORD_Y: {Math.round(scrollPercent * 0.8)}</span>
-                                </div>
-                            </div>
                         </div>
 
                         <div className="flex items-center gap-4 md:gap-8">
