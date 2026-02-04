@@ -68,7 +68,7 @@ const ScrollExpandMedia = ({
                     // Here we are emulating scroll jacking which is bad for perf usually.
                     // We will keep it but throttle state updates.
 
-                    const scrollDelta = e.deltaY * 0.0009;
+                    const scrollDelta = e.deltaY * 0.0012;
                     const newProgress = Math.min(Math.max(scrollProgress + scrollDelta, 0), 1);
 
                     if (newProgress !== scrollProgress) {
@@ -212,7 +212,6 @@ const ScrollExpandMedia = ({
                             </>
                         ) : (
                             <div className="w-full h-full relative overflow-hidden">
-                                {/* Only the grid pattern, no solid background color to let global particles show through */}
                                 <div className="absolute inset-0 bg-grid opacity-60" />
                                 <div className="absolute inset-0 bg-radial-glow opacity-40" />
                                 <div className="absolute inset-0 bg-gradient-to-b from-[#0f1923]/60 via-transparent to-[#0f1923]/60" />
@@ -222,16 +221,15 @@ const ScrollExpandMedia = ({
 
                     <div className='container mx-auto flex flex-col items-center justify-start relative z-10'>
                         <div className='flex flex-col items-center justify-center w-full h-[100dvh] relative'>
-                            <div
-                                className='absolute z-0 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 transition-none rounded-3xl overflow-hidden'
+                            <motion.div
+                                className='absolute z-0 top-1/2 left-1/2 rounded-3xl overflow-hidden'
                                 style={{
-                                    width: `${mediaWidth}px`,
-                                    height: `${mediaHeight}px`,
-                                    maxWidth: isMobileState ? '100vw' : '95vw',
-                                    maxHeight: isMobileState ? '100dvh' : '85vh',
-                                    boxShadow: '0px 0px 50px rgba(0, 0, 0, 0.4)',
-                                    borderRadius: isMobileState ? `${(1 - scrollProgress) * 32}px` : '4px',
-                                    transition: 'width 0.8s cubic-bezier(0.22, 1, 0.36, 1), height 0.8s cubic-bezier(0.22, 1, 0.36, 1), border-radius 0.5s ease'
+                                    x: '-50%',
+                                    y: '-50%',
+                                    width: mediaWidth,
+                                    height: mediaHeight,
+                                    borderRadius: isMobileState ? (1 - scrollProgress) * 32 : 4,
+                                    boxShadow: '0px 0px 50px rgba(0, 0, 0, 0.4)'
                                 }}
                             >
                                 {mediaType === 'video' ? (
@@ -253,11 +251,7 @@ const ScrollExpandMedia = ({
                                                 allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
                                                 allowFullScreen
                                             />
-                                            <div
-                                                className='absolute inset-0 z-10'
-                                                style={{ pointerEvents: 'none' }}
-                                            ></div>
-
+                                            <div className='absolute inset-0 z-10' style={{ pointerEvents: 'none' }}></div>
                                             <motion.div
                                                 className='absolute inset-0 bg-black/30 rounded-3xl'
                                                 initial={{ opacity: 0.7 }}
@@ -280,11 +274,7 @@ const ScrollExpandMedia = ({
                                                 disablePictureInPicture
                                                 disableRemotePlayback
                                             />
-                                            <div
-                                                className='absolute inset-0 z-10'
-                                                style={{ pointerEvents: 'none' }}
-                                            ></div>
-
+                                            <div className='absolute inset-0 z-10' style={{ pointerEvents: 'none' }}></div>
                                             <motion.div
                                                 className='absolute inset-0 bg-black/30 rounded-3xl'
                                                 initial={{ opacity: 0.7 }}
@@ -300,7 +290,6 @@ const ScrollExpandMedia = ({
                                             alt={title || 'Media content'}
                                             className='w-full h-full object-cover rounded-3xl'
                                         />
-
                                         <motion.div
                                             className='absolute inset-0 bg-black/50 rounded-3xl'
                                             initial={{ opacity: 0.7 }}
@@ -328,9 +317,8 @@ const ScrollExpandMedia = ({
                                         </p>
                                     )}
                                 </div>
-                            </div>
+                            </motion.div>
 
-                            {/* Powered By & Scroll Hint (Fading with scroll) */}
                             <motion.div
                                 className="absolute bottom-10 left-10 hidden md:flex items-center gap-3 opacity-60 z-20"
                                 style={{ opacity: 1 - scrollProgress }}
@@ -352,20 +340,31 @@ const ScrollExpandMedia = ({
                             </motion.div>
 
                             <div
-                                className={`flex items-center justify-center text-center gap-4 w-full relative z-10 transition-none flex-col ${textBlend ? 'mix-blend-difference' : 'mix-blend-normal'
-                                    }`}
+                                className={`flex items-center justify-center text-center gap-4 w-full relative z-10 transition-none flex-col ${textBlend ? 'mix-blend-difference' : 'mix-blend-normal'}`}
                             >
                                 <motion.h2
-                                    className='text-8xl md:text-8xl lg:text-9xl font-bold text-white font-teko uppercase drop-shadow-2xl glitch'
+                                    className='text-7xl md:text-8xl lg:text-[7rem] font-medium font-teko uppercase drop-shadow-2xl'
                                     data-text={firstWord}
-                                    style={{ transform: `translateX(-${textTranslateX}vw)` }}
+                                    style={{
+                                        transform: `translateX(-${textTranslateX}vw)`,
+                                        background: 'linear-gradient(to bottom, #ffffff 0%, #e0e0e0 45%, #b0b0b0 50%, #e0e0e0 55%, #ffffff 100%)',
+                                        WebkitBackgroundClip: 'text',
+                                        WebkitTextFillColor: 'transparent',
+                                        letterSpacing: '0.2em'
+                                    }}
                                 >
                                     <ScrambleText text={firstWord} />
                                 </motion.h2>
                                 <motion.h2
-                                    className='text-8xl md:text-8xl lg:text-[10rem] font-bold text-center text-white font-teko uppercase drop-shadow-2xl glitch tracking-tighter'
+                                    className='text-8xl md:text-8xl lg:text-[11rem] font-bold text-center font-teko uppercase drop-shadow-2xl tracking-tighter mt-2 md:mt-4'
                                     data-text={restOfTitle}
-                                    style={{ transform: `translateX(${textTranslateX}vw)` }}
+                                    style={{
+                                        transform: `translateX(${textTranslateX}vw)`,
+                                        background: 'linear-gradient(to bottom, #ffffff 10%, #d1d1d1 50%, #ffffff 90%)',
+                                        WebkitBackgroundClip: 'text',
+                                        WebkitTextFillColor: 'transparent',
+                                        lineHeight: 1
+                                    }}
                                 >
                                     <ScrambleText text={restOfTitle} />
                                 </motion.h2>

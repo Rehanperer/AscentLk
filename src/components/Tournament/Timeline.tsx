@@ -31,12 +31,12 @@ const phases = [
 
 const Timeline: React.FC = () => {
     return (
-        <div className="w-full max-w-7xl mx-auto px-6 py-12 relative">
+        <div className="w-full max-w-7xl mx-auto px-4 md:px-6 py-20 relative">
 
             {/* Desktop Horizontal Line */}
-            <div className="hidden md:block absolute top-1/2 left-0 w-full h-[2px] bg-white/10 -translate-y-1/2 z-0">
+            <div className="hidden md:block absolute top-1/2 left-0 w-full h-[1px] bg-white/10 -translate-y-1/2 z-0">
                 <motion.div
-                    className="h-full bg-[#ff4655] origin-left"
+                    className="h-full bg-[#ff4655] origin-left shadow-[0_0_10px_rgba(255,70,85,0.4)]"
                     initial={{ scaleX: 0 }}
                     whileInView={{ scaleX: 1 }}
                     viewport={{ once: true }}
@@ -45,7 +45,7 @@ const Timeline: React.FC = () => {
             </div>
 
             {/* Mobile Vertical Line */}
-            <div className="md:hidden absolute top-0 left-8 h-full w-[2px] bg-white/10 z-0">
+            <div className="md:hidden absolute top-0 left-6 h-full w-[2px] bg-white/10 z-0">
                 <motion.div
                     className="w-full bg-[#ff4655] origin-top"
                     initial={{ scaleY: 0 }}
@@ -55,81 +55,77 @@ const Timeline: React.FC = () => {
                 />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-12 relative z-10">
-                {phases.map((phase, index) => (
+            <div className="flex flex-col md:flex-row items-center md:justify-between gap-20 md:gap-0 relative z-10 min-h-[500px]">
+                {phases.map((phase, index) => {
+                    const isEven = index % 2 === 0;
+                    return (
+                        <div key={phase.id} className="relative flex flex-col items-center md:w-1/4 w-full">
+                            {/* Card Container */}
+                            <motion.div
+                                initial={{ opacity: 0, y: isEven ? -50 : 50 }}
+                                whileInView={{ opacity: 1, y: isEven ? -20 : 20 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: index * 0.2, duration: 0.6 }}
+                                className={`w-full px-4 md:px-4 flex flex-col items-end md:items-center
+                                    ${isEven ? 'md:order-1' : 'md:order-3'}
+                                `}
+                            >
+                                {/* Card content */}
+                                <div className={`w-[85%] md:w-full max-w-[280px] p-5 bg-[#0f1923]/95 backdrop-blur-md border ${phase.highlight ? 'border-[#ff4655]' : 'border-white/10'} hover:border-[#ff4655]/50 transition-all duration-500 rounded-sm relative group`}>
+                                    <div className="text-[#ff4655] font-mono text-[10px] tracking-[0.3em] mb-1 font-bold opacity-80 uppercase">PHASE {phase.id}</div>
+                                    <h3 className="font-teko text-3xl text-white uppercase leading-none mb-1 group-hover:text-[#ff4655] transition-colors">{phase.title}</h3>
+                                    <div className="text-white/40 font-mono text-[9px] uppercase mb-4 tracking-[0.2em]">{phase.subtitle}</div>
+                                    <p className="text-[13px] text-gray-400 leading-relaxed mb-4 font-medium h-12 overflow-hidden">{phase.desc}</p>
+                                    <div className="inline-block bg-[#ff4655]/10 px-3 py-1 text-[11px] font-teko tracking-widest text-[#ff4655] border border-[#ff4655]/20 uppercase">
+                                        {phase.date}
+                                    </div>
+                                </div>
+                            </motion.div>
+
+                            {/* Node & Stem (Desktop) */}
+                            <div className="hidden md:flex flex-col items-center justify-center md:order-2 h-1 relative">
+                                <motion.div
+                                    className={`w-[1px] bg-gradient-to-b from-[#ff4655] to-transparent absolute
+                                        ${isEven ? 'bottom-2 h-16' : 'top-2 h-16 rotate-180'}
+                                    `}
+                                    initial={{ scaleY: 0 }}
+                                    whileInView={{ scaleY: 1 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: index * 0.2 + 0.3, duration: 0.5 }}
+                                />
+                                <div className="w-3 h-3 rounded-full border border-[#ff4655] bg-[#0f1923] z-20 shadow-[0_0_10px_rgba(255,70,85,0.5)]" />
+                            </div>
+
+                            {/* Node (Mobile) */}
+                            <div className="md:hidden absolute left-6 top-1/2 -translate-y-1/2 -translate-x-1/2 w-4 h-4 rounded-full border-2 border-[#ff4655] bg-[#0f1923] z-20" />
+                        </div>
+                    );
+                })}
+
+                {/* Prize Pool Node */}
+                <div className="relative flex flex-col items-center md:w-1/4 w-full">
                     <motion.div
-                        key={phase.id}
-                        initial={{ opacity: 0, y: 50 }}
-                        whileInView={{ opacity: 1, y: 0 }}
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
                         viewport={{ once: true }}
-                        transition={{ delay: index * 0.3, duration: 0.5 }}
-                        className={`relative group ${index % 2 === 0 ? 'md:mt-0' : 'md:mt-32'}`} // Stagger layout
+                        transition={{ delay: 1, duration: 0.8 }}
+                        className="md:order-1 px-4 text-center"
                     >
-                        {/* Dot on Line */}
-                        <div className={`absolute w-4 h-4 rounded-full border-2 border-[#ff4655] bg-[#0f1923] 
-                            md:left-1/2 md:-translate-x-1/2 md:top-1/2 md:-translate-y-1/2
-                            left-8 -translate-x-1/2 top-8
-                            group-hover:bg-[#ff4655] transition-colors duration-300 z-20`}
-                        />
-
-                        {/* Card */}
-                        <div className={`ml-16 md:ml-0 md:text-center p-6 bg-[#white]/5 border border-white/10 hover:border-[#ff4655] transition-colors duration-300 angled-box relative bg-[#0f1923]/80 backdrop-blur-sm
-                            ${phase.highlight ? 'border-[#ff4655] shadow-[0_0_20px_rgba(255,70,85,0.2)]' : ''}
-                        `}>
-                            {/* Phase Number */}
-                            <div className="text-[#ff4655] font-mono text-xs tracking-widest mb-2 font-bold">
-                                PHASE {phase.id}
-                            </div>
-
-                            {/* Title */}
-                            <h3 className="font-teko text-4xl text-white uppercase leading-none mb-1">
-                                {phase.title}
-                            </h3>
-
-                            {/* Subtitle */}
-                            <div className="text-white/60 font-mono text-xs uppercase mb-4 tracking-wider">
-                                {phase.subtitle}
-                            </div>
-
-                            {/* Description */}
-                            <p className="text-sm text-gray-400 leading-relaxed mb-4 font-medium opacity-80">
-                                {phase.desc}
-                            </p>
-
-                            {/* Date Badge */}
-                            <div className="inline-block bg-white/5 px-3 py-1 text-xs font-teko tracking-wide text-[#ff4655] border border-white/5">
-                                {phase.date}
-                            </div>
-
+                        <div className="font-teko text-[5rem] lg:text-[6rem] font-bold text-white leading-none tracking-tighter hover:scale-105 transition-transform duration-500 cursor-default">
+                            <span className="text-[#ff4655]">300</span>K
                         </div>
-                    </motion.div>
-                ))}
-
-                {/* Prize Pool Node (Last Item) */}
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 1.2, type: "spring" }}
-                    className="relative md:mt-16"
-                >
-                    {/* Dot on Line */}
-                    <div className={`absolute w-6 h-6 rounded-full border-2 border-[#ff4655] bg-[#ff4655] 
-                            md:left-1/2 md:-translate-x-1/2 md:top-1/2 md:-translate-y-1/2
-                            left-8 -translate-x-1/2 top-24
-                            shadow-[0_0_15px_rgba(255,70,85,0.8)] z-20 animate-pulse`}
-                    />
-
-                    <div className="ml-16 md:ml-0 text-center">
-                        <div className="font-teko text-7xl font-bold text-white leading-none drop-shadow-[0_0_10px_rgba(255,70,85,0.5)]">
-                            300K
-                        </div>
-                        <div className="text-[#ff4655] font-mono text-sm tracking-[0.3em] uppercase bg-[#0f1923] inline-block px-2 relative z-10">
+                        <div className="text-white/60 font-mono text-[10px] tracking-[0.5em] uppercase mt-[-5px]">
                             LKR PRIZE POOL
                         </div>
-                    </div>
-                </motion.div>
+                    </motion.div>
 
+                    <div className="hidden md:flex flex-col items-center justify-center md:order-2 h-1 relative">
+                        <div className="w-4 h-4 rounded-full bg-[#ff4655] z-30 shadow-[0_0_20px_rgba(255,70,85,0.8)] animate-pulse" />
+                        <div className="w-10 h-10 rounded-full border border-[#ff4655]/30 absolute z-20 animate-ping opacity-20" />
+                    </div>
+
+                    <div className="md:hidden absolute left-6 top-1/2 -translate-y-1/2 -translate-x-1/2 w-5 h-5 rounded-full bg-[#ff4655] z-20 shadow-[0_0_15px_rgba(255,70,85,0.6)]" />
+                </div>
             </div>
         </div>
     );

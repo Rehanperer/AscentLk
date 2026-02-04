@@ -37,13 +37,7 @@ const LoadingScreen: React.FC = () => {
 
             <div className="mt-8 md:mt-12 w-48 md:w-64">
                 <div className="flex justify-between text-[10px] md:text-xs font-mono text-white/40 mb-2 uppercase tracking-widest">
-                    <span>System_Boot</span>
-                    <motion.span
-                        animate={{ opacity: [1, 0, 1] }}
-                        transition={{ duration: 0.4, repeat: Infinity, repeatDelay: 0.1 }}
-                    >
-                        _
-                    </motion.span>
+                    <span>LOADING</span>
                 </div>
 
                 {/* Progress Bar */}
