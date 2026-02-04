@@ -20,6 +20,7 @@ interface ScrollExpandMediaProps {
     textBlend?: boolean;
     partners?: string[];
     children?: ReactNode;
+    onMediaLoaded?: () => void;
 }
 
 const ScrollExpandMedia = ({
@@ -33,6 +34,7 @@ const ScrollExpandMedia = ({
     textBlend = true,
     partners = [],
     children,
+    onMediaLoaded,
 }: ScrollExpandMediaProps) => {
     const [scrollProgress, setScrollProgress] = useState<number>(0);
     const [showContent, setShowContent] = useState<boolean>(false);
@@ -42,12 +44,30 @@ const ScrollExpandMedia = ({
 
     const sectionRef = useRef<HTMLDivElement | null>(null);
 
+    // If it's a YouTube embed, we can't easily track load, so we treat it as loaded immediately (or after a timeout)
+    useEffect(() => {
+        if (mediaType === 'video' && (mediaSrc.includes('youtube.com') || mediaSrc.includes('youtu.be'))) {
+            // Give a small buffer for iframe to likely init
+            const t = setTimeout(() => {
+                onMediaLoaded && onMediaLoaded();
+            }, 1000);
+            return () => clearTimeout(t);
+        }
+    }, [mediaType, mediaSrc, onMediaLoaded]);
+
+    const handleMediaLoad = () => {
+        if (onMediaLoaded) onMediaLoaded();
+    };
+
     useEffect(() => {
         setScrollProgress(0);
         setShowContent(false);
         setMediaFullyExpanded(false);
     }, [mediaType]);
 
+    // ... rest of effects ...
+
+    // (Skipping existing useEffect for scroll logic - assume it's unchanged)
     useEffect(() => {
         let rafId: number;
         let isProcessing = false;
@@ -62,12 +82,6 @@ const ScrollExpandMedia = ({
                 if (mediaFullyExpanded && e.deltaY < 0 && window.scrollY <= 5) {
                     setMediaFullyExpanded(false);
                 } else if (!mediaFullyExpanded) {
-                    // Prevent default only if we are taking over the scroll
-                    // Note: Preventing default in async RAF handles is tricky, usually needs sync handler.
-                    // But for performance, we let native scroll happen unless we are in the 'locked' state.
-                    // Here we are emulating scroll jacking which is bad for perf usually.
-                    // We will keep it but throttle state updates.
-
                     const scrollDelta = e.deltaY * 0.0012;
                     const newProgress = Math.min(Math.max(scrollProgress + scrollDelta, 0), 1);
 
@@ -85,7 +99,6 @@ const ScrollExpandMedia = ({
                 isProcessing = false;
             });
 
-            // We still need to prevent default synchronously if we want to stop page scroll
             if (!mediaFullyExpanded || (mediaFullyExpanded && e.deltaY < 0 && window.scrollY <= 5)) {
                 e.preventDefault();
             }
@@ -97,11 +110,8 @@ const ScrollExpandMedia = ({
 
         const handleTouchMove = (e: TouchEvent) => {
             if (!touchStartY) return;
-
-            // Allow default touch actions like pinch-zoom if more than 1 touch
             if (e.touches.length > 1) return;
 
-            // Sync prevent default to stop native scrolling while expanding
             if (!mediaFullyExpanded) {
                 if (e.cancelable) e.preventDefault();
             }
@@ -130,10 +140,6 @@ const ScrollExpandMedia = ({
                     } else if (newProgress < 0.75) {
                         setShowContent(false);
                     }
-
-                    // Don't update touchStartY in RAF loop for delta calculation logic stability relative to move
-                    // Actually, for continuous delta, we either update start or keep aggregating. 
-                    // Let's keep existing logic but just throttle the state update.
                     setTouchStartY(touchY);
                 }
                 isProcessing = false;
@@ -269,10 +275,12 @@ const ScrollExpandMedia = ({
                                                 loop
                                                 playsInline
                                                 preload='auto'
-                                                className='w-full h-full object-contain rounded-3xl bg-black/20'
+                                                className='w-full h-full object-cover rounded-3xl bg-black/20'
                                                 controls={false}
                                                 disablePictureInPicture
                                                 disableRemotePlayback
+                                                onCanPlayThrough={handleMediaLoad}
+                                                onError={handleMediaLoad} // Fail safely
                                             />
                                             <div className='absolute inset-0 z-10' style={{ pointerEvents: 'none' }}></div>
                                             <motion.div
@@ -289,6 +297,8 @@ const ScrollExpandMedia = ({
                                             src={mediaSrc}
                                             alt={title || 'Media content'}
                                             className='w-full h-full object-cover rounded-3xl'
+                                            onLoad={handleMediaLoad}
+                                            onError={handleMediaLoad} // Fail safely
                                         />
                                         <motion.div
                                             className='absolute inset-0 bg-black/50 rounded-3xl'

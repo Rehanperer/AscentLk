@@ -1,4 +1,4 @@
-import React, { useState, Suspense, lazy } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from './components/Navbar';
 import ScrollExpandMedia from './components/Hero/ScrollExpandMedia';
@@ -27,10 +27,23 @@ const App: React.FC = () => {
     const [ticketModalTitle, setTicketModalTitle] = useState('');
     const [isSponsorModalOpen, setIsSponsorModalOpen] = useState(false);
 
-    // Simulation finished - Instant load for premium feel
-    React.useEffect(() => {
-        setIsLoading(false);
+    const [isMediaLoaded, setIsMediaLoaded] = useState(false);
+    const [minTimeElapsed, setMinTimeElapsed] = useState(false);
+
+    // Minimum load time for branding impact (1.5s)
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setMinTimeElapsed(true);
+        }, 1500);
+        return () => clearTimeout(timer);
     }, []);
+
+    // Combine media load status with minimum timer
+    useEffect(() => {
+        if (isMediaLoaded && minTimeElapsed) {
+            setIsLoading(false);
+        }
+    }, [isMediaLoaded, minTimeElapsed]);
 
     const openTicketModal = (title: string) => {
         setTicketModalTitle(title);
@@ -57,6 +70,7 @@ const App: React.FC = () => {
                 scrollToExpand="SCROLL"
                 partners={['img/StarGarments.svg', 'img/Aivance.svg']}
                 textBlend={false}
+                onMediaLoaded={() => setIsMediaLoaded(true)}
             >
                 {/* Children content that shows after expansion */}
                 <div className="flex flex-col items-center">
