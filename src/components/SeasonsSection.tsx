@@ -76,6 +76,15 @@ const SeasonCard: React.FC<{ season: any; index: number }> = ({ season, index })
     const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["7deg", "-7deg"]);
     const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-7deg", "7deg"]);
 
+    const particles = React.useMemo(() => {
+        return [...Array(8)].map(() => ({
+            left: `${Math.random() * 100}%`,
+            xMove: (Math.random() - 0.5) * 100,
+            duration: 3 + Math.random() * 4,
+            delay: Math.random() * 2
+        }));
+    }, []);
+
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
         const rect = e.currentTarget.getBoundingClientRect();
         const width = rect.width;
@@ -114,6 +123,7 @@ const SeasonCard: React.FC<{ season: any; index: number }> = ({ season, index })
             />
 
             {/* Active Green Energy Effect */}
+            {/* Active Green Energy Effect */}
             {isActive && (
                 <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden translate-z-0">
                     <motion.div
@@ -146,26 +156,26 @@ const SeasonCard: React.FC<{ season: any; index: number }> = ({ season, index })
                             transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
                         />
                     </svg>
-                    {[...Array(8)].map((_, i) => (
+                    {particles.map((p, i) => (
                         <motion.div
                             key={`particle-${i}`}
                             className="absolute w-1 h-1 rounded-full opacity-40 shadow-[0_0_5px_currentColor]"
                             style={{
                                 backgroundColor: themeColor,
                                 color: themeColor,
-                                left: `${Math.random() * 100}%`,
+                                left: p.left,
                                 bottom: '0%'
                             }}
                             animate={{
                                 y: [-20, -400],
-                                x: [0, (Math.random() - 0.5) * 100],
+                                x: [0, p.xMove],
                                 opacity: [0, 1, 0],
                                 scale: [0, 1.5, 0]
                             }}
                             transition={{
-                                duration: 3 + Math.random() * 4,
+                                duration: p.duration,
                                 repeat: Infinity,
-                                delay: Math.random() * 2,
+                                delay: p.delay,
                                 ease: "easeOut"
                             }}
                         />
