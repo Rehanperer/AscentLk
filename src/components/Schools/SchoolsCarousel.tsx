@@ -57,14 +57,15 @@ const SchoolCard: React.FC<{ school: School }> = ({ school }) => {
                 </div>
 
                 {/* Logo Frame - FULLY NORMALIZED */}
-                <div className="relative w-24 h-24 md:w-32 md:h-32 flex items-center justify-center mt-6">
-                    <div className="w-full h-full rounded-full border border-white/5 bg-white/[0.02] flex items-center justify-center relative overflow-hidden group-hover:bg-[#ff4655]/5 transition-colors duration-500">
-                        <i className={`fa-solid fa-shield-halved text-3xl md:text-4xl transition-all duration-500 ${isConfirmed ? 'text-[#ff4655]/10' : 'text-white/5'} group-hover:text-white/10`}></i>
+                <div className="relative w-22 h-22 md:w-28 md:h-28 flex items-center justify-center mt-8">
+                    <div className="w-full h-full rounded-xl border border-white/5 bg-white/[0.02] flex items-center justify-center relative overflow-hidden group-hover:bg-[#ff4655]/5 transition-colors duration-500">
+                        {/* Shield Icon Background - Lower opacity when logo is present */}
+                        <i className={`fa-solid fa-shield-halved text-2xl md:text-3xl transition-all duration-500 ${isConfirmed ? 'text-[#ff4655]/5' : 'text-white/5'} absolute`}></i>
 
                         {/* School Logo - Ensuring it fits perfectly */}
                         <img
-                            src={`img/schools/${school.name}.png`}
-                            className="absolute inset-0 w-full h-full object-contain p-4 md:p-5 opacity-0 group-hover:opacity-100 transition-all duration-500 group-hover:scale-105"
+                            src={`img/schools/${school.logo || school.name}.png`}
+                            className="absolute inset-0 w-full h-full object-contain p-1.5 opacity-90 group-hover:opacity-100 transition-all duration-500 group-hover:scale-105 z-10"
                             alt={school.name}
                             onError={(e) => (e.currentTarget.style.display = 'none')}
                         />
@@ -73,13 +74,13 @@ const SchoolCard: React.FC<{ school: School }> = ({ school }) => {
 
                 {/* Name Section - FIXED HEIGHT FOR ALIGNMENT */}
                 <div className="w-full mt-auto pb-4 translate-z-20 flex flex-col items-center">
-                    <div className="h-12 md:h-16 flex items-center justify-center w-full px-2">
-                        <h4 className="font-teko text-lg md:text-xl font-bold text-white tracking-[0.05em] uppercase leading-[1.1] transition-colors group-hover:text-[#ff4655] text-center whitespace-normal overflow-hidden h-full flex items-center">
+                    <div className="h-14 md:h-16 flex items-center justify-center w-full px-1">
+                        <h4 className="font-teko text-base md:text-lg font-bold text-white tracking-[0.05em] uppercase leading-[1.0] transition-colors group-hover:text-[#ff4655] text-center whitespace-normal flex items-center justify-center w-full">
                             {school.name}
                         </h4>
                     </div>
 
-                    <div className="font-mono text-[7px] md:text-[8px] text-[#ff4655]/60 uppercase tracking-[0.2em] mt-2 font-semibold">
+                    <div className="font-mono text-[7px] md:text-[8px] text-[#ff4655]/60 uppercase tracking-[0.2em] mt-1 font-semibold">
                         ELITE_CHALLENGER // 2026_RG
                     </div>
                 </div>
