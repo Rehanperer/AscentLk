@@ -28,22 +28,14 @@ const App: React.FC = () => {
     const [isSponsorModalOpen, setIsSponsorModalOpen] = useState(false);
 
     const [isMediaLoaded, setIsMediaLoaded] = useState(false);
-    const [minTimeElapsed, setMinTimeElapsed] = useState(false);
+    // We now rely on the LoadingScreen to tell us when it's done,
+    // ensuring the full animation always plays.
+    const handleLoadingComplete = () => {
+        setIsLoading(false);
+    };
 
-    // Minimum load time for branding impact (1.5s)
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setMinTimeElapsed(true);
-        }, 1500);
-        return () => clearTimeout(timer);
-    }, []);
-
-    // Combine media load status with minimum timer
-    useEffect(() => {
-        if (isMediaLoaded && minTimeElapsed) {
-            setIsLoading(false);
-        }
-    }, [isMediaLoaded, minTimeElapsed]);
+    // removed effect related to minTimeElapsed
+    // removed effect related to isMediaLoaded toggling isLoading directly
 
     const openTicketModal = (title: string) => {
         setTicketModalTitle(title);
@@ -53,7 +45,7 @@ const App: React.FC = () => {
     return (
         <div className="relative min-h-screen bg-[#0a1016]">
             <AnimatePresence>
-                {isLoading && <LoadingScreen key="loader" />}
+                {isLoading && <LoadingScreen onComplete={handleLoadingComplete} key="loader" />}
             </AnimatePresence>
             <CustomCursor />
 
