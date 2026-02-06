@@ -76,7 +76,7 @@ const Timeline: React.FC = () => {
                         {/* Card */}
                         <motion.div
                             className={`
-                                h-full flex flex-col justify-between p-6 md:p-8
+                                h-full flex flex-col justify-between p-5 md:p-6
                                 bg-[#0f1923]/80 backdrop-blur-md 
                                 border border-white/5 
                                 transition-all duration-500 hover:-translate-y-2
@@ -101,7 +101,7 @@ const Timeline: React.FC = () => {
                                     <div className="hidden md:block absolute -top-[5px] left-1/2 -translate-x-1/2 w-2 h-2 bg-[#0f1923] border border-[#ff4655] rotate-45 z-20" />
                                 </div>
 
-                                <h3 className="font-teko text-4xl lg:text-5xl text-white mb-2 leading-[0.85] tracking-tight">{phase.title}</h3>
+                                <h3 className="font-teko text-3xl md:text-3xl lg:text-3xl xl:text-4xl 2xl:text-5xl text-white mb-2 leading-[0.85] tracking-tight">{phase.title}</h3>
                                 <div className="text-white/40 font-mono text-[10px] tracking-[0.2em] uppercase mb-6">{phase.subtitle}</div>
                                 <p className="text-sm text-gray-400 font-medium leading-relaxed opacity-80">{phase.desc}</p>
                             </div>

@@ -356,7 +356,8 @@ const ScrollExpandMedia = ({
                                     className='text-7xl md:text-8xl lg:text-[7rem] font-medium font-teko uppercase drop-shadow-2xl'
                                     data-text={firstWord}
                                     style={{
-                                        transform: `translateX(-${textTranslateX}vw)`,
+                                        // Removed transform to prevent clipping
+                                        scale: 1 - scrollProgress * 0.2, // Added scale effect instead
                                         background: 'linear-gradient(to bottom, #ffffff 0%, #e0e0e0 45%, #b0b0b0 50%, #e0e0e0 55%, #ffffff 100%)',
                                         WebkitBackgroundClip: 'text',
                                         WebkitTextFillColor: 'transparent',
@@ -366,10 +367,11 @@ const ScrollExpandMedia = ({
                                     <ScrambleText text={firstWord} />
                                 </motion.h2>
                                 <motion.h2
-                                    className='text-8xl md:text-8xl lg:text-[11rem] font-bold text-center font-teko uppercase drop-shadow-2xl tracking-tighter mt-2 md:mt-4'
+                                    className='text-8xl md:text-8xl lg:text-[11rem] font-bold text-center font-teko uppercase drop-shadow-2xl tracking-tighter mt-2 md:mt-4 w-full px-4'
                                     data-text={restOfTitle}
                                     style={{
-                                        transform: `translateX(${textTranslateX}vw)`,
+                                        // Removed transform to prevent clipping
+                                        scale: 1 + scrollProgress * 0.2, // Added scale effect instead
                                         background: 'linear-gradient(to bottom, #ffffff 10%, #d1d1d1 50%, #ffffff 90%)',
                                         WebkitBackgroundClip: 'text',
                                         WebkitTextFillColor: 'transparent',
