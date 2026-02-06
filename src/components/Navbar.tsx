@@ -69,11 +69,18 @@ const Navbar: React.FC<NavbarProps> = ({ onRegister }) => {
                                 ))}
                             </div>
 
-                            {/* Register Button */}
+                            {/* Register Button (Desktop) */}
                             <div onClick={onRegister} className="hidden md:block group cursor-pointer">
                                 <div className="relative overflow-hidden bg-[#ff4655] text-white px-8 py-2 font-bold font-teko text-xl tracking-wider rounded-sm transition-all duration-300 hover:bg-white hover:text-[#0a1016]">
                                     <div className="relative z-10">REGISTER NOW</div>
                                     <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-0 transition-transform duration-500 skew-x-12" />
+                                </div>
+                            </div>
+
+                            {/* Mobile Register Button (New) */}
+                            <div onClick={onRegister} className="md:hidden group cursor-pointer mr-2">
+                                <div className="relative overflow-hidden bg-[#ff4655] text-white px-4 py-1.5 font-bold font-teko text-lg tracking-wider rounded-sm active:scale-95 transition-transform">
+                                    REGISTER
                                 </div>
                             </div>
 
@@ -125,35 +132,28 @@ const Navbar: React.FC<NavbarProps> = ({ onRegister }) => {
                         <div className="h-full flex flex-col p-8 pt-32 overflow-y-auto">
                             <div className="flex flex-col gap-8">
                                 {navLinks.map((item, i) => (
-                                    <motion.a
+                                    <motion.button
                                         key={item.name}
                                         initial={{ opacity: 0, x: 20 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         transition={{ delay: 0.1 + (i * 0.1) }}
-                                        href={item.link}
                                         onClick={(e) => {
                                             e.preventDefault();
                                             setIsMobileMenuOpen(false);
-                                            // Small timeout to allow menu close animation to start/finish clearing view
-                                            setTimeout(() => {
-                                                const element = document.querySelector(item.link);
-                                                if (element) {
-                                                    const navHeight = 80; // Approximate navbar height
-                                                    const elementPosition = element.getBoundingClientRect().top + window.scrollY;
-                                                    const offsetPosition = elementPosition - navHeight;
-
-                                                    window.scrollTo({
-                                                        top: offsetPosition,
-                                                        behavior: "smooth"
-                                                    });
-                                                }
-                                            }, 100);
+                                            // Robust scroll logic
+                                            const targetId = item.link.replace('#', '');
+                                            const element = document.getElementById(targetId);
+                                            if (element) {
+                                                setTimeout(() => {
+                                                    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                                }, 100);
+                                            }
                                         }}
-                                        className="font-teko text-5xl font-bold text-white/40 hover:text-white transition-colors flex items-center gap-4 group active:text-white cursor-pointer"
+                                        className="font-teko text-5xl font-bold text-white/40 hover:text-white transition-colors flex items-center gap-4 group active:text-white cursor-pointer w-full text-left bg-transparent border-none p-0 outline-none"
                                     >
                                         <span className="text-xl font-mono text-[#ff4655] group-hover:translate-x-2 transition-transform">0{i + 1}</span>
                                         {item.name}
-                                    </motion.a>
+                                    </motion.button>
                                 ))}
                             </div>
 
