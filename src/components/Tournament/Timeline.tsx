@@ -127,7 +127,7 @@ const Timeline: React.FC = () => {
                         <div className="font-teko text-[7rem] md:text-[6.5rem] lg:text-[7.5rem] font-bold leading-[0.8] text-white tracking-tighter relative">
                             <motion.span
                                 className="relative z-10 transition-all duration-500"
-                                whileInView={{ color: "transparent", WebkitTextStroke: "1px #ff4655" }}
+                                whileInView={{ color: "transparent", WebkitTextStroke: "1px #ff4655" } as any}
                                 viewport={{ margin: "-10%" }}
                             >
                                 300K
