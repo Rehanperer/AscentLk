@@ -63,7 +63,7 @@ const App: React.FC = () => {
             {/* Hero Section with Scroll Expansion */}
             <ScrollExpandMedia
                 mediaType="video"
-                mediaSrc="ascent_final.mov"
+                mediaSrc="ascent_vid.mp4"
                 bgImageSrc="grid"
                 title="ASCENT 2026"
                 date="Tournament // 01"
