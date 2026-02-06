@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, Handshake } from 'lucide-react';
+import { useAudio } from '../hooks/useAudio';
 
 interface SponsorModalProps {
     isOpen: boolean;
@@ -7,6 +8,7 @@ interface SponsorModalProps {
 }
 
 const SponsorModal: React.FC<SponsorModalProps> = ({ isOpen, onClose }) => {
+    const { playHover, playClick, playSuccess } = useAudio();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -40,6 +42,7 @@ const SponsorModal: React.FC<SponsorModalProps> = ({ isOpen, onClose }) => {
                 throw new Error(detailedError);
             }
 
+            playSuccess();
             setIsSubmitted(true);
             setTimeout(() => {
                 onClose();
@@ -67,35 +70,65 @@ const SponsorModal: React.FC<SponsorModalProps> = ({ isOpen, onClose }) => {
                             <div className="inline-block px-2 py-0.5 bg-[#eec758] text-black text-[10px] font-bold tracking-widest mb-2">PARTNERSHIP</div>
                             <h2 className="font-teko text-5xl text-[#eec758] leading-none">JOIN THE ALLIANCE</h2>
                         </div>
-                        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                        <form onSubmit={(e) => { playClick(); handleSubmit(e); }} className="flex flex-col gap-4">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-xs uppercase tracking-widest mb-2 opacity-70 text-[#eec758]">Full Name</label>
-                                    <input type="text" name="fullName" required className="vct-input interactive-element" />
+                                    <input
+                                        type="text"
+                                        name="fullName"
+                                        required
+                                        onMouseEnter={() => playHover()}
+                                        className="vct-input interactive-element"
+                                    />
                                 </div>
                                 <div>
                                     <label className="block text-xs uppercase tracking-widest mb-2 opacity-70 text-[#eec758]">Company</label>
-                                    <input type="text" name="company" required className="vct-input interactive-element" />
+                                    <input
+                                        type="text"
+                                        name="company"
+                                        required
+                                        onMouseEnter={() => playHover()}
+                                        className="vct-input interactive-element"
+                                    />
                                 </div>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-xs uppercase tracking-widest mb-2 opacity-70 text-[#eec758]">Email</label>
-                                    <input type="email" name="email" required className="vct-input interactive-element" />
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        required
+                                        onMouseEnter={() => playHover()}
+                                        className="vct-input interactive-element"
+                                    />
                                 </div>
                                 <div>
                                     <label className="block text-xs uppercase tracking-widest mb-2 opacity-70 text-[#eec758]">Role / Position</label>
-                                    <input type="text" name="role" required className="vct-input interactive-element" />
+                                    <input
+                                        type="text"
+                                        name="role"
+                                        required
+                                        onMouseEnter={() => playHover()}
+                                        className="vct-input interactive-element"
+                                    />
                                 </div>
                             </div>
                             <div>
                                 <label className="block text-xs uppercase tracking-widest mb-2 opacity-70 text-[#eec758]">Message (Optional)</label>
-                                <textarea name="message" rows={2} className="vct-input interactive-element"></textarea>
+                                <textarea
+                                    name="message"
+                                    rows={2}
+                                    onMouseEnter={() => playHover()}
+                                    className="vct-input interactive-element"
+                                ></textarea>
                             </div>
                             {error && <p className="text-[#ff4655] text-xs font-mono">{error}</p>}
                             <button
                                 type="submit"
                                 disabled={isSubmitting}
+                                onMouseEnter={() => playHover()}
                                 className="border border-[#eec758] text-[#eec758] py-3 font-teko text-xl font-bold angled-btn hover:bg-[#eec758] hover:text-black transition-colors mt-2 interactive-element disabled:opacity-50 disabled:cursor-wait"
                             >
                                 {isSubmitting ? 'SENDING...' : 'SEND INQUIRY'}

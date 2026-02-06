@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Instagram, Youtube, Twitch, Globe, Shield, Users, Trophy } from 'lucide-react';
 import ScrambleText from './ScrambleText';
+import { useAudio } from '../hooks/useAudio';
 
 interface PartnerSectionProps {
     onSponsorClick?: () => void;
@@ -46,6 +47,7 @@ const PartnershipCard: React.FC<{
 );
 
 const PartnerSection: React.FC<PartnerSectionProps> = ({ onSponsorClick, onContactClick }) => {
+    const { playHover, playClick } = useAudio();
     return (
         <section className="relative py-24 md:py-32 overflow-hidden bg-[#0f1923]" id="partners">
             {/* Background Branding */}
@@ -76,16 +78,18 @@ const PartnerSection: React.FC<PartnerSectionProps> = ({ onSponsorClick, onConta
                                 <motion.button
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.95 }}
+                                    onMouseEnter={() => playHover()}
                                     className="bg-[#ff4655] text-white px-10 py-4 font-bold font-teko text-2xl tracking-widest hover:bg-white hover:text-[#0a1016] transition-all rounded-sm shadow-[0_0_20px_rgba(255,70,85,0.2)]"
-                                    onClick={onSponsorClick}
+                                    onClick={() => { playClick(); onSponsorClick?.(); }}
                                 >
                                     CORPORATE ENQUIRY
                                 </motion.button>
                                 <motion.button
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.95 }}
+                                    onMouseEnter={() => playHover()}
                                     className="border border-white/20 text-white px-8 py-4 font-bold font-teko text-2xl tracking-widest hover:bg-white hover:text-[#0a1016] transition-all rounded-sm"
-                                    onClick={onContactClick}
+                                    onClick={() => { playClick(); onContactClick?.(); }}
                                 >
                                     GENERAL CONTACT
                                 </motion.button>
@@ -97,7 +101,7 @@ const PartnerSection: React.FC<PartnerSectionProps> = ({ onSponsorClick, onConta
                             <div className="text-[10px] font-mono tracking-[0.5em] text-white/20 mb-6 uppercase">Sync_Social_Channels</div>
                             <div className="flex flex-wrap gap-4">
                                 {[
-                                    { icon: <Instagram />, link: 'https://instagram.com/ascent.2026' },
+                                    { icon: <Instagram />, link: 'https://www.instagram.com/ascent_2026/' },
                                     { icon: <Youtube />, link: 'https://youtube.com/@ascent.2026' },
                                     { icon: <DiscordIcon className="w-6 h-6" />, link: '#' },
                                     { icon: <Twitch />, link: '#' }
@@ -105,6 +109,8 @@ const PartnerSection: React.FC<PartnerSectionProps> = ({ onSponsorClick, onConta
                                     <motion.a
                                         key={i}
                                         whileHover={{ y: -5, borderColor: '#ff4655' }}
+                                        onMouseEnter={() => playHover()}
+                                        onClick={() => playClick()}
                                         href={social.link}
                                         target="_blank"
                                         rel="noopener noreferrer"

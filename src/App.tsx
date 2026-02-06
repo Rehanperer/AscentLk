@@ -144,6 +144,7 @@ const App: React.FC = () => {
 
                         <footer className="py-12 border-t border-white/5 text-center">
                             <div className="flex flex-col md:flex-row justify-center items-center gap-6 md:gap-12 text-[10px] md:text-xs text-white/40 font-medium tracking-wide uppercase mb-8">
+                                <a href="https://www.instagram.com/ascent_2026/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Instagram</a>
                                 <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
                                 <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
                                 <a href="#" className="hover:text-white transition-colors">Code of Conduct</a>

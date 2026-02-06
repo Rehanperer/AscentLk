@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Instagram } from 'lucide-react';
+import { useAudio } from '../hooks/useAudio';
 
 interface NavbarProps {
     onRegister: () => void;
 }
 
 const Navbar: React.FC<NavbarProps> = ({ onRegister }) => {
+    const { playHover, playClick } = useAudio();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [scrollPercent, setScrollPercent] = useState(0);
 
@@ -48,7 +51,13 @@ const Navbar: React.FC<NavbarProps> = ({ onRegister }) => {
                     <div className="relative px-4 py-2 flex justify-between items-center">
                         {/* Logo Area */}
                         <div className="flex items-center gap-6">
-                            <div className="relative group cursor-pointer flex items-center" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+                            <div className="relative group cursor-pointer flex items-center"
+                                onMouseEnter={() => playHover()}
+                                onClick={() => {
+                                    playClick();
+                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                }}
+                            >
                                 <span className="font-teko text-2xl md:text-3xl tracking-widest text-white font-bold leading-none group-hover:text-[#ff4655] transition-colors duration-300">
                                     ASCENT <span className="text-[#ff4655] group-hover:text-white transition-colors duration-300">//</span> 2026
                                 </span>
@@ -58,8 +67,20 @@ const Navbar: React.FC<NavbarProps> = ({ onRegister }) => {
                         <div className="flex items-center gap-4 md:gap-8">
                             {/* Desktop Social Icons */}
                             <div className="hidden md:flex gap-1">
+                                <a
+                                    href="https://www.instagram.com/ascent_2026/"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    onMouseEnter={() => playHover()}
+                                    className="w-10 h-10 flex items-center justify-center opacity-40 hover:opacity-100 hover:bg-white/5 transition-all cursor-pointer rounded-sm group relative"
+                                >
+                                    <Instagram className="w-4 h-4 text-white group-hover:scale-110 transition-transform" />
+                                </a>
                                 {['Club', 'Valorant', 'Event'].map((item, i) => (
-                                    <div key={i} className="w-10 h-10 flex items-center justify-center opacity-40 hover:opacity-100 hover:bg-white/5 transition-all cursor-pointer rounded-sm group relative">
+                                    <div key={i}
+                                        onMouseEnter={() => playHover()}
+                                        className="w-10 h-10 flex items-center justify-center opacity-40 hover:opacity-100 hover:bg-white/5 transition-all cursor-pointer rounded-sm group relative"
+                                    >
                                         <img
                                             src={`img/${item === 'Event' ? 'ASCENT2026' : item === 'Club' ? 'SVG' : 'Valorant'}.svg`}
                                             className="w-4 h-4 object-contain brightness-150 group-hover:scale-110 transition-transform"
@@ -70,7 +91,14 @@ const Navbar: React.FC<NavbarProps> = ({ onRegister }) => {
                             </div>
 
                             {/* Register Button (Desktop) */}
-                            <div onClick={onRegister} className="hidden md:block group cursor-pointer">
+                            <div
+                                onClick={() => {
+                                    playClick();
+                                    onRegister();
+                                }}
+                                onMouseEnter={() => playHover()}
+                                className="hidden md:block group cursor-pointer"
+                            >
                                 <div className="relative overflow-hidden bg-[#ff4655] text-white px-8 py-2 font-bold font-teko text-xl tracking-wider rounded-sm transition-all duration-300 hover:bg-white hover:text-[#0a1016]">
                                     <div className="relative z-10">REGISTER NOW</div>
                                     <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-0 transition-transform duration-500 skew-x-12" />
@@ -78,7 +106,13 @@ const Navbar: React.FC<NavbarProps> = ({ onRegister }) => {
                             </div>
 
                             {/* Mobile Register Button (New) */}
-                            <div onClick={onRegister} className="md:hidden group cursor-pointer mr-2">
+                            <div
+                                onClick={() => {
+                                    playClick();
+                                    onRegister();
+                                }}
+                                className="md:hidden group cursor-pointer mr-2"
+                            >
                                 <div className="relative overflow-hidden bg-[#ff4655] text-white px-4 py-1.5 font-bold font-teko text-lg tracking-wider rounded-sm active:scale-95 transition-transform">
                                     REGISTER
                                 </div>
@@ -137,8 +171,10 @@ const Navbar: React.FC<NavbarProps> = ({ onRegister }) => {
                                         initial={{ opacity: 0, x: 20 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         transition={{ delay: 0.1 + (i * 0.1) }}
+                                        onMouseEnter={() => playHover()}
                                         onClick={(e) => {
                                             e.preventDefault();
+                                            playClick();
                                             setIsMobileMenuOpen(false);
                                             // Robust scroll logic
                                             const targetId = item.link.replace('#', '');
@@ -172,7 +208,15 @@ const Navbar: React.FC<NavbarProps> = ({ onRegister }) => {
                                 >
                                     REGISTER NOW
                                 </button>
-                                <div className="mt-8 flex justify-center gap-8">
+                                <div className="mt-8 flex justify-center gap-6">
+                                    <a
+                                        href="https://www.instagram.com/ascent_2026/"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="w-12 h-12 border border-white/5 flex items-center justify-center opacity-60 active:opacity-100"
+                                    >
+                                        <Instagram className="w-5 h-5 text-white" />
+                                    </a>
                                     {['Club', 'Valorant', 'Event'].map((item, i) => (
                                         <div key={i} className="w-12 h-12 border border-white/5 flex items-center justify-center opacity-60">
                                             <img src={`img/${item === 'Event' ? 'ASCENT2026' : item === 'Club' ? 'SVG' : 'Valorant'}.svg`} className="w-5 h-5" alt={item} />

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, CheckCircle } from 'lucide-react';
+import { useAudio } from '../hooks/useAudio';
 
 interface RegistrationModalProps {
     isOpen: boolean;
@@ -8,6 +9,7 @@ interface RegistrationModalProps {
 }
 
 const RegistrationModal: React.FC<RegistrationModalProps> = ({ isOpen, onClose, title = "SECURE YOUR SPOT" }) => {
+    const { playHover, playClick, playSuccess } = useAudio();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -38,6 +40,7 @@ const RegistrationModal: React.FC<RegistrationModalProps> = ({ isOpen, onClose, 
                 throw new Error(detailedError);
             }
 
+            playSuccess();
             setIsSubmitted(true);
             setTimeout(() => {
                 onClose();
@@ -67,19 +70,34 @@ const RegistrationModal: React.FC<RegistrationModalProps> = ({ isOpen, onClose, 
                         <h2 className="font-teko text-4xl text-white mb-6 border-b border-white/10 pb-2 pl-4">
                             {title}
                         </h2>
-                        <form onSubmit={handleSubmit} className="flex flex-col gap-5 pl-4">
+                        <form onSubmit={(e) => { playClick(); handleSubmit(e); }} className="flex flex-col gap-5 pl-4">
                             <div>
                                 <label className="block text-xs uppercase tracking-widest mb-2 opacity-70 text-[#ff4655] font-bold">Full Name</label>
-                                <input type="text" name="fullName" required className="vct-input interactive-element" placeholder="Jett Windwalker" />
+                                <input
+                                    type="text"
+                                    name="fullName"
+                                    required
+                                    onMouseEnter={() => playHover()}
+                                    className="vct-input interactive-element"
+                                    placeholder="Jett Windwalker"
+                                />
                             </div>
                             <div>
                                 <label className="block text-xs uppercase tracking-widest mb-2 opacity-70 text-[#ff4655] font-bold">Email Address</label>
-                                <input type="email" name="email" required className="vct-input interactive-element" placeholder="agent@valorant.com" />
+                                <input
+                                    type="email"
+                                    name="email"
+                                    required
+                                    onMouseEnter={() => playHover()}
+                                    className="vct-input interactive-element"
+                                    placeholder="agent@valorant.com"
+                                />
                             </div>
                             {error && <p className="text-[#ff4655] text-xs font-mono">{error}</p>}
                             <button
                                 type="submit"
                                 disabled={isSubmitting}
+                                onMouseEnter={() => playHover()}
                                 className="bg-[#ff4655] text-white py-3 font-teko text-xl font-bold angled-btn hover:bg-white hover:text-black transition-colors mt-4 interactive-element disabled:opacity-50 disabled:cursor-wait"
                             >
                                 {isSubmitting ? 'PROCESSING...' :

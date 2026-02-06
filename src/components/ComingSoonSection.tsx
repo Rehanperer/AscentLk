@@ -1,12 +1,14 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import ScrambleText from './ScrambleText';
+import { useAudio } from '../hooks/useAudio';
 
 interface ComingSoonProps {
     onNotifyClick?: () => void;
 }
 
 const ComingSoonSection: React.FC<ComingSoonProps> = ({ onNotifyClick }) => {
+    const { playHover, playClick } = useAudio();
     return (
         <section className="relative py-32 md:py-48 overflow-hidden bg-[#0a1016]" id="coming-soon">
             {/* Background Radar Sweep VFX */}
@@ -57,11 +59,15 @@ const ComingSoonSection: React.FC<ComingSoonProps> = ({ onNotifyClick }) => {
                     <motion.div
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
-                        className="relative group inline-block"
-                        onClick={onNotifyClick}
+                        className="relative group inline-block cursor-pointer"
+                        onMouseEnter={() => playHover()}
+                        onClick={() => {
+                            playClick();
+                            onNotifyClick?.();
+                        }}
                     >
                         <div className="absolute -inset-0.5 bg-gradient-to-r from-[#ff4655] to-white/20 rounded-sm opacity-50 group-hover:opacity-100 transition-opacity blur-[2px]" />
-                        <button className="relative px-12 py-4 bg-[#0a1016] text-white font-teko text-2xl tracking-[0.2em] rounded-sm transition-all flex items-center gap-4 overflow-hidden group-hover:bg-transparent group-hover:text-white border border-white/10 uppercase">
+                        <button className="relative px-12 py-4 bg-[#0a1016] text-white font-teko text-2xl tracking-[0.2em] rounded-sm transition-all flex items-center gap-4 overflow-hidden group-hover:bg-transparent group-hover:text-white border border-white/10 uppercase pointer-events-none">
                             <span className="relative z-10">ENABLE_NOTIFICATIONS</span>
                             <div className="w-2 h-2 rounded-full bg-[#ff4655] group-hover:animate-ping" />
                         </button>

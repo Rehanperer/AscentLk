@@ -7,21 +7,21 @@ const phases = [
         title: 'QUALIFIERS',
         subtitle: 'Swiss Online',
         desc: 'The gauntlet begins. Swiss-system bracket.',
-        date: 'JUNE 2026',
+        date: 'JULY END',
     },
     {
         id: '02',
         title: 'GROUPS',
         subtitle: 'LAN Studio',
         desc: 'Offline group stages. Pro environment.',
-        date: 'EARLY JULY',
+        date: 'AUGUST',
     },
     {
         id: '03',
         title: 'FINALS',
         subtitle: 'Grand Stage',
         desc: 'The grand finale. Live audience.',
-        date: 'JULY 17',
+        date: 'SEPTEMBER 17TH',
         highlight: true
     }
 ];
@@ -120,8 +120,7 @@ const Timeline: React.FC = () => {
                     <div className="md:hidden absolute left-[-24px] top-0 h-[50%] w-[1px] bg-white/10" />
 
                     <div className="text-center md:text-right group cursor-default relative">
-                        {/* Desktop Connector for Prize Pool */}
-                        <div className="hidden md:block absolute -top-[5px] right-1/2 translate-x-1/2 w-2 h-2 bg-[#0f1923] border border-[#ff4655] rotate-45 z-20" />
+
 
                         <div className="font-mono text-[10px] tracking-[0.4em] text-white/40 mb-2 group-hover:text-[#ff4655] transition-colors">GRAND PRIZE</div>
                         <div className="font-teko text-[7rem] md:text-[6.5rem] lg:text-[7.5rem] font-bold leading-[0.8] text-white tracking-tighter relative">

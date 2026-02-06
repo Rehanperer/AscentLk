@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ScrambleText from './ScrambleText';
+import { useAudio } from '../hooks/useAudio';
 
 // Warp Speed Canvas Component - Optimized
 const WarpSpeedBackground: React.FC<{ speed: number }> = ({ speed }) => {
@@ -81,25 +82,29 @@ interface LoadingScreenProps {
 }
 
 const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete }) => {
+    const { playGlitch, playWhoosh, playSuccess } = useAudio();
     const [stage, setStage] = useState(0);
     const [warpSpeed, setWarpSpeed] = useState(2);
 
     useEffect(() => {
-        // Enforce fixed timing for the sequence (Total 4.7s)
+        // Enforce fixed timing for the sequence (Total 5s)
         const sequence = async () => {
             // Stage 0: Logos (0ms)
 
-            // Stage 1: PRESENTS (1200ms)
-            await new Promise(r => setTimeout(r, 1200));
+            // Stage 1: PRESENTS (1300ms)
+            await new Promise(r => setTimeout(r, 1300));
             setStage(1);
+            playWhoosh();
 
-            // Stage 2: ASCENT Reveal (Total ~2.6s)
-            await new Promise(r => setTimeout(r, 1400));
+            // Stage 2: ASCENT Reveal (Total ~2.8s)
+            await new Promise(r => setTimeout(r, 1500));
             setStage(2);
+            playGlitch();
             setWarpSpeed(20); // Hyperdrive
 
-            // Complete (Total 4700ms)
-            await new Promise(r => setTimeout(r, 2100));
+            // Complete (Total 5000ms)
+            await new Promise(r => setTimeout(r, 2200));
+            playSuccess();
             if (onComplete) onComplete();
         };
 
@@ -276,7 +281,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete }) => {
                             className="absolute inset-0 bg-[#ff4655]"
                             initial={{ width: "0%" }}
                             animate={{ width: "100%" }}
-                            transition={{ duration: 4.7, ease: "linear" }}
+                            transition={{ duration: 5, ease: "linear" }}
                         />
                     </div>
 
