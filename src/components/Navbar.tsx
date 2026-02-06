@@ -131,8 +131,25 @@ const Navbar: React.FC<NavbarProps> = ({ onRegister }) => {
                                         animate={{ opacity: 1, x: 0 }}
                                         transition={{ delay: 0.1 + (i * 0.1) }}
                                         href={item.link}
-                                        onClick={() => setIsMobileMenuOpen(false)}
-                                        className="font-teko text-5xl font-bold text-white/40 hover:text-white transition-colors flex items-center gap-4 group active:text-white"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            setIsMobileMenuOpen(false);
+                                            // Small timeout to allow menu close animation to start/finish clearing view
+                                            setTimeout(() => {
+                                                const element = document.querySelector(item.link);
+                                                if (element) {
+                                                    const navHeight = 80; // Approximate navbar height
+                                                    const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+                                                    const offsetPosition = elementPosition - navHeight;
+
+                                                    window.scrollTo({
+                                                        top: offsetPosition,
+                                                        behavior: "smooth"
+                                                    });
+                                                }
+                                            }, 100);
+                                        }}
+                                        className="font-teko text-5xl font-bold text-white/40 hover:text-white transition-colors flex items-center gap-4 group active:text-white cursor-pointer"
                                     >
                                         <span className="text-xl font-mono text-[#ff4655] group-hover:translate-x-2 transition-transform">0{i + 1}</span>
                                         {item.name}
