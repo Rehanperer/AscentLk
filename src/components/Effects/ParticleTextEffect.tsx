@@ -277,6 +277,33 @@ const ParticleTextEffect: React.FC<ParticleTextEffectProps> = ({
         hasPointerRef.current = true;
     };
 
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
+    if (isMobile) {
+        return (
+            <div className={`w-full h-full flex items-center justify-center ${className}`}>
+                <h2
+                    className="font-teko font-bold text-center leading-none"
+                    style={{
+                        fontSize: fontSize || '15vw',
+                        background: `linear-gradient(to bottom, #${colors[0]}, #${colors[colors.length - 1]})`,
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent'
+                    }}
+                >
+                    {text}
+                </h2>
+            </div>
+        );
+    }
+
     return (
         <canvas
             ref={canvasRef}

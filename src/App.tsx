@@ -103,7 +103,7 @@ const App: React.FC = () => {
                         <CountdownSection />
 
                         {/* Participating Schools Section - Standard Import for zero perceived delay */}
-                        <section className="py-24 relative">
+                        <section id="schools" className="py-24 relative">
                             <ParallaxBackground text="VALORANT // 5v5" velocity={-30} direction="horizontal" className="top-0" />
                             <SectionReveal className="relative z-10 p-8 border border-white/5 bg-[#0f1923]/50 backdrop-blur-sm">
                                 <div className="max-w-7xl mx-auto px-6 mb-12 flex justify-between items-end border-b border-white/10 pb-4">

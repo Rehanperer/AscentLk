@@ -275,7 +275,7 @@ const ScrollExpandMedia = ({
                                                 loop
                                                 playsInline
                                                 preload='auto'
-                                                className='w-full h-full object-cover rounded-3xl bg-black/20'
+                                                className='w-full h-full object-contain md:object-cover rounded-3xl bg-black'
                                                 controls={false}
                                                 disablePictureInPicture
                                                 disableRemotePlayback

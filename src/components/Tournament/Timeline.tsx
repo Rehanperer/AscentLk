@@ -45,7 +45,7 @@ const Timeline: React.FC = () => {
     };
 
     return (
-        <div ref={ref} className="w-full max-w-7xl mx-auto px-6 py-24 relative mt-12">
+        <div id="timeline" ref={ref} className="w-full max-w-7xl mx-auto px-6 py-24 relative mt-12">
 
             {/* Desktop Top Line */}
             <div className="hidden md:block absolute top-[96px] left-0 w-full h-[1px] bg-white/5 z-0">

@@ -28,7 +28,7 @@ const CountdownSection: React.FC = () => {
     }, []);
 
     return (
-        <section className="relative overflow-hidden py-16 md:py-24 bg-[#0a0a0c]">
+        <section id="countdown" className="relative overflow-hidden py-16 md:py-24 bg-[#0a0a0c]">
             {/* TACTICAL BACKGROUND LAYER */}
             <div className="absolute inset-0 z-0">
                 {/* Metallic Red Gradient */}
