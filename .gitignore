@@ -118,3 +118,6 @@ dist
 
 # macOS
 .DS_Store
+
+# Ticketing System (Standalone)
+ticketing-system/
