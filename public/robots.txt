@@ -1,8 +1,5 @@
 User-agent: *
 Allow: /
 
-# Host
-Host: https://ascent.lk
-
 # Sitemaps
-Sitemap: https://ascent.lk/sitemap.xml
+Sitemap: https://ascentlk.com/sitemap.xml
