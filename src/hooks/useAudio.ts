@@ -1,5 +1,5 @@
 import { useRef, useEffect } from 'react';
-import useSound from 'use-sound';
+// import useSound from 'use-sound';
 
 // Premium UI Sound Assets (Publicly available high-quality UI sounds)
 const SOUNDS = {
@@ -11,17 +11,20 @@ const SOUNDS = {
 };
 
 export const useAudio = () => {
-    const [playHover] = useSound(SOUNDS.hover, { volume: 0.25 });
-    const [playClick] = useSound(SOUNDS.click, { volume: 0.4 });
-    const [playGlitch] = useSound(SOUNDS.glitch, { volume: 0.3 });
-    const [playWhoosh] = useSound(SOUNDS.whoosh, { volume: 0.4 });
-    const [playSuccess] = useSound(SOUNDS.success, { volume: 0.5 });
+    // const [playHover] = useSound(SOUNDS.hover, { volume: 0.25 });
+    // const [playClick] = useSound(SOUNDS.click, { volume: 0.4 });
+    // const [playGlitch] = useSound(SOUNDS.glitch, { volume: 0.3 });
+    // const [playWhoosh] = useSound(SOUNDS.whoosh, { volume: 0.4 });
+    // const [playSuccess] = useSound(SOUNDS.success, { volume: 0.5 });
+
+    // Return no-op functions to disable sound
+    const noOp = () => { };
 
     return {
-        playHover,
-        playClick,
-        playGlitch,
-        playWhoosh,
-        playSuccess,
+        playHover: noOp,
+        playClick: noOp,
+        playGlitch: noOp,
+        playWhoosh: noOp,
+        playSuccess: noOp,
     };
 };
