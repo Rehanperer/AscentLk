@@ -26,6 +26,9 @@ const SchoolCard: React.FC<{ school: School }> = ({ school }) => {
     const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-5deg", "5deg"]);
 
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        // Optimization: Disable 3D tilt on mobile/touch devices
+        if (window.innerWidth < 768) return;
+
         const rect = e.currentTarget.getBoundingClientRect();
         x.set((e.clientX - rect.left) / rect.width - 0.5);
         y.set((e.clientY - rect.top) / rect.height - 0.5);

@@ -37,6 +37,8 @@ const App: React.FC = () => {
     // removed effect related to minTimeElapsed
     // removed effect related to isMediaLoaded toggling isLoading directly
 
+    const [isHeroExpanded, setIsHeroExpanded] = useState(false);
+
     const openTicketModal = (title: string) => {
         setTicketModalTitle(title);
         setIsTicketModalOpen(true);
@@ -50,7 +52,10 @@ const App: React.FC = () => {
             <CustomCursor />
 
             {/* Premium HUD Navigation */}
-            <Navbar onRegister={() => openTicketModal('GENERAL REGISTRATION')} />
+            <Navbar
+                onRegister={() => openTicketModal('GENERAL REGISTRATION')}
+                onNavigate={() => setIsHeroExpanded(true)}
+            />
 
             {/* Hero Section with Scroll Expansion */}
             <ScrollExpandMedia
@@ -63,6 +68,7 @@ const App: React.FC = () => {
                 partners={['img/StarGarments.svg', 'img/Aivance.svg']}
                 textBlend={false}
                 onMediaLoaded={() => setIsMediaLoaded(true)}
+                forceExpand={isHeroExpanded}
             >
                 {/* Children content that shows after expansion */}
                 <div className="flex flex-col items-center">
@@ -113,34 +119,39 @@ const App: React.FC = () => {
                         </section>
 
                         {/* Other Lazy Components */}
-                        <Suspense fallback={
-                            <div className="w-full h-96 flex items-center justify-center bg-[#0a1016]">
-                                <div className="font-mono text-[10px] tracking-[0.5em] animate-pulse text-[#ff4655]">SYNCING_CHRONICLE...</div>
-                            </div>
-                        }>
-                            <section className="py-24 relative overflow-hidden bg-grid">
-                                <ParallaxBackground text="ASCENT" velocity={50} direction="horizontal" className="top-1/2 -translate-y-1/2 opacity-5" />
-                                <SectionReveal className="relative z-10">
-                                    <div className="max-w-7xl mx-auto px-6 mb-16 text-center">
-                                        <ScrambleText text="TOURNAMENT STRUCTURE" className="text-[#ff4655] font-bold tracking-widest text-xs mb-2 block" />
-                                        <h2 className="font-teko text-6xl md:text-8xl font-bold leading-none">PATH TO ASCENT</h2>
-                                    </div>
-                                    <Timeline />
-                                    <SeasonsSection />
-                                </SectionReveal>
-                            </section>
 
-                            <ComingSoonSection onNotifyClick={() => openTicketModal('WAITLIST')} />
+                        <section id="timeline" className="relative">
+                            <Suspense fallback={
+                                <div className="w-full h-96 flex items-center justify-center bg-[#0a1016]">
+                                    <div className="font-mono text-[10px] tracking-[0.5em] animate-pulse text-[#ff4655]">SYNCING_CHRONICLE...</div>
+                                </div>
+                            }>
+                                <section className="py-24 relative overflow-hidden bg-grid">
+                                    <ParallaxBackground text="ASCENT" velocity={50} direction="horizontal" className="top-1/2 -translate-y-1/2 opacity-5" />
+                                    <SectionReveal className="relative z-10">
+                                        <div className="max-w-7xl mx-auto px-6 mb-16 text-center">
+                                            <ScrambleText text="TOURNAMENT STRUCTURE" className="text-[#ff4655] font-bold tracking-widest text-xs mb-2 block" />
+                                            <h2 className="font-teko text-6xl md:text-8xl font-bold leading-none">PATH TO ASCENT</h2>
+                                        </div>
+                                        <Timeline />
+                                        <SeasonsSection />
+                                    </SectionReveal>
+                                </section>
+                            </Suspense>
+                        </section>
 
-                            <section className="relative">
+                        <ComingSoonSection onNotifyClick={() => openTicketModal('WAITLIST')} />
+
+                        <section id="partners" className="relative">
+                            <Suspense fallback={null}>
                                 <SectionReveal>
                                     <PartnerSection
                                         onSponsorClick={() => setIsSponsorModalOpen(true)}
                                         onContactClick={() => openTicketModal('GENERAL INQUIRY')}
                                     />
                                 </SectionReveal>
-                            </section>
-                        </Suspense>
+                            </Suspense>
+                        </section>
 
                         <footer className="py-12 border-t border-white/5 text-center">
                             <div className="flex flex-col md:flex-row justify-center items-center gap-6 md:gap-12 text-[10px] md:text-xs text-white/40 font-medium tracking-wide uppercase mb-8">

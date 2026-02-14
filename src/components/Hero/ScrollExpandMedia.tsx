@@ -21,6 +21,7 @@ interface ScrollExpandMediaProps {
     partners?: string[];
     children?: ReactNode;
     onMediaLoaded?: () => void;
+    forceExpand?: boolean;
 }
 
 const ScrollExpandMedia = ({
@@ -35,6 +36,7 @@ const ScrollExpandMedia = ({
     partners = [],
     children,
     onMediaLoaded,
+    forceExpand = false,
 }: ScrollExpandMediaProps) => {
     const [scrollProgress, setScrollProgress] = useState<number>(0);
     const [showContent, setShowContent] = useState<boolean>(false);
@@ -64,6 +66,15 @@ const ScrollExpandMedia = ({
         setShowContent(false);
         setMediaFullyExpanded(false);
     }, [mediaType]);
+
+    // React to forced expansion (e.g. hitting a nav link)
+    useEffect(() => {
+        if (forceExpand) {
+            setMediaFullyExpanded(true);
+            setScrollProgress(1);
+            setShowContent(true);
+        }
+    }, [forceExpand]);
 
     // ... rest of effects ...
 

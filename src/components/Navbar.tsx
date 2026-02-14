@@ -5,9 +5,10 @@ import { useAudio } from '../hooks/useAudio';
 
 interface NavbarProps {
     onRegister: () => void;
+    onNavigate?: () => void;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ onRegister }) => {
+const Navbar: React.FC<NavbarProps> = ({ onRegister, onNavigate }) => {
     const { playHover, playClick } = useAudio();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [scrollPercent, setScrollPercent] = useState(0);
@@ -43,7 +44,7 @@ const Navbar: React.FC<NavbarProps> = ({ onRegister }) => {
             <nav className="fixed top-0 left-0 w-full z-[999] px-4 py-3 md:px-8 md:py-4 pointer-events-none">
                 <div className="max-w-7xl mx-auto relative pointer-events-auto">
                     {/* Mobile optimized blur (reduced intensity) */}
-                    <div className="absolute inset-0 bg-[#0a1016]/80 backdrop-blur-md md:backdrop-blur-xl border border-white/5 shadow-2xl rounded-sm" />
+                    <div className="absolute inset-0 bg-[#0a1016]/80 backdrop-blur-sm md:backdrop-blur-xl border border-white/5 shadow-2xl rounded-sm" />
 
                     {/* Stealth Progress Bar */}
                     <div className="absolute top-0 left-0 h-[1px] bg-[#ff4655]/60 transition-all duration-100 ease-out" style={{ width: `${scrollPercent}%` }} />
@@ -55,6 +56,7 @@ const Navbar: React.FC<NavbarProps> = ({ onRegister }) => {
                                 onMouseEnter={() => playHover()}
                                 onClick={() => {
                                     playClick();
+                                    onNavigate?.();
                                     window.scrollTo({ top: 0, behavior: 'smooth' });
                                 }}
                             >
@@ -159,9 +161,9 @@ const Navbar: React.FC<NavbarProps> = ({ onRegister }) => {
                             </div>
                         </div>
 
-                        {/* Background VFX */}
-                        <div className="absolute inset-0 bg-grid opacity-10 pointer-events-none" />
-                        <div className="absolute -top-[20%] -right-[20%] w-full h-full bg-[#ff4655]/5 blur-[100px] rounded-full" />
+                        {/* Background VFX - Simplified for Mobile */}
+                        <div className="absolute inset-0 bg-grid opacity-5 pointer-events-none" />
+                        {/* Removed heavy blur circle for performance */}
 
                         <div className="h-full flex flex-col p-8 pt-32 overflow-y-auto">
                             <div className="flex flex-col gap-8">
@@ -176,14 +178,24 @@ const Navbar: React.FC<NavbarProps> = ({ onRegister }) => {
                                             e.preventDefault();
                                             playClick();
                                             setIsMobileMenuOpen(false);
-                                            // Robust scroll logic
+                                            onNavigate?.(); // Unlock Hero Scroll
+
+                                            // Robust scroll logic with offset
                                             const targetId = item.link.replace('#', '');
-                                            const element = document.getElementById(targetId);
-                                            if (element) {
-                                                setTimeout(() => {
-                                                    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                                                }, 100);
-                                            }
+                                            // Small timeout to allow menu to close/animation to start
+                                            setTimeout(() => {
+                                                const element = document.getElementById(targetId);
+                                                if (element) {
+                                                    const headerOffset = 80; // Approximate height of fixed navbar
+                                                    const elementPosition = element.getBoundingClientRect().top;
+                                                    const offsetPosition = elementPosition + window.scrollY - headerOffset;
+
+                                                    window.scrollTo({
+                                                        top: offsetPosition,
+                                                        behavior: "smooth"
+                                                    });
+                                                }
+                                            }, 100);
                                         }}
                                         className="font-teko text-5xl font-bold text-white/40 hover:text-white transition-colors flex items-center gap-4 group active:text-white cursor-pointer w-full text-left bg-transparent border-none p-0 outline-none"
                                     >
