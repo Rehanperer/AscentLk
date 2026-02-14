@@ -34,11 +34,11 @@ const CountdownSection: React.FC = () => {
                 {/* Metallic Red Gradient */}
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,#3a0a0d_0%,#0a0a0c_100%)] opacity-80" />
 
-                {/* HUD Scanline/Radar Sweep */}
+                {/* HUD Scanline/Radar Sweep - Slower and simpler on mobile (or hidden) */}
                 <motion.div
-                    className="absolute inset-0 bg-[conic-gradient(from_0deg,transparent_0%,rgba(255,70,85,0.05)_50%,transparent_100%)]"
+                    className="absolute inset-0 bg-[conic-gradient(from_0deg,transparent_0%,rgba(255,70,85,0.05)_50%,transparent_100%)] md:bg-[conic-gradient(from_0deg,transparent_0%,rgba(255,70,85,0.05)_50%,transparent_100%)] opacity-50 md:opacity-100"
                     animate={{ rotate: 360 }}
-                    transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                    transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
                 />
 
                 {/* Technical Grid Accent */}
@@ -113,6 +113,8 @@ const CountdownUnit: React.FC<{ val: string; label: string }> = ({ val, label })
     const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-10deg", "10deg"]);
 
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (window.innerWidth < 768) return; // Disable tilt on mobile
+
         const rect = e.currentTarget.getBoundingClientRect();
         const width = rect.width;
         const height = rect.height;

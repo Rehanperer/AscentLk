@@ -14,6 +14,12 @@ const ParallaxBackground: React.FC<ParallaxProps> = ({
     className = "",
     direction = 'horizontal'
 }) => {
+    const [isMobile, setIsMobile] = React.useState(false);
+
+    React.useEffect(() => {
+        setIsMobile(window.innerWidth < 768);
+    }, []);
+
     const { scrollYProgress } = useScroll();
 
     // Create a smooth scroll effect
@@ -26,6 +32,18 @@ const ParallaxBackground: React.FC<ParallaxProps> = ({
     // e.g. move from -100px to 100px based on velocity
     const yRange = useTransform(smoothProgress, [0, 1], [0, velocity * 10]);
     const xRange = useTransform(smoothProgress, [0, 1], [0, velocity * 10]);
+
+    if (isMobile) {
+        return (
+            <div className={`absolute inset-0 overflow-hidden pointer-events-none z-0 flex items-center justify-center ${className}`}>
+                <div
+                    className="whitespace-nowrap font-teko font-bold text-[15vw] leading-none text-white/5 select-none"
+                >
+                    {text} {text} {text}
+                </div>
+            </div>
+        );
+    }
 
     const transformStyle = direction === 'vertical' ? { y: yRange } : { x: xRange };
 

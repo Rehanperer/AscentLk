@@ -12,8 +12,8 @@ const seasons = [
 const SeasonsSection: React.FC = () => {
     return (
         <section className="relative py-32 overflow-hidden bg-[#0a1016]">
-            {/* MULTI-COLOR ATMOSPHERIC GAS */}
-            <div className="absolute inset-0 pointer-events-none z-0">
+            {/* MULTI-COLOR ATMOSPHERIC GAS - Hidden on Mobile */}
+            <div className="hidden md:block absolute inset-0 pointer-events-none z-0">
                 <motion.div
                     className="absolute left-[-10%] top-[-10%] w-[60%] h-[70%] opacity-20 blur-[120px]"
                     style={{ background: 'radial-gradient(circle, rgba(0,255,102,0.15) 0%, transparent 70%)' }}
@@ -86,6 +86,7 @@ const SeasonCard: React.FC<{ season: any; index: number }> = ({ season, index })
     }, []);
 
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (window.innerWidth < 768) return; // Disable tilt on mobile
         const rect = e.currentTarget.getBoundingClientRect();
         const width = rect.width;
         const height = rect.height;
@@ -101,6 +102,9 @@ const SeasonCard: React.FC<{ season: any; index: number }> = ({ season, index })
         x.set(0);
         y.set(0);
     };
+
+    // Optimization: Check for mobile to conditionally render expensive effects
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
     return (
         <motion.div
@@ -123,8 +127,7 @@ const SeasonCard: React.FC<{ season: any; index: number }> = ({ season, index })
             />
 
             {/* Active Green Energy Effect */}
-            {/* Active Green Energy Effect */}
-            {isActive && (
+            {isActive && !isMobile && (
                 <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden translate-z-0">
                     <motion.div
                         className="absolute inset-0 opacity-20"
@@ -182,6 +185,16 @@ const SeasonCard: React.FC<{ season: any; index: number }> = ({ season, index })
                     ))}
                 </div>
             )}
+
+            {/* Simple Mobile Active State */
+                isActive && isMobile && (
+                    <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+                        <div
+                            className="absolute inset-0 opacity-10"
+                            style={{ background: `linear-gradient(to top, ${themeColor}, transparent)` }}
+                        />
+                    </div>
+                )}
 
             {/* Persistent Ambient Glow for all locked seasons */}
             {!isActive && (
