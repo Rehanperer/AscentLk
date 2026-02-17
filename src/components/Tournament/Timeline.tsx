@@ -7,21 +7,21 @@ const phases = [
         title: 'QUALIFIERS',
         subtitle: 'Swiss Online',
         desc: 'The gauntlet begins. Swiss-system bracket.',
-        date: 'JULY END',
+        date: 'SEP',
     },
     {
         id: '02',
-        title: 'GROUPS',
+        title: 'PLAY OFFS',
         subtitle: 'LAN Studio',
         desc: 'Offline group stages. Pro environment.',
-        date: 'AUGUST',
+        date: 'OCT',
     },
     {
         id: '03',
         title: 'FINALS',
         subtitle: 'Grand Stage',
         desc: 'The grand finale. Live audience.',
-        date: 'SEPTEMBER 17TH',
+        date: 'NOV',
         highlight: true
     }
 ];

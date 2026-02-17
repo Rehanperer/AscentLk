@@ -24,10 +24,8 @@ export const SCHOOLS_DATA: School[] = [
     { name: "Ananda College", status: 'Confirmed', logo: 'ananda' },
     { name: "Nalanda College", status: 'Confirmed', logo: 'nalanda' },
     { name: "Royal College", status: 'Pending', logo: 'royal' },
-    { name: "Trinity College", status: 'Pending', logo: 'trinity' },
     { name: "Bishop's College", status: 'Pending', logo: 'bishops' },
-    { name: "Methodist College", status: 'Pending', logo: 'methodists' },
-    { name: "St. Bridget's Convent", status: 'Pending', logo: 'bridgets' },
+
     { name: "Musaeus College", status: 'Pending', logo: 'musaeus' },
     { name: "Elizabeth Moir", status: 'Pending', logo: 'elizabeth_moir' },
     { name: "Stafford International", status: 'Pending', logo: 'stafford' },
