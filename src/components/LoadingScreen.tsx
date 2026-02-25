@@ -39,7 +39,7 @@ const WarpSpeedBackground: React.FC<{ speed: number }> = ({ speed }) => {
         }
 
         const animate = () => {
-            ctx.fillStyle = "#0a1016";
+            ctx.fillStyle = "#000000";
             ctx.fillRect(0, 0, rect.width, rect.height);
 
             stars.forEach(star => {
@@ -134,7 +134,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete }) => {
 
     return (
         <motion.div
-            className="fixed inset-0 z-[9999] bg-[#0a1016] flex flex-col items-center justify-center pointer-events-none overflow-hidden"
+            className="fixed inset-0 z-[9999] bg-[#000000] flex flex-col items-center justify-center pointer-events-none overflow-hidden"
             initial={{ opacity: 1 }}
             exit={{
                 opacity: 0,

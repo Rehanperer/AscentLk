@@ -45,7 +45,7 @@ const App: React.FC = () => {
     };
 
     return (
-        <div className="relative min-h-screen bg-[#0a1016]">
+        <div className="relative min-h-screen bg-[#000000]">
             <AnimatePresence>
                 {isLoading && <LoadingScreen onComplete={handleLoadingComplete} key="loader" />}
             </AnimatePresence>
@@ -122,7 +122,7 @@ const App: React.FC = () => {
 
                         <section id="timeline" className="relative">
                             <Suspense fallback={
-                                <div className="w-full h-96 flex items-center justify-center bg-[#0a1016]">
+                                <div className="w-full h-96 flex items-center justify-center bg-[#000000]">
                                     <div className="font-mono text-[10px] tracking-[0.5em] animate-pulse text-[#ff4655]">SYNCING_CHRONICLE...</div>
                                 </div>
                             }>
