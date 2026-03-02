@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Instagram } from 'lucide-react';
+import { Instagram, Ticket } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useAudio } from '../hooks/useAudio';
 
 interface NavbarProps {
@@ -91,6 +92,7 @@ const Navbar: React.FC<NavbarProps> = ({ onRegister, onNavigate }) => {
                                     </div>
                                 ))}
                             </div>
+
 
                             {/* Register Button (Desktop) */}
                             <div
@@ -209,7 +211,7 @@ const Navbar: React.FC<NavbarProps> = ({ onRegister, onNavigate }) => {
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 transition={{ delay: 0.6 }}
-                                className="mt-auto border-t border-white/5 pt-8 mb-8"
+                                className="mt-auto border-t border-white/5 pt-8 mb-8 flex flex-col gap-4"
                             >
                                 <button
                                     onClick={() => {
