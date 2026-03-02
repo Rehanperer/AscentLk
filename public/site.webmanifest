@@ -9,9 +9,9 @@
             "purpose": "any"
         },
         {
-            "src": "/favicon-black.svg",
+            "src": "/search-logo.png",
             "sizes": "512x512",
-            "type": "image/svg+xml",
+            "type": "image/png",
             "purpose": "any"
         }
     ],
