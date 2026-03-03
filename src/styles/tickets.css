@@ -1,223 +1,235 @@
 /* ======================================================= */
-/* TICKETS PAGE – Self-contained styles                   */
-/* Namespaced with 'tickets-' prefix to avoid Tailwind clashes */
+/* TICKETS PAGE – HUD / VALORANT THEME                    */
 /* ======================================================= */
 
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@200;300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Teko:wght@400;500;600;700&family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
 
 .tickets-page {
-    --t-primary: #ff3c3c;
-    --t-primary-glow: rgba(255, 60, 60, 0.4);
-    --t-bg-deep: #020617;
-    --t-bg-card: rgba(15, 23, 42, 0.6);
-    --t-bg-glass: rgba(15, 23, 42, 0.4);
-    --t-text-main: #f8fafc;
-    --t-text-muted: #94a3b8;
-    --t-text-dim: #64748b;
-    --t-border-glass: rgba(255, 255, 255, 0.08);
+    --t-primary: #ff4655;
+    --t-primary-glow: rgba(255, 70, 85, 0.4);
+    --t-bg-black: #000000;
+    --t-bg-dark: #0a1016;
+    --t-bg-card: rgba(15, 25, 35, 0.8);
+    --t-border: rgba(255, 255, 255, 0.1);
+    --t-text-main: #ffffff;
+    --t-text-muted: rgba(255, 255, 255, 0.6);
+    --t-text-dim: rgba(255, 255, 255, 0.3);
 
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    background: radial-gradient(circle at top center, #1e1b4b 0%, #020617 70%);
+    font-family: 'Inter', sans-serif;
+    background-color: var(--t-bg-black);
+    background-image:
+        linear-gradient(rgba(255, 70, 85, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 70, 85, 0.05) 1px, transparent 1px);
+    background-size: 40px 40px;
     color: var(--t-text-main);
     min-height: 100vh;
-    padding: 2rem;
+    padding: 1rem;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Scanlines Effect Overlay */
+.tickets-page::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.05) 50%);
+    background-size: 100% 4px;
+    z-index: 100;
+    pointer-events: none;
+    opacity: 0.2;
+}
+
+.tickets-container {
     max-width: 1400px;
     margin: 0 auto;
+    position: relative;
+    z-index: 10;
 }
 
 .tickets-page h1,
 .tickets-page h2,
-.tickets-page h3 {
-    font-family: 'Outfit', sans-serif;
-    letter-spacing: -0.02em;
+.tickets-page h3,
+.tickets-page .font-teko {
+    font-family: 'Teko', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.tickets-page .font-mono {
+    font-family: 'Rajdhani', sans-serif;
+    letter-spacing: 0.1em;
 }
 
 /* Back Link */
 .tickets-back-link {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    color: var(--t-text-dim);
-    font-size: 0.85rem;
-    font-weight: 600;
+    gap: 0.75rem;
+    color: var(--t-primary);
+    font-family: 'Teko', sans-serif;
+    font-size: 1.2rem;
     text-decoration: none;
-    padding: 0.6rem 1.2rem;
-    border-radius: 0.8rem;
-    background: var(--t-bg-glass);
-    border: 1px solid var(--t-border-glass);
-    transition: all 0.3s;
+    padding: 0.5rem 1rem;
+    border: 1px solid rgba(255, 70, 85, 0.3);
+    clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+    background: rgba(255, 70, 85, 0.05);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     margin-bottom: 2rem;
 }
 
 .tickets-back-link:hover {
+    background: var(--t-primary);
     color: white;
-    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateX(-5px);
 }
 
 /* Header */
 .tickets-header {
-    text-align: center;
+    text-align: left;
     margin-bottom: 3rem;
+    border-left: 4px solid var(--t-primary);
+    padding-left: 1.5rem;
 }
 
 .tickets-badge-group {
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    flex-wrap: wrap;
     gap: 1rem;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
 }
 
 .tickets-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1.2rem;
-    border-radius: 2rem;
-    font-size: 0.8rem;
+    font-family: 'Rajdhani', sans-serif;
     font-weight: 700;
-}
-
-.tickets-badge--primary {
-    background: rgba(255, 60, 60, 0.1);
-    border: 1px solid rgba(255, 60, 60, 0.2);
-    color: var(--t-primary);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    padding: 0.25rem 0.75rem;
     text-transform: uppercase;
 }
 
-.tickets-badge--capacity {
-    background: var(--t-bg-glass);
-    border: 1px solid var(--t-border-glass);
-}
-
-.tickets-badge__label {
-    color: var(--t-text-dim);
-}
-
-.tickets-badge__value {
+.tickets-badge--primary {
+    background: var(--t-primary);
     color: white;
-    margin-left: 0.5rem;
+}
+
+.tickets-badge--capacity {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--t-border);
 }
 
 .tickets-title {
-    font-size: 3.5rem;
-    font-weight: 800;
-    line-height: 1.1;
+    font-size: 4rem;
+    font-weight: 700;
+    line-height: 0.9;
     margin: 0;
+    color: white;
 }
 
-.tickets-title__accent {
-    color: var(--t-primary);
+@media (max-width: 768px) {
+    .tickets-title {
+        font-size: 2.5rem;
+    }
 }
 
 /* Level Nav */
 .tickets-nav {
     display: flex;
-    justify-content: center;
-    margin-bottom: 3rem;
-    position: sticky;
-    top: 1rem;
-    z-index: 100;
+    justify-content: flex-start;
+    margin-bottom: 2rem;
 }
 
 .tickets-switcher {
-    background: var(--t-bg-glass);
-    padding: 6px;
-    border-radius: 1.2rem;
-    border: 1px solid var(--t-border-glass);
     display: flex;
-    gap: 6px;
-    backdrop-filter: blur(20px);
+    gap: 2px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 2px;
 }
 
 .tickets-tab {
-    padding: 0.8rem 1.5rem;
-    border-radius: 0.8rem;
+    padding: 0.75rem 2rem;
     border: none;
     background: transparent;
-    color: var(--t-text-dim);
+    color: var(--t-text-muted);
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-    font-weight: 700;
+    font-family: 'Teko', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
     position: relative;
-    transition: color 0.3s;
-    font-size: 0.9rem;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    transition: all 0.2s ease;
+}
+
+.tickets-tab:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.05);
 }
 
 .tickets-tab--active {
     color: white;
-}
-
-.tickets-tab__indicator {
-    position: absolute;
-    inset: 0;
-    background: var(--t-primary);
-    border-radius: 0.8rem;
-    z-index: -1;
-    box-shadow: 0 8px 20px var(--t-primary-glow);
-}
-
-.tickets-tab__cap {
-    font-size: 0.7rem;
-    opacity: 0.6;
-    margin-left: auto;
+    background: var(--t-primary) !important;
 }
 
 /* Main Layout */
 .tickets-layout {
     display: grid;
-    grid-template-columns: 1fr 380px;
-    gap: 2rem;
+    grid-template-columns: 1fr 400px;
+    gap: 1.5rem;
     align-items: start;
 }
 
 .tickets-picker {
     background: var(--t-bg-card);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid var(--t-border-glass);
-    border-radius: 1.5rem;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    padding: 2rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
+    border: 1px solid var(--t-border);
+    position: relative;
+    padding: 1.5rem;
     overflow: hidden;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Prevent clip-path blowout */
+    clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
 }
 
-.tickets-picker:hover {
-    border-color: rgba(255, 255, 255, 0.15);
+/* HUD Brackets for Picker */
+.tickets-picker::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 30px;
+    height: 30px;
+    border-top: 2px solid var(--t-primary);
+    border-left: 2px solid var(--t-primary);
+    pointer-events: none;
 }
 
 .tickets-picker__header {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid var(--t-border-glass);
-    padding-bottom: 1.2rem;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
 }
 
 .tickets-picker__title-group h2 {
+    font-family: 'Teko', sans-serif;
+    font-size: 2rem;
     margin: 0;
-    font-size: 1.4rem;
 }
 
 .tickets-picker__title-group p {
-    margin: 0.2rem 0 0;
-    color: var(--t-text-dim);
+    font-family: 'Rajdhani', sans-serif;
     font-size: 0.8rem;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
+    color: var(--t-primary);
+    margin: 0.25rem 0 0;
+    text-transform: uppercase;
+    font-weight: 700;
 }
 
 .tickets-legend {
     display: flex;
-    gap: 1rem;
+    gap: 1.2rem;
     flex-wrap: wrap;
 }
 
@@ -225,117 +237,92 @@
     display: flex;
     align-items: center;
     gap: 0.4rem;
-    font-size: 0.72rem;
-    color: var(--t-text-dim);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
 }
 
 .tickets-legend__swatch {
     width: 10px;
     height: 10px;
-    border-radius: 3px;
+    border-radius: 2px;
 }
 
 .tickets-picker__content {
     width: 100%;
-    display: flex;
-    justify-content: center;
-}
-
-.tickets-picker__view {
-    width: 100%;
+    margin: 1.5rem 0;
+    position: relative;
 }
 
 .tickets-footer {
     display: flex;
     align-items: center;
-    gap: 0.8rem;
-    padding: 0.8rem 1rem;
-    background: rgba(255, 255, 255, 0.02);
-    border-radius: 1rem;
-    color: var(--t-text-muted);
-    font-size: 0.75rem;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-.tickets-footer__count {
-    background: var(--t-primary);
-    color: white;
-    padding: 0.2rem 0.8rem;
-    border-radius: 1rem;
-    font-weight: 700;
-    font-size: 0.7rem;
-}
-
-/* Summary (re-skin BookingSummary within tickets page) */
-.tickets-summary .glass-card {
-    background: var(--t-bg-card) !important;
-    backdrop-filter: blur(20px);
-    border: 1px solid var(--t-border-glass) !important;
-    border-radius: 1.5rem;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-}
-
-.tickets-summary .btn-premium {
-    padding: 0.8rem 1.8rem;
-    border-radius: 0.75rem;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: linear-gradient(135deg, var(--t-primary) 0%, #dc2626 100%);
-    color: white;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(255, 70, 85, 0.05);
+    border-left: 2px solid var(--t-primary);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.8rem;
     font-weight: 600;
-    font-size: 0.95rem;
-    box-shadow: 0 10px 15px -3px var(--t-primary-glow);
-    cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
+    text-transform: uppercase;
 }
 
-.tickets-summary .btn-premium:hover {
-    transform: translateY(-2px);
-    filter: brightness(1.1);
-}
-
-/* SVG Seat Picker */
+/* SVG Seat Picker Overrides */
 .seat-picker-svg-wrap {
     width: 100%;
     overflow-x: auto;
     overflow-y: hidden;
+    padding: 1rem 0;
     -webkit-overflow-scrolling: touch;
-    padding-bottom: 0.5rem;
+    cursor: grab;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+}
+
+.seat-picker-svg-wrap:active {
+    cursor: grabbing;
 }
 
 .seat-picker-svg {
     min-width: 800px;
     width: 100%;
     height: auto;
-    user-select: none;
-    -webkit-user-select: none;
-    touch-action: pan-x pan-y;
+    display: block;
+    margin: 0 auto;
+    filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5));
 }
 
-.seat-node--available {
-    cursor: pointer;
+/* Summary Card Reskin */
+.tickets-summary .glass-card {
+    background: var(--t-bg-card) !important;
+    border: 1px solid var(--t-border) !important;
+    clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px);
+    padding: 2rem !important;
 }
 
-.seat-node--booked {
-    opacity: 0.35;
-    cursor: not-allowed;
+.tickets-summary .btn-premium {
+    background: var(--t-primary) !important;
+    font-family: 'Teko', sans-serif !important;
+    font-size: 1.5rem !important;
+    letter-spacing: 0.1em !important;
+    border-radius: 0 !important;
+    clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+    height: 54px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
 }
 
-.seat-node--held {
-    cursor: not-allowed;
-}
-
-.seat-node--available:hover rect:nth-child(2),
-.seat-node--selected:hover rect:nth-child(2) {
-    filter: brightness(1.3);
+.tickets-summary .btn-premium:hover {
+    background: white !important;
+    color: var(--t-bg-black) !important;
+    transform: scale(1.02);
 }
 
 /* Responsive */
-@media (max-width: 1200px) {
+@media (max-width: 1100px) {
     .tickets-layout {
         grid-template-columns: 1fr;
     }
@@ -353,39 +340,81 @@
     }
 
     .tickets-title {
-        font-size: 2rem;
+        font-size: 2.2rem;
     }
 
     .tickets-picker {
         padding: 1rem;
     }
 
-    .tickets-picker__header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
+    .tickets-header {
+        margin-bottom: 2rem;
+        padding-left: 1rem;
     }
 
-    .tickets-legend {
-        width: 100%;
+    .tickets-nav {
+        margin-bottom: 1.5rem;
     }
 
-    .tickets-back-link {
-        margin-bottom: 1rem;
+    .tickets-tab {
+        padding: 0.6rem 1rem;
+        font-size: 1.1rem;
+    }
+
+    .tickets-tab__cap {
+        margin-left: 0.5rem;
+    }
+
+    .seat-picker-svg {
+        min-width: 700px;
     }
 }
 
 @media (max-width: 480px) {
-    .tickets-tab span:not(.tickets-tab__cap) {
-        display: none;
+    .tickets-title {
+        font-size: 1.8rem;
+    }
+
+    .tickets-badge-group {
+        gap: 0.5rem;
+    }
+
+    .tickets-badge {
+        font-size: 0.65rem;
     }
 
     .tickets-tab {
-        min-width: 60px;
-        padding: 0.6rem 1rem;
+        padding: 0.5rem 0.75rem;
+        font-size: 1rem;
     }
 
-    .tickets-title {
-        font-size: 1.6rem;
+    .tickets-tab__cap {
+        display: none;
+    }
+
+    .tickets-picker__title-group h2 {
+        font-size: 1.5rem;
+    }
+
+    .tickets-legend {
+        gap: 0.8rem;
+    }
+
+    .tickets-legend__item {
+        font-size: 0.65rem;
+    }
+
+    .tickets-footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .tickets-footer span:last-child {
+        margin-left: 0;
+    }
+
+    .seat-picker-svg {
+        min-width: 600px;
     }
 }

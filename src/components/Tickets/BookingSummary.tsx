@@ -1,9 +1,10 @@
 import React from 'react';
-import { ShoppingCart, IndianRupee, Eye, Trash2, Layers, ChevronRight } from 'lucide-react';
+import { ShoppingCart, Layers, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface BookingSummaryProps {
     selectedSeats: string[];
+    onCheckout: () => void;
 }
 
 const getSeatInfo = (seatId: string) => {
@@ -27,96 +28,85 @@ const getSeatInfo = (seatId: string) => {
     return { label: `${row}${num}`, section, level, price, quality, rating };
 };
 
-const BookingSummary: React.FC<BookingSummaryProps> = ({ selectedSeats }) => {
+const BookingSummary: React.FC<BookingSummaryProps> = ({ selectedSeats, onCheckout }) => {
     const selectedDetails = selectedSeats.map(getSeatInfo);
     const totalPrice = selectedDetails.reduce((sum, item) => sum + item.price, 0);
 
     return (
-        <div className="glass-card" style={{
-            position: 'sticky',
-            top: '2.5rem',
-            padding: '2.5rem',
-            background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 100%)',
-            border: '1px solid rgba(255, 255, 255, 0.1)'
-        }}>
-            <h2 style={{
-                fontSize: '1.4rem',
-                marginBottom: '2rem',
+        <div className="glass-card tickets-summary-card">
+            <h2 className="font-teko" style={{
+                fontSize: '1.8rem',
+                marginBottom: '1.5rem',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.8rem',
-                fontWeight: 800
+                borderBottom: '1px solid var(--t-border)',
+                paddingBottom: '0.5rem'
             }}>
-                <ShoppingCart size={22} color="var(--primary)" />
+                <ShoppingCart size={20} className="text-[#ff4655]" />
                 Final Order
             </h2>
 
             {selectedSeats.length === 0 ? (
                 <div style={{
                     textAlign: 'center',
-                    padding: '4rem 0',
-                    color: 'var(--text-dim)',
+                    padding: '3rem 1rem',
+                    color: 'var(--t-text-dim)',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
-                    gap: '1rem'
-                }}>
-                    <Layers size={40} opacity={0.2} />
+                    gap: '1rem',
+                    border: '1px dashed var(--t-border)',
+                    background: 'rgba(255,255,255,0.02)'
+                }} className="font-mono">
+                    <Layers size={32} opacity={0.3} />
                     <div>
-                        <p style={{ fontWeight: 600 }}>Your basket is empty</p>
-                        <p style={{ fontSize: '0.8rem', marginTop: '0.4rem' }}>Select seats to continue</p>
+                        <p style={{ fontWeight: 600, color: 'var(--t-text-muted)' }}>Selection is empty</p>
+                        <p style={{ fontSize: '0.7rem', marginTop: '0.4rem' }}>Please select seats to continue</p>
                     </div>
                 </div>
             ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                     <div style={{
                         maxHeight: '400px',
                         overflowY: 'auto',
                         paddingRight: '0.5rem',
                         display: 'flex',
                         flexDirection: 'column',
-                        gap: '1rem'
-                    }}>
+                        gap: '0.8rem'
+                    }} className="custom-scrollbar">
                         <AnimatePresence>
                             {selectedDetails.map((seat, idx) => (
                                 <motion.div
                                     key={selectedSeats[idx]}
-                                    initial={{ opacity: 0, scale: 0.9, x: 20 }}
-                                    animate={{ opacity: 1, scale: 1, x: 0 }}
-                                    exit={{ opacity: 0, scale: 0.9, x: -20 }}
+                                    initial={{ opacity: 0, x: 20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    exit={{ opacity: 0, x: -20 }}
                                     style={{
                                         display: 'flex',
                                         flexDirection: 'column',
-                                        gap: '0.6rem',
-                                        padding: '1.2rem',
-                                        background: 'rgba(255,255,255,0.03)',
-                                        borderRadius: '1rem',
-                                        border: '1px solid rgba(255,255,255,0.02)'
+                                        gap: '0.5rem',
+                                        padding: '1rem',
+                                        background: 'rgba(255, 70, 85, 0.03)',
+                                        borderLeft: '2px solid var(--t-primary)'
                                     }}
                                 >
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                                            <div style={{
-                                                width: '32px',
-                                                height: '32px',
-                                                borderRadius: '0.5rem',
-                                                background: 'rgba(255, 60, 60, 0.1)',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                fontSize: '0.7rem',
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                            <div className="font-mono" style={{
+                                                fontSize: '1rem',
                                                 fontWeight: 800,
-                                                color: 'var(--primary)'
+                                                color: 'var(--t-primary)'
                                             }}>
                                                 {seat.label}
                                             </div>
-                                            <div>
-                                                <div style={{ fontSize: '0.9rem', fontWeight: 700 }}>{seat.level} Level</div>
-                                                <div style={{ fontSize: '0.7rem', color: 'var(--text-dim)' }}>{seat.section} Section</div>
+                                            <div className="font-teko">
+                                                <div style={{ fontSize: '1.1rem', lineHeight: 1 }}>{seat.level} Level</div>
+                                                <div style={{ fontSize: '0.75rem', color: 'var(--t-text-dim)', letterSpacing: '0.1em' }}>{seat.section} Section</div>
                                             </div>
                                         </div>
-                                        <div style={{ fontWeight: 800, color: 'var(--text-main)' }}>
-                                            Rs. {seat.price}
+                                        <div className="font-mono" style={{ fontWeight: 700, fontSize: '0.9rem' }}>
+                                            Rs.{seat.price}
                                         </div>
                                     </div>
 
@@ -126,19 +116,18 @@ const BookingSummary: React.FC<BookingSummaryProps> = ({ selectedSeats }) => {
                                         alignItems: 'center',
                                         fontSize: '0.7rem',
                                         borderTop: '1px solid rgba(255,255,255,0.05)',
-                                        paddingTop: '0.6rem'
-                                    }}>
-                                        <div style={{ display: 'flex', gap: '2px' }}>
+                                        paddingTop: '0.5rem'
+                                    }} className="font-mono">
+                                        <div style={{ display: 'flex', gap: '4px' }}>
                                             {Array.from({ length: 5 }).map((_, i) => (
                                                 <div key={i} style={{
-                                                    width: '8px',
+                                                    width: '10px',
                                                     height: '2px',
-                                                    background: i < seat.rating ? 'var(--primary)' : 'rgba(255,255,255,0.1)',
-                                                    borderRadius: '1px'
+                                                    background: i < seat.rating ? 'var(--t-primary)' : 'rgba(255,255,255,0.1)'
                                                 }} />
                                             ))}
                                         </div>
-                                        <span style={{ color: 'var(--primary)', fontWeight: 700, textTransform: 'uppercase' }}>{seat.quality}</span>
+                                        <span style={{ color: 'var(--t-primary)', fontWeight: 700 }}>{seat.quality}</span>
                                     </div>
                                 </motion.div>
                             ))}
@@ -146,34 +135,38 @@ const BookingSummary: React.FC<BookingSummaryProps> = ({ selectedSeats }) => {
                     </div>
 
                     <div style={{
-                        borderTop: '1px solid rgba(255,255,255,0.1)',
-                        paddingTop: '2rem',
+                        borderTop: '1px solid var(--t-border)',
+                        paddingTop: '1.5rem',
                     }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem', alignItems: 'flex-end' }}>
-                            <span style={{ color: 'var(--text-dim)', fontSize: '0.9rem', fontWeight: 500 }}>Total Investment</span>
+                        <div className="font-teko" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', alignItems: 'flex-end' }}>
+                            <span style={{ color: 'var(--t-text-dim)', fontSize: '1.2rem' }}>Total Investment</span>
                             <motion.span
                                 key={totalPrice}
-                                initial={{ scale: 1.1, color: 'var(--primary)' }}
-                                animate={{ scale: 1, color: 'var(--text-main)' }}
-                                style={{ fontSize: '1.8rem', fontWeight: 800 }}
+                                initial={{ opacity: 0.5 }}
+                                animate={{ opacity: 1 }}
+                                style={{ fontSize: '2.5rem', fontWeight: 700, lineHeight: 1 }}
                             >
-                                Rs. {totalPrice.toLocaleString()}
+                                Rs.{totalPrice.toLocaleString()}
                             </motion.span>
                         </div>
 
-                        <button className="btn-premium" style={{ width: '100%', padding: '1.25rem' }}>
-                            Secure Reservations
-                            <ChevronRight size={18} />
+                        <button
+                            className="btn-premium font-teko"
+                            style={{ width: '100%' }}
+                            onClick={onCheckout}
+                        >
+                            Confirm Seating
+                            <ChevronRight size={20} className="ml-2" />
                         </button>
 
-                        <p style={{
-                            fontSize: '0.7rem',
-                            color: 'var(--text-dim)',
+                        <p className="font-mono" style={{
+                            fontSize: '0.65rem',
+                            color: 'var(--t-text-dim)',
                             textAlign: 'center',
-                            marginTop: '1rem',
-                            padding: '0 1rem'
+                            marginTop: '1.2rem',
+                            lineHeight: 1.4
                         }}>
-                            Price includes all local government taxes and institute service fees.
+                            Secure Digital Payment // Taxes Included // Refund Policy V2.4
                         </p>
                     </div>
                 </div>

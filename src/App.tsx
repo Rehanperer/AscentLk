@@ -1,6 +1,6 @@
 import React, { useState, Suspense, lazy } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 
 import Navbar from './components/Navbar';
 import ScrollExpandMedia from './components/Hero/ScrollExpandMedia';
@@ -22,6 +22,18 @@ const Timeline = lazy(() => import('./components/Tournament/Timeline'));
 const PartnerSection = lazy(() => import('./components/PartnerSection'));
 const RegistrationModal = lazy(() => import('./components/RegistrationModal'));
 const SponsorModal = lazy(() => import('./components/SponsorModal'));
+const AdminPage = lazy(() => import('./components/Admin/AdminPage'));
+const AdminLoginPage = lazy(() => import('./components/Admin/AdminLoginPage'));
+const CheckoutPage = lazy(() => import('./components/Tickets/CheckoutPage'));
+
+// Simple Auth Guard component
+const AdminGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const session = localStorage.getItem('admin_session');
+    if (!session) {
+        return <Navigate to="/admin/login" replace />;
+    }
+    return <>{children}</>;
+};
 
 
 const App: React.FC = () => {
@@ -49,6 +61,23 @@ const App: React.FC = () => {
                 <Route path="/tickets" element={
                     <Suspense fallback={<LoadingScreen onComplete={() => { }} />}>
                         <TicketsPage />
+                    </Suspense>
+                } />
+                <Route path="/checkout" element={
+                    <Suspense fallback={<LoadingScreen onComplete={() => { }} />}>
+                        <CheckoutPage />
+                    </Suspense>
+                } />
+                <Route path="/admin" element={
+                    <Suspense fallback={<LoadingScreen onComplete={() => { }} />}>
+                        <AdminGuard>
+                            <AdminPage />
+                        </AdminGuard>
+                    </Suspense>
+                } />
+                <Route path="/admin/login" element={
+                    <Suspense fallback={<LoadingScreen onComplete={() => { }} />}>
+                        <AdminLoginPage />
                     </Suspense>
                 } />
                 <Route path="/" element={
