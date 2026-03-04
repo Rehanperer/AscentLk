@@ -137,9 +137,15 @@ const App: React.FC = () => {
                                     <CountdownSection />
 
                                     {/* Participating Schools Section - Standard Import for zero perceived delay */}
-                                    <section id="schools" className="py-24 relative">
-                                        <ParallaxBackground text="VALORANT // 5v5" velocity={-30} direction="horizontal" className="top-0" />
-                                        <SectionReveal className="relative z-10 p-8 border border-white/5 bg-[#0f1923]/50 backdrop-blur-sm">
+                                    <section id="schools" className="py-24 relative overflow-hidden bg-atmospheric">
+                                        {/* Moving Scanline */}
+                                        <div className="bg-scanline opacity-20" />
+
+                                        {/* Animated atmospheric glow orb */}
+                                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#ff4655]/5 rounded-full blur-[120px] anim-pulse-slow pointer-events-none" />
+
+                                        <ParallaxBackground text="VALORANT // 5v5" velocity={-30} direction="horizontal" className="top-0 opacity-5" />
+                                        <SectionReveal className="relative z-10 p-8 border border-white/5 backdrop-blur-sm bg-black/20">
                                             <div className="max-w-7xl mx-auto px-6 mb-12 flex justify-between items-end border-b border-white/10 pb-4">
                                                 <div>
                                                     <ScrambleText text="ELIGIBLE INSTITUTIONS" className="text-[#ff4655] font-bold tracking-widest text-xs mb-2 block" />

@@ -28,21 +28,17 @@ const CountdownSection: React.FC = () => {
     }, []);
 
     return (
-        <section id="countdown" className="relative overflow-hidden py-16 md:py-24 bg-[#0a0a0c]">
+        <section id="countdown" className="relative overflow-hidden py-16 md:py-24 bg-atmospheric">
             {/* TACTICAL BACKGROUND LAYER */}
             <div className="absolute inset-0 z-0">
-                {/* Metallic Red Gradient */}
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,#3a0a0d_0%,#0a0a0c_100%)] opacity-80" />
+                {/* Moving Scanline */}
+                <div className="bg-scanline opacity-20" />
 
-                {/* HUD Scanline/Radar Sweep - Slower and simpler on mobile (or hidden) */}
-                <motion.div
-                    className="absolute inset-0 bg-[conic-gradient(from_0deg,transparent_0%,rgba(255,70,85,0.05)_50%,transparent_100%)] md:bg-[conic-gradient(from_0deg,transparent_0%,rgba(255,70,85,0.05)_50%,transparent_100%)] opacity-50 md:opacity-100"
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                />
+                {/* Animated atmospheric glow orb */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#ff4655]/5 rounded-full blur-[120px] anim-pulse-slow pointer-events-none" />
 
                 {/* Technical Grid Accent */}
-                <div className="absolute inset-0 bg-grid opacity-10 pointer-events-none" />
+                <div className="absolute inset-0 bg-grid opacity-5 pointer-events-none" />
 
                 {/* Corner Markers */}
                 <div className="absolute top-10 left-10 w-20 h-20 border-t border-l border-[#ff4655]/30" />
