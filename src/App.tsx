@@ -138,9 +138,6 @@ const App: React.FC = () => {
 
                                     {/* Participating Schools Section - Standard Import for zero perceived delay */}
                                     <section id="schools" className="py-24 relative overflow-hidden bg-atmospheric">
-                                        {/* Moving Scanline - Intensified */}
-                                        <div className="bg-scanline opacity-60" />
-
                                         {/* Animated atmospheric glow orb */}
                                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#ff4655]/10 rounded-full blur-[150px] anim-pulse-slow pointer-events-none" />
 

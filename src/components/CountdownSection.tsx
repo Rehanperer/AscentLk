@@ -31,9 +31,6 @@ const CountdownSection: React.FC = () => {
         <section id="countdown" className="relative overflow-hidden py-16 md:py-24 bg-atmospheric">
             {/* TACTICAL BACKGROUND LAYER */}
             <div className="absolute inset-0 z-0">
-                {/* Moving Scanline - Intensified */}
-                <div className="bg-scanline opacity-60" />
-
                 {/* Animated atmospheric glow orb */}
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#ff4655]/10 rounded-full blur-[150px] anim-pulse-slow pointer-events-none" />
 
