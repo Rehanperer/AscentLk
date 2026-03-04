@@ -138,11 +138,11 @@ const App: React.FC = () => {
 
                                     {/* Participating Schools Section - Standard Import for zero perceived delay */}
                                     <section id="schools" className="py-24 relative overflow-hidden bg-atmospheric">
-                                        {/* Moving Scanline */}
-                                        <div className="bg-scanline opacity-20" />
+                                        {/* Moving Scanline - Intensified */}
+                                        <div className="bg-scanline opacity-60" />
 
                                         {/* Animated atmospheric glow orb */}
-                                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#ff4655]/5 rounded-full blur-[120px] anim-pulse-slow pointer-events-none" />
+                                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#ff4655]/10 rounded-full blur-[150px] anim-pulse-slow pointer-events-none" />
 
                                         <ParallaxBackground text="VALORANT // 5v5" velocity={-30} direction="horizontal" className="top-0 opacity-5" />
                                         <SectionReveal className="relative z-10 p-8 border border-white/5 backdrop-blur-sm bg-black/20">
@@ -169,8 +169,11 @@ const App: React.FC = () => {
                                             </div>
                                         }>
                                             <section className="py-24 relative overflow-hidden bg-atmospheric">
+                                                {/* Moving Scanline - Intensified */}
+                                                <div className="bg-scanline opacity-60" />
+
                                                 {/* Animated atmospheric glow orb */}
-                                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#ff4655]/5 rounded-full blur-[120px] anim-pulse-slow pointer-events-none" />
+                                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#ff4655]/10 rounded-full blur-[150px] anim-pulse-slow pointer-events-none" />
 
                                                 <ParallaxBackground text="ASCENT" velocity={50} direction="horizontal" className="top-1/2 -translate-y-1/2 opacity-[0.03]" />
                                                 <SectionReveal className="relative z-10">
