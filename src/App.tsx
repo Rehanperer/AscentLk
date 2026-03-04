@@ -162,10 +162,14 @@ const App: React.FC = () => {
                                                 <div className="font-mono text-[10px] tracking-[0.5em] animate-pulse text-[#ff4655]">SYNCING_CHRONICLE...</div>
                                             </div>
                                         }>
-                                            <section className="py-24 relative overflow-hidden bg-grid">
-                                                <ParallaxBackground text="ASCENT" velocity={50} direction="horizontal" className="top-1/2 -translate-y-1/2 opacity-5" />
+                                            <section className="py-24 relative overflow-hidden bg-atmospheric">
+                                                {/* Animated atmospheric glow orb */}
+                                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#ff4655]/5 rounded-full blur-[120px] anim-pulse-slow pointer-events-none" />
+
+                                                <ParallaxBackground text="ASCENT" velocity={50} direction="horizontal" className="top-1/2 -translate-y-1/2 opacity-[0.03]" />
                                                 <SectionReveal className="relative z-10">
                                                     <div className="max-w-7xl mx-auto px-6 mb-16 text-center">
+
                                                         <ScrambleText text="TOURNAMENT STRUCTURE" className="text-[#ff4655] font-bold tracking-widest text-xs mb-2 block" />
                                                         <h2 className="font-teko text-6xl md:text-8xl font-bold leading-none">PATH TO ASCENT</h2>
                                                     </div>
