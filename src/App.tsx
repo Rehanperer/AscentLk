@@ -197,8 +197,9 @@ const App: React.FC = () => {
                                             <a href="#" className="hover:text-white transition-colors">Code of Conduct</a>
                                             <a href="#" className="hover:text-white transition-colors">Support</a>
                                         </div>
-                                        <div className="text-[10px] text-white/20 font-inter tracking-wider">
-                                            © 2026 ASCENT ESPORTS. ALL RIGHTS RESERVED.
+                                        <div className="text-[10px] text-white/20 font-inter tracking-wider space-y-1">
+                                            <div>© 2026 ASCENT ESPORTS. ALL RIGHTS RESERVED.</div>
+                                            <div className="text-[9px] opacity-50 tracking-[0.3em] font-mono select-none">DESIGNED & DEVELOPED BY <span className="text-white/40">REHAN PERERA</span></div>
                                         </div>
                                     </footer>
                                 </div>
