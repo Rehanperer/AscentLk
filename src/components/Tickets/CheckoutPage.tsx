@@ -140,14 +140,24 @@ const CheckoutPage: React.FC = () => {
     }
 
     return (
-        <div className="min-h-screen bg-[#000000] text-white flex flex-col font-inter selection:bg-[#ff4655] selection:text-white">
-            {/* Background Accent */}
-            <div className="fixed inset-0 pointer-events-none opacity-[0.03]"
-                style={{
-                    backgroundImage: 'linear-gradient(#ff4655 1px, transparent 1px), linear-gradient(90deg, #ff4655 1px, transparent 1px)',
-                    backgroundSize: '40px 40px'
-                }}
-            />
+        <div className="min-h-screen bg-atmospheric text-white flex flex-col font-inter selection:bg-[#ff4655] selection:text-white relative overflow-hidden">
+            {/* Background Accents & Effects */}
+            <div className="fixed inset-0 z-0 pointer-events-none">
+                {/* Moving Scanline - Intensified */}
+                <div className="bg-scanline opacity-40" />
+
+                {/* Animated atmospheric glow orb */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#ff4655]/10 rounded-full blur-[150px] anim-pulse-slow" />
+
+                {/* Technical Grid Accent */}
+                <div className="fixed inset-0 opacity-[0.05]"
+                    style={{
+                        backgroundImage: 'linear-gradient(#ff4655 1px, transparent 1px), linear-gradient(90deg, #ff4655 1px, transparent 1px)',
+                        backgroundSize: '40px 40px'
+                    }}
+                />
+            </div>
+
 
             {/* Navigation Header */}
             <header className="relative z-10 px-8 py-6 flex justify-between items-center border-b border-white/5 backdrop-blur-md">
