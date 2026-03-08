@@ -4,12 +4,11 @@ import { generateSeats, getViewBox, SeatData } from '../../utils/SeatingEngine';
 // ===========================================================
 // Types
 // ===========================================================
-export type SeatStatus = 'available' | 'selected' | 'held' | 'booked';
+export type SeatStatus = 'available' | 'selected' | 'booked';
 
 interface SeatPickerProps {
     activeLevel: 'Ground' | 'Balcony' | 'Deck';
     selectedSeats: string[];
-    heldSeats?: string[];
     bookedSeats?: string[];
     onSeatToggle: (seatId: string) => void;
 }
@@ -20,7 +19,6 @@ interface SeatPickerProps {
 const COLORS: Record<SeatStatus, { fill: string; stroke: string }> = {
     available: { fill: '#ef4444', stroke: 'rgba(255,255,255,0.15)' },
     selected: { fill: '#00ff88', stroke: '#34d399' },
-    held: { fill: '#f59e0b', stroke: '#d97706' },
     booked: { fill: '#1e293b', stroke: '#0f172a' },
 };
 
@@ -180,7 +178,7 @@ const SectionLabels: React.FC<{ level: string }> = ({ level }) => {
 // Main SeatPicker Component
 // ===========================================================
 const SeatPicker: React.FC<SeatPickerProps> = ({
-    activeLevel, selectedSeats, heldSeats = [], bookedSeats = [], onSeatToggle,
+    activeLevel, selectedSeats, bookedSeats = [], onSeatToggle,
 }) => {
     const allSeats = useMemo(() => generateSeats(activeLevel), [activeLevel]);
     const viewBox = useMemo(() => getViewBox(activeLevel), [activeLevel]);
@@ -188,11 +186,10 @@ const SeatPicker: React.FC<SeatPickerProps> = ({
     const getStatus = useCallback(
         (id: string): SeatStatus => {
             if (bookedSeats.includes(id)) return 'booked';
-            if (heldSeats.includes(id)) return 'held';
             if (selectedSeats.includes(id)) return 'selected';
             return 'available';
         },
-        [selectedSeats, heldSeats, bookedSeats]
+        [selectedSeats, bookedSeats]
     );
 
     return (

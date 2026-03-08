@@ -5,7 +5,7 @@ const CountdownSection: React.FC = () => {
     const [timeLeft, setTimeLeft] = useState({ d: '00', h: '00', m: '00', s: '00' });
 
     useEffect(() => {
-        const target = new Date("2026-03-06T00:00:00").getTime();
+        const target = new Date("2026-03-13T00:00:00").getTime();
         const update = () => {
             const now = new Date().getTime();
             const distance = target - now;
@@ -46,7 +46,7 @@ const CountdownSection: React.FC = () => {
 
             {/* MAR 06 GHOST TEXT */}
             <div className="absolute inset-0 flex items-center justify-center font-teko font-bold text-[12rem] md:text-[25rem] text-white/[0.02] select-none pointer-events-none -rotate-6">
-                MARCH 06
+                MARCH 13
             </div>
 
             <div className="relative z-10 max-w-7xl mx-auto px-6">
@@ -79,7 +79,7 @@ const CountdownSection: React.FC = () => {
                             transition={{ delay: 0.2 }}
                             className="text-white/40 font-mono text-sm md:text-base max-w-md mx-auto lg:mx-0 leading-relaxed"
                         >
-                            REGISTRATION WINDOW OPENS MARCH 06.
+                            REGISTRATION WINDOW OPENS MARCH 13.
                             READY YOUR WEAPONS. SYNC YOUR SITES. THE ASCENT AWAITS.
                         </motion.p>
                     </div>

@@ -25,6 +25,7 @@ const SponsorModal = lazy(() => import('./components/SponsorModal'));
 const AdminPage = lazy(() => import('./components/Admin/AdminPage'));
 const AdminLoginPage = lazy(() => import('./components/Admin/AdminLoginPage'));
 const CheckoutPage = lazy(() => import('./components/Tickets/CheckoutPage'));
+const RegistrationPage = lazy(() => import('./components/Registration/RegistrationPage'));
 
 // Simple Auth Guard component
 const AdminGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -78,6 +79,11 @@ const App: React.FC = () => {
                 <Route path="/admin/login" element={
                     <Suspense fallback={<LoadingScreen onComplete={() => { }} />}>
                         <AdminLoginPage />
+                    </Suspense>
+                } />
+                <Route path="/register" element={
+                    <Suspense fallback={<LoadingScreen onComplete={() => { }} />}>
+                        <RegistrationPage />
                     </Suspense>
                 } />
                 <Route path="/" element={

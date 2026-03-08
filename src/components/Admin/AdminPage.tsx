@@ -252,7 +252,6 @@ const AdminPage: React.FC = () => {
                             <SeatPicker
                                 activeLevel={monitorLevel}
                                 selectedSeats={[]}
-                                heldSeats={heldSeats}
                                 bookedSeats={bookedSeats}
                                 onSeatToggle={() => { }} // Read-only mode
                             />

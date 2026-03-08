@@ -143,9 +143,6 @@ const CheckoutPage: React.FC = () => {
         <div className="min-h-screen bg-atmospheric text-white flex flex-col font-inter selection:bg-[#ff4655] selection:text-white relative overflow-hidden">
             {/* Background Accents & Effects */}
             <div className="fixed inset-0 z-0 pointer-events-none">
-                {/* Moving Scanline - Intensified */}
-                <div className="bg-scanline opacity-40" />
-
                 {/* Animated atmospheric glow orb */}
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#ff4655]/10 rounded-full blur-[150px] anim-pulse-slow" />
 
@@ -158,18 +155,17 @@ const CheckoutPage: React.FC = () => {
                 />
             </div>
 
-
             {/* Navigation Header */}
-            <header className="relative z-10 px-8 py-6 flex justify-between items-center border-b border-white/5 backdrop-blur-md">
+            <header className="relative z-10 px-8 py-6 flex justify-between items-center border-b border-white/10 backdrop-blur-md">
                 <Link
                     to="/tickets"
                     onMouseEnter={() => playHover()}
-                    className="flex items-center gap-2 text-white/50 hover:text-white transition-colors font-mono text-xs tracking-widest"
+                    className="flex items-center gap-2 text-white/70 hover:text-white transition-colors font-mono text-xs tracking-widest"
                 >
                     <ArrowLeft size={14} /> // RECALL_SELECTION
                 </Link>
                 <div className="font-teko text-2xl tracking-[0.2em] text-[#ff4655]">ASCENT_SECURE_PAY</div>
-                <div className="flex items-center gap-3 font-mono text-[10px] text-white/30">
+                <div className="flex items-center gap-3 font-mono text-[10px] text-white/60">
                     <ShieldCheck size={14} className="text-[#00ff88]" />
                     ENCRYPTION_ACTIVE
                 </div>
@@ -183,7 +179,7 @@ const CheckoutPage: React.FC = () => {
                         <div className="lg:col-span-7 space-y-10">
                             <div>
                                 <h1 className="font-teko text-6xl leading-none uppercase mb-4">Finalize_Reservation</h1>
-                                <p className="font-mono text-xs text-white/40 leading-relaxed uppercase">
+                                <p className="font-mono text-xs text-white/60 leading-relaxed uppercase">
                                     Operator ID: ASCENT-GUEST // SECURE_ACCESS_PORTAL_V2.1 <br />
                                     Please provide accurate identification for entry authorization.
                                 </p>
@@ -192,7 +188,7 @@ const CheckoutPage: React.FC = () => {
                             <form onSubmit={handleSubmit} className="space-y-8">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                     <div className="space-y-4">
-                                        <label className="block font-mono text-[10px] text-white/40 tracking-widest uppercase flex items-center gap-2">
+                                        <label className="block font-mono text-[10px] text-white/80 tracking-widest uppercase flex items-center gap-2">
                                             <User size={12} /> Legal_Identity
                                         </label>
                                         <input
@@ -201,12 +197,12 @@ const CheckoutPage: React.FC = () => {
                                             onChange={handleInputChange}
                                             onMouseEnter={() => playHover()}
                                             required
-                                            className="w-full bg-white/5 border border-white/10 p-4 font-mono text-sm text-white focus:border-[#ff4655] outline-none transition-all placeholder:text-white/10"
+                                            className="w-full bg-white/5 border border-white/20 p-4 font-mono text-sm text-white focus:border-[#ff4655] outline-none transition-all placeholder:text-white/30"
                                             placeholder="ENTER_FULL_NAME..."
                                         />
                                     </div>
                                     <div className="space-y-4">
-                                        <label className="block font-mono text-[10px] text-white/40 tracking-widest uppercase flex items-center gap-2">
+                                        <label className="block font-mono text-[10px] text-white/80 tracking-widest uppercase flex items-center gap-2">
                                             <Phone size={12} /> Comm_Link
                                         </label>
                                         <input
@@ -215,14 +211,14 @@ const CheckoutPage: React.FC = () => {
                                             onChange={handleInputChange}
                                             onMouseEnter={() => playHover()}
                                             required
-                                            className="w-full bg-white/5 border border-white/10 p-4 font-mono text-sm text-white focus:border-[#ff4655] outline-none transition-all placeholder:text-white/10"
+                                            className="w-full bg-white/5 border border-white/20 p-4 font-mono text-sm text-white focus:border-[#ff4655] outline-none transition-all placeholder:text-white/30"
                                             placeholder="ENTER_PHONE_NUMBER..."
                                         />
                                     </div>
                                 </div>
 
                                 <div className="space-y-4">
-                                    <label className="block font-mono text-[10px] text-white/40 tracking-widest uppercase flex items-center gap-2">
+                                    <label className="block font-mono text-[10px] text-white/80 tracking-widest uppercase flex items-center gap-2">
                                         <Mail size={12} /> Digital_Address
                                     </label>
                                     <input
@@ -232,13 +228,13 @@ const CheckoutPage: React.FC = () => {
                                         onChange={handleInputChange}
                                         onMouseEnter={() => playHover()}
                                         required
-                                        className="w-full bg-white/5 border border-white/10 p-4 font-mono text-sm text-white focus:border-[#ff4655] outline-none transition-all placeholder:text-white/10"
+                                        className="w-full bg-white/5 border border-white/20 p-4 font-mono text-sm text-white focus:border-[#ff4655] outline-none transition-all placeholder:text-white/30"
                                         placeholder="ENTER_EMAIL_FOR_TICKET_DELIVERY..."
                                     />
                                 </div>
 
                                 <div className="space-y-4">
-                                    <label className="block font-mono text-[10px] text-white/40 tracking-widest uppercase flex items-center gap-2">
+                                    <label className="block font-mono text-[10px] text-white/80 tracking-widest uppercase flex items-center gap-2">
                                         <School size={12} /> Sector_Affiliation
                                     </label>
                                     <input
@@ -247,7 +243,7 @@ const CheckoutPage: React.FC = () => {
                                         onChange={handleInputChange}
                                         onMouseEnter={() => playHover()}
                                         required
-                                        className="w-full bg-white/5 border border-white/10 p-4 font-mono text-sm text-white focus:border-[#ff4655] outline-none transition-all placeholder:text-white/10"
+                                        className="w-full bg-white/5 border border-white/20 p-4 font-mono text-sm text-white focus:border-[#ff4655] outline-none transition-all placeholder:text-white/30"
                                         placeholder="ENTER_SCHOOL_OR_INSTITUTION..."
                                     />
                                 </div>
@@ -287,7 +283,7 @@ const CheckoutPage: React.FC = () => {
 
                         {/* Right Side: Order Summary */}
                         <div className="lg:col-span-5">
-                            <div className="sticky top-12 bg-white/5 border border-white/10 p-8 clip-path-angled">
+                            <div className="sticky top-12 bg-white/5 border border-white/20 p-8 clip-path-angled shadow-2xl backdrop-blur-sm">
                                 <h3 className="font-teko text-2xl mb-6 flex items-center justify-between">
                                     ORDER_MANIFEST
                                     <span className="text-[#ff4655] text-sm font-mono">[0{selectedSeats.length}]</span>
@@ -296,28 +292,28 @@ const CheckoutPage: React.FC = () => {
                                 <div className="space-y-4 mb-8 max-h-64 overflow-y-auto custom-scrollbar pr-4">
                                     {seatDetails.map((seat: any) => {
                                         return (
-                                            <div key={seat.id} className="flex justify-between items-center py-3 border-b border-white/5 last:border-0">
+                                            <div key={seat.id} className="flex justify-between items-center py-3 border-b border-white/10 last:border-0">
                                                 <div className="flex items-center gap-4">
-                                                    <div className="w-10 h-10 bg-[#ff4655]/10 border border-[#ff4655]/30 flex items-center justify-center font-mono font-bold text-[#ff4655]">
+                                                    <div className="w-10 h-10 bg-[#ff4655]/20 border border-[#ff4655]/50 flex items-center justify-center font-mono font-bold text-[#ff4655]">
                                                         {seat.row}{seat.num}
                                                     </div>
                                                     <div>
                                                         <div className="font-teko text-lg leading-none">{seat.level}</div>
-                                                        <div className="font-mono text-[9px] text-white/30 uppercase">{seat.section} SECTION</div>
+                                                        <div className="font-mono text-[9px] text-white/50 uppercase">{seat.section} SECTION</div>
                                                     </div>
                                                 </div>
-                                                <div className="font-mono text-xs opacity-60">RS.{(seat.price || 750).toFixed(2)}</div>
+                                                <div className="font-mono text-xs opacity-80">RS.{(seat.price || 750).toFixed(2)}</div>
                                             </div>
                                         );
                                     })}
                                 </div>
 
-                                <div className="space-y-3 pt-6 border-t border-white/10">
-                                    <div className="flex justify-between font-mono text-[10px] text-white/40">
+                                <div className="space-y-3 pt-6 border-t border-white/20">
+                                    <div className="flex justify-between font-mono text-[10px] text-white/60">
                                         <span>SUBTOTAL</span>
                                         <span>RS.{totalPrice.toFixed(2)}</span>
                                     </div>
-                                    <div className="flex justify-between font-mono text-[10px] text-white/40">
+                                    <div className="flex justify-between font-mono text-[10px] text-white/60">
                                         <span>SYSTEM_FEES</span>
                                         <span>RS.0.00</span>
                                     </div>
@@ -327,7 +323,8 @@ const CheckoutPage: React.FC = () => {
                                     </div>
                                 </div>
 
-                                <div className="mt-8 p-4 bg-white/5 border border-white/5 text-[9px] font-mono text-white/30 leading-relaxed uppercase">
+                                <div className="mt-8 p-4 bg-[#ff4655]/5 border border-[#ff4655]/20 text-[10px] font-mono text-white/70 leading-relaxed uppercase">
+                                    <AlertCircle size={12} className="inline mr-2 text-[#ff4655]" />
                                     No payment is required for this phase. Your selection will be converted to a confirmed booking in the operations database instantly.
                                 </div>
                             </div>
