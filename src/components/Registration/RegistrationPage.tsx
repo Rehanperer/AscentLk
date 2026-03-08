@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import ScrambleText from '../ScrambleText';
 import SectionReveal from '../Effects/SectionReveal';
 import ParallaxBackground from '../Effects/ParallaxBackground';
+import { supabase } from '../../lib/supabase';
 
 // Reusing some of the styling logic from existing components for consistency
 const InputField = ({ label, name, value, onChange, placeholder, icon: Icon, type = "text", required = false, error = "" }: any) => (
@@ -143,12 +144,43 @@ const RegistrationPage: React.FC = () => {
 
         setIsSubmitting(true);
 
-        // Simulate API call
-        setTimeout(() => {
+        const submitData = async () => {
+            const { error } = await supabase.from('tournament_teams').insert([
+                {
+                    school: formData.school,
+                    player1_name: formData.player1Name,
+                    player1_riot_id: formData.player1RiotId,
+                    player2_name: formData.player2Name,
+                    player2_riot_id: formData.player2RiotId,
+                    player3_name: formData.player3Name,
+                    player3_riot_id: formData.player3RiotId,
+                    player4_name: formData.player4Name,
+                    player4_riot_id: formData.player4RiotId,
+                    player5_name: formData.player5Name,
+                    player5_riot_id: formData.player5RiotId,
+                    sub1_name: formData.sub1Name || null,
+                    sub1_riot_id: formData.sub1RiotId || null,
+                    sub2_name: formData.sub2Name || null,
+                    sub2_riot_id: formData.sub2RiotId || null,
+                    igl_name: formData.iglName,
+                    igl_phone: formData.iglPhone,
+                    teacher_name: formData.teacherName,
+                    teacher_phone: formData.teacherPhone,
+                }
+            ]);
+
             setIsSubmitting(false);
-            setIsSuccess(true);
-            window.scrollTo(0, 0);
-        }, 2000);
+
+            if (error) {
+                console.error('Error submitting registration:', error);
+                alert('There was an error saving your registration. Please try again.');
+            } else {
+                setIsSuccess(true);
+                window.scrollTo(0, 0);
+            }
+        };
+
+        submitData();
     };
 
     const pageVariants = {

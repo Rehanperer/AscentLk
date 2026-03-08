@@ -5,11 +5,13 @@ import {
     Ticket,
     TrendingUp,
     Settings,
+    Database,
+    AlertCircle,
+    Gamepad2,
+    X,
     Search,
     Download,
-    LayoutDashboard,
-    Database,
-    AlertCircle
+    LayoutDashboard
 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import SeatPicker from '../Tickets/SeatPicker';
@@ -19,6 +21,7 @@ interface AdminStats {
     seatsBooked: number;
     seatsHeld: number;
     totalRevenue: number;
+    totalSeats: number;
 }
 
 const AdminPage: React.FC = () => {
@@ -26,11 +29,16 @@ const AdminPage: React.FC = () => {
         totalRegistrations: 0,
         seatsBooked: 0,
         seatsHeld: 0,
-        totalRevenue: 0
+        totalRevenue: 0,
+        totalSeats: 0
     });
 
     const [registrants, setRegistrants] = useState<any[]>([]);
-    const [activeTab, setActiveTab] = useState<'overview' | 'registrations' | 'monitor'>('overview');
+    const [tournamentTeams, setTournamentTeams] = useState<any[]>([]);
+    const [activeTab, setActiveTab] = useState<'overview' | 'registrations' | 'monitor' | 'tournament'>('overview');
+
+    // Modal State
+    const [selectedTeam, setSelectedTeam] = useState<any | null>(null);
 
     // Monitor State
     const [bookedSeats, setBookedSeats] = useState<string[]>([]);
@@ -42,6 +50,10 @@ const AdminPage: React.FC = () => {
             // Fetch Registrations
             const { data: regData } = await supabase.from('registrations').select('*').order('created_at', { ascending: false });
             if (regData) setRegistrants(regData);
+
+            // Fetch Tournament Teams
+            const { data: teamData } = await supabase.from('tournament_teams').select('*').order('created_at', { ascending: false });
+            if (teamData) setTournamentTeams(teamData);
 
             // Fetch Seat Stats
             const { data: seatData } = await supabase.from('seats').select('id, status, price');
@@ -57,7 +69,8 @@ const AdminPage: React.FC = () => {
                     totalRegistrations: regData?.length || 0,
                     seatsBooked: booked.length,
                     seatsHeld: held.length,
-                    totalRevenue: revenue
+                    totalRevenue: revenue,
+                    totalSeats: seatData.length
                 });
             }
         };
@@ -73,9 +86,14 @@ const AdminPage: React.FC = () => {
             .on('postgres_changes', { event: '*', schema: 'public', table: 'registrations' }, () => fetchData())
             .subscribe();
 
+        const teamChannel = supabase.channel('admin_teams_v2')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'tournament_teams' }, () => fetchData())
+            .subscribe();
+
         return () => {
             supabase.removeChannel(seatChannel);
             supabase.removeChannel(regChannel);
+            supabase.removeChannel(teamChannel);
         };
     }, []);
 
@@ -120,6 +138,7 @@ const AdminPage: React.FC = () => {
                     {[
                         { id: 'overview', icon: LayoutDashboard, label: 'OVERVIEW' },
                         { id: 'registrations', icon: Database, label: 'REGISTRATIONS' },
+                        { id: 'tournament', icon: Gamepad2, label: 'TOURNAMENT_TEAMS' },
                         { id: 'monitor', icon: Ticket, label: 'VENUE_MONITOR' }
                     ].map(tab => (
                         <button
@@ -142,19 +161,25 @@ const AdminPage: React.FC = () => {
                         <StatCard icon={TrendingUp} label="HELD_TRANSACTIONS" value={stats.seatsHeld} color="#f59e0b" />
                         <StatCard icon={AlertCircle} label="REVENUE_GENERATED" value={`LKR ${stats.totalRevenue.toLocaleString()}`} color="#3b82f6" />
 
-                        {/* Large Activity Card */}
-                        <div className="md:col-span-2 lg:col-span-3 bg-white/5 border border-white/10 p-8 clip-path-angled relative overflow-hidden">
-                            <h3 className="font-teko text-2xl mb-6">REGISTRATION_TRENDS</h3>
-                            <div className="h-64 flex items-end justify-between gap-2 border-b border-white/10 pb-4">
-                                {/* Placeholder Graph */}
-                                {[40, 70, 45, 90, 65, 80, 50, 85, 95, 60, 75, 55].map((h, i) => (
-                                    <div key={i} className="w-full bg-[#ff4655]/20 hover:bg-[#ff4655] transition-all relative group" style={{ height: `${h}%` }}>
-                                        <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-[#ff4655] text-white text-[10px] px-1 hidden group-hover:block">{h}</div>
+                        {/* Latest Entries Card */}
+                        <div className="md:col-span-2 lg:col-span-3 bg-white/5 border border-white/10 p-8 clip-path-angled relative overflow-hidden flex flex-col h-full min-h-[300px]">
+                            <h3 className="font-teko text-2xl mb-6">LATEST TOURNAMENT ENTRIES</h3>
+                            <div className="flex-1 space-y-3 overflow-y-auto pr-2 pb-4">
+                                {tournamentTeams.slice(0, 5).map((team, idx) => (
+                                    <div key={idx} className="bg-black/40 border border-white/5 p-4 flex justify-between items-center group hover:border-[#ff4655]/30 transition-colors">
+                                        <div>
+                                            <div className="font-teko text-xl text-white uppercase">{team.school}</div>
+                                            <div className="font-mono text-[10px] text-white/50">{new Date(team.created_at).toLocaleString()}</div>
+                                        </div>
+                                        <div className="text-right">
+                                            <div className="font-mono text-xs text-[#ff4655] uppercase">{team.igl_name}</div>
+                                            <div className="font-mono text-[10px] text-white/40">IGL</div>
+                                        </div>
                                     </div>
                                 ))}
-                            </div>
-                            <div className="flex justify-between mt-4 font-mono text-[10px] text-white/30">
-                                <span>08:00</span><span>12:00</span><span>16:00</span><span>20:00</span><span>00:00</span>
+                                {tournamentTeams.length === 0 && (
+                                    <div className="h-full flex items-center justify-center text-white/30 font-mono text-xs opacity-50">NO ENTRIES FOUND</div>
+                                )}
                             </div>
                         </div>
 
@@ -221,6 +246,70 @@ const AdminPage: React.FC = () => {
                     </motion.div>
                 )}
 
+                {activeTab === 'tournament' && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-white/5 border border-white/10 p-6">
+                        <div className="flex justify-between items-center mb-6">
+                            <div className="relative">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30" size={16} />
+                                <input
+                                    type="text"
+                                    placeholder="SEARCH_TEAMS..."
+                                    className="bg-white/5 border border-white/10 pl-10 pr-4 py-2 font-mono text-xs w-80 outline-none focus:border-[#ff4655]"
+                                />
+                            </div>
+                            <button className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 font-mono text-xs transition-colors">
+                                <Download size={14} /> EXPORT_CSV
+                            </button>
+                        </div>
+
+                        <div className="overflow-x-auto">
+                            <table className="w-full border-collapse">
+                                <thead className="bg-[#ff4655]/10 text-left font-mono text-xs">
+                                    <tr>
+                                        <th className="p-4 border-b border-white/5">SCHOOL</th>
+                                        <th className="p-4 border-b border-white/5">IGL</th>
+                                        <th className="p-4 border-b border-white/5">TEACHER IN CHARGE</th>
+                                        <th className="p-4 border-b border-white/5">ROSTER (MAIN/SUB)</th>
+                                        <th className="p-4 border-b border-white/5">TIMESTAMP</th>
+                                        <th className="p-4 border-b border-white/5">STATUS</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="font-mono text-xs text-white/70">
+                                    {tournamentTeams.length > 0 ? tournamentTeams.map((team, i) => (
+                                        <tr
+                                            key={i}
+                                            className="hover:bg-white/5 transition-colors border-b border-white/5 cursor-pointer"
+                                            onClick={() => setSelectedTeam(team)}
+                                        >
+                                            <td className="p-4 uppercase font-bold text-white">{team.school}</td>
+                                            <td className="p-4">
+                                                <div className="text-white uppercase">{team.igl_name}</div>
+                                                <div className="text-[10px] text-white/50">{team.igl_phone}</div>
+                                            </td>
+                                            <td className="p-4">
+                                                <div className="text-white uppercase">{team.teacher_name}</div>
+                                                <div className="text-[10px] text-white/50">{team.teacher_phone}</div>
+                                            </td>
+                                            <td className="p-4 text-[10px]">
+                                                <div className="flex gap-2 text-[#ff4655]">5 MAIN <span className="text-white/30 truncate max-w-[150px] inline-block align-bottom" title={`${team.player1_riot_id}, ${team.player2_riot_id}, ${team.player3_riot_id}, ${team.player4_riot_id}, ${team.player5_riot_id}`}>...</span></div>
+                                                <div className="text-white/50">{team.sub1_name ? (team.sub2_name ? '2 SUBS' : '1 SUB') : '0 SUBS'}</div>
+                                            </td>
+                                            <td className="p-4">{new Date(team.created_at).toLocaleString()}</td>
+                                            <td className="p-4">
+                                                <span className="px-2 py-0.5 bg-[#00ff88]/20 text-[#00ff88] text-[10px]">REGISTERED</span>
+                                            </td>
+                                        </tr>
+                                    )) : (
+                                        <tr>
+                                            <td colSpan={6} className="p-12 text-center opacity-30">NO_TEAMS_REGISTERED</td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    </motion.div>
+                )}
+
                 {activeTab === 'monitor' && (
                     <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white/5 border border-white/10 p-8">
                         <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-6">
@@ -248,7 +337,7 @@ const AdminPage: React.FC = () => {
                             </div>
                         </div>
 
-                        <div className="max-w-4xl mx-auto bg-black/40 border border-white/5 p-6 md:p-12">
+                        <div className="max-w-4xl mx-auto bg-black/40 border border-white/5 p-6 md:p-12 mb-8">
                             <SeatPicker
                                 activeLevel={monitorLevel}
                                 selectedSeats={[]}
@@ -256,9 +345,133 @@ const AdminPage: React.FC = () => {
                                 onSeatToggle={() => { }} // Read-only mode
                             />
                         </div>
+
+                        {/* Monitor Stats */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                            <div className="bg-white/5 border border-white/10 p-6 flex items-center justify-between">
+                                <div>
+                                    <div className="text-white/30 font-mono text-xs uppercase mb-1">AVAILABLE SEATS</div>
+                                    <div className="font-teko text-4xl text-[#ff4655]">
+                                        {stats.totalSeats - stats.seatsBooked - stats.seatsHeld}
+                                    </div>
+                                </div>
+                                <div className="text-[#ff4655] font-mono text-xs text-right hidden sm:block">
+                                    {Math.round(((stats.totalSeats - stats.seatsBooked - stats.seatsHeld) / (stats.totalSeats || 1)) * 100)}%<br />CAPACITY
+                                </div>
+                            </div>
+
+                            <div className="bg-white/5 border border-white/10 p-6 flex items-center justify-between">
+                                <div>
+                                    <div className="text-white/30 font-mono text-xs uppercase mb-1">BOOKED SEATS</div>
+                                    <div className="font-teko text-4xl text-[#1e293b]">
+                                        {stats.seatsBooked}
+                                    </div>
+                                </div>
+                                <div className="text-[#1e293b] font-mono text-xs text-right hidden sm:block">
+                                    {Math.round((stats.seatsBooked / (stats.totalSeats || 1)) * 100)}%<br />CAPACITY
+                                </div>
+                            </div>
+
+                            <div className="bg-white/5 border border-white/10 p-6 flex items-center justify-between">
+                                <div>
+                                    <div className="text-white/30 font-mono text-xs uppercase mb-1">HELD IN CHECKOUT</div>
+                                    <div className="font-teko text-4xl text-[#f59e0b]">
+                                        {stats.seatsHeld}
+                                    </div>
+                                </div>
+                                <div className="text-[#f59e0b] font-mono text-xs text-right hidden sm:block">
+                                    {Math.round((stats.seatsHeld / (stats.totalSeats || 1)) * 100)}%<br />CAPACITY
+                                </div>
+                            </div>
+                        </div>
                     </motion.div>
                 )}
             </div>
+
+            {/* Team Details Modal */}
+            {selectedTeam && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        className="bg-[#0f0f13] border border-white/10 w-full max-w-2xl max-h-[90vh] overflow-y-auto relative p-8 shadow-2xl"
+                    >
+                        <button
+                            onClick={() => setSelectedTeam(null)}
+                            className="absolute top-6 right-6 text-white/50 hover:text-white transition-colors"
+                        >
+                            <X size={24} />
+                        </button>
+
+                        <div className="mb-8 border-b border-white/10 pb-4">
+                            <h2 className="font-teko text-4xl text-white uppercase">{selectedTeam.school}</h2>
+                            <p className="font-mono text-xs text-[#ff4655] tracking-widest mt-1">
+                                TEAM REGISTRATION DETAILS
+                            </p>
+                            <p className="font-mono text-[10px] text-white/30 mt-2">
+                                SUBMITTED: {new Date(selectedTeam.created_at).toLocaleString()}
+                            </p>
+                        </div>
+
+                        <div className="space-y-8 font-mono text-sm">
+                            {/* Contacts */}
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="bg-white/5 p-4 border-l-2 border-[#ff4655]">
+                                    <h4 className="text-white/40 text-xs mb-2">IN-GAME LEADER</h4>
+                                    <div className="text-white uppercase">{selectedTeam.igl_name}</div>
+                                    <div className="text-[#ff4655] text-xs">{selectedTeam.igl_phone}</div>
+                                </div>
+                                <div className="bg-white/5 p-4 border-l-2 border-[#ff4655]">
+                                    <h4 className="text-white/40 text-xs mb-2">TEACHER IN CHARGE</h4>
+                                    <div className="text-white uppercase">{selectedTeam.teacher_name}</div>
+                                    <div className="text-[#ff4655] text-xs">{selectedTeam.teacher_phone}</div>
+                                </div>
+                            </div>
+
+                            {/* Main Roster */}
+                            <div>
+                                <h3 className="font-teko text-2xl text-white mb-4 border-b border-white/5 pb-2">MAIN ROSTER</h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {[1, 2, 3, 4, 5].map((num) => (
+                                        <div key={`player${num}`} className="flex justify-between items-center bg-white/[0.02] p-3 border border-white/5">
+                                            <div>
+                                                <div className="text-white/40 text-[10px] mb-1">PLAYER {num} {num === 1 && <span className="text-[#ff4655] ml-1">(IGL)</span>}</div>
+                                                <div className="text-white text-sm uppercase">{selectedTeam[`player${num}_name`]}</div>
+                                            </div>
+                                            <div className="text-right text-[#00ff88] text-xs bg-[#00ff88]/10 px-2 py-1 rounded-sm">
+                                                {selectedTeam[`player${num}_riot_id`]}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Substitutes */}
+                            {(selectedTeam.sub1_name || selectedTeam.sub2_name) && (
+                                <div>
+                                    <h3 className="font-teko text-2xl text-white mb-4 border-b border-white/5 pb-2 mt-4">SUBSTITUTES</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        {[1, 2].map((num) => (
+                                            selectedTeam[`sub${num}_name`] ? (
+                                                <div key={`sub${num}`} className="flex justify-between items-center bg-white/[0.02] p-3 border border-white/5">
+                                                    <div>
+                                                        <div className="text-white/40 text-[10px] mb-1">SUBSTITUTE {num}</div>
+                                                        <div className="text-white text-sm uppercase">{selectedTeam[`sub${num}_name`]}</div>
+                                                    </div>
+                                                    <div className="text-right text-white/50 text-xs bg-white/5 px-2 py-1 rounded-sm">
+                                                        {selectedTeam[`sub${num}_riot_id`]}
+                                                    </div>
+                                                </div>
+                                            ) : null
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </motion.div>
+                </div>
+            )}
 
             <style>{`
                 .clip-path-angled {
