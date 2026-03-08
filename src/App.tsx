@@ -1,6 +1,6 @@
 import React, { useState, Suspense, lazy } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, Link } from 'react-router-dom';
 
 import Navbar from './components/Navbar';
 import ScrollExpandMedia from './components/Hero/ScrollExpandMedia';
@@ -12,6 +12,7 @@ import SectionReveal from './components/Effects/SectionReveal';
 import ParallaxBackground from './components/Effects/ParallaxBackground';
 import SeasonsSection from './components/SeasonsSection';
 import SchoolsCarousel from './components/Schools/SchoolsCarousel';
+import Footer from './components/Footer';
 
 // Lazy Load Heavy Components
 import LoadingScreen from './components/LoadingScreen';
@@ -26,6 +27,11 @@ const AdminPage = lazy(() => import('./components/Admin/AdminPage'));
 const AdminLoginPage = lazy(() => import('./components/Admin/AdminLoginPage'));
 const CheckoutPage = lazy(() => import('./components/Tickets/CheckoutPage'));
 const RegistrationPage = lazy(() => import('./components/Registration/RegistrationPage'));
+
+// Policy Pages
+const RefundPolicy = lazy(() => import('./pages/Policies/RefundPolicy'));
+const PrivacyPolicy = lazy(() => import('./pages/Policies/PrivacyPolicy'));
+const TermsOfService = lazy(() => import('./pages/Policies/TermsOfService'));
 
 // Simple Auth Guard component
 const AdminGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -84,6 +90,21 @@ const App: React.FC = () => {
                 <Route path="/register" element={
                     <Suspense fallback={<LoadingScreen onComplete={() => { }} />}>
                         <RegistrationPage />
+                    </Suspense>
+                } />
+                <Route path="/refund-policy" element={
+                    <Suspense fallback={<LoadingScreen onComplete={() => { }} />}>
+                        <RefundPolicy />
+                    </Suspense>
+                } />
+                <Route path="/privacy-policy" element={
+                    <Suspense fallback={<LoadingScreen onComplete={() => { }} />}>
+                        <PrivacyPolicy />
+                    </Suspense>
+                } />
+                <Route path="/terms-of-service" element={
+                    <Suspense fallback={<LoadingScreen onComplete={() => { }} />}>
+                        <TermsOfService />
                     </Suspense>
                 } />
                 <Route path="/" element={
@@ -205,21 +226,7 @@ const App: React.FC = () => {
                                         </Suspense>
                                     </section>
 
-                                    <footer className="py-12 border-t border-white/5 text-center">
-                                        <div className="flex flex-col md:flex-row justify-center items-center gap-6 md:gap-12 text-[10px] md:text-xs text-white/40 font-medium tracking-wide uppercase mb-8">
-                                            <a href="https://www.instagram.com/ascent_2026/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Instagram</a>
-                                            <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
-                                            <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
-                                            <a href="#" className="hover:text-white transition-colors">Code of Conduct</a>
-                                            <a href="#" className="hover:text-white transition-colors">Support</a>
-                                        </div>
-                                        <div className="text-[10px] text-white/40 font-inter tracking-wider space-y-2">
-                                            <div>© 2026 ASCENT ESPORTS. ALL RIGHTS RESERVED.</div>
-                                            <div className="text-[9px] text-[#ff4655]/60 tracking-[0.3em] font-mono select-none">
-                                                DESIGNED & DEVELOPED BY <span className="text-white/80">REHAN PERERA</span>
-                                            </div>
-                                        </div>
-                                    </footer>
+                                    <Footer />
                                 </div>
                             </div>
                         </ScrollExpandMedia>

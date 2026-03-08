@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { getLevelCapacity } from '../../utils/SeatingEngine';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
+import Footer from '../Footer';
 import '../../styles/tickets.css';
 
 const TicketsPage: React.FC = () => {
@@ -182,6 +183,7 @@ const TicketsPage: React.FC = () => {
                         />
                     </aside>
                 </div>
+                <Footer />
             </div>
         </div>
     );

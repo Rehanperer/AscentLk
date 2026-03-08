@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAudio } from '../../hooks/useAudio';
+import Footer from '../Footer';
 
 const CheckoutPage: React.FC = () => {
     const location = useLocation();
@@ -385,6 +386,8 @@ const CheckoutPage: React.FC = () => {
                     </div>
                 )}
             </main>
+
+            <Footer />
 
             {/* Footer Brackets */}
             <div className="fixed bottom-10 left-10 w-20 h-20 border-b-2 border-l-2 border-[#ff4655]/10 pointer-events-none" />
