@@ -24,7 +24,7 @@ const InputField = ({ label, name, value, onChange, placeholder, icon: Icon, typ
                 value={value}
                 onChange={onChange}
                 placeholder={placeholder}
-                className={`w-full bg-[#0a1016]/80 border ${error ? 'border-red-500/50' : 'border-white/10'} text-white pl-12 pr-4 py-4 focus:outline-none focus:border-[#ff4655] transition-all font-inter backdrop-blur-sm rounded-sm`}
+                className={`w-full bg-[#0d121f]/80 border ${error ? 'border-red-500/50' : 'border-white/10'} text-white pl-12 pr-4 py-4 focus:outline-none focus:border-[#ff4655] transition-all font-inter backdrop-blur-sm rounded-sm`}
                 required={required}
             />
             {/* Decorative corners */}
@@ -39,6 +39,7 @@ const RegistrationPage: React.FC = () => {
     const [currentStep, setCurrentStep] = useState(1);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
+    const [isVerified, setIsVerified] = useState(false);
 
     // Form State
     const [formData, setFormData] = useState({
@@ -190,7 +191,7 @@ const RegistrationPage: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[#000000] relative overflow-hidden font-inter selection:bg-[#ff4655] selection:text-white pb-24">
+        <div className="min-h-screen relative overflow-hidden font-inter selection:bg-[#ff4655] selection:text-white pb-24" style={{ background: 'var(--bg-gradient)' }}>
             {/* Dynamic Background */}
             <div className="fixed inset-0 pointer-events-none z-0">
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,70,85,0.1)_0%,rgba(0,0,0,0)_60%)]" />
@@ -233,7 +234,7 @@ const RegistrationPage: React.FC = () => {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -20 }}
-                                className="bg-black/40 backdrop-blur-xl border border-white/10 p-8 md:p-12 relative overflow-hidden rounded-sm"
+                                className="bg-[#0d121f]/40 backdrop-blur-xl border border-white/10 p-8 md:p-12 relative overflow-hidden rounded-sm"
                             >
                                 {/* Decorative Elements */}
                                 <div className="absolute top-0 left-0 w-32 h-[1px] bg-gradient-to-r from-[#ff4655] to-transparent" />
@@ -255,8 +256,8 @@ const RegistrationPage: React.FC = () => {
                                     ].map((s) => (
                                         <div key={s.step} className="flex flex-col items-center gap-2">
                                             <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${currentStep >= s.step
-                                                ? 'bg-[#000000] border-[#ff4655] text-[#ff4655] shadow-[0_0_15px_rgba(255,70,85,0.3)]'
-                                                : 'bg-[#000000] border-white/20 text-white/40'
+                                                ? 'bg-[#0d121f] border-[#ff4655] text-[#ff4655] shadow-[0_0_15px_rgba(255,70,85,0.3)]'
+                                                : 'bg-[#0d121f] border-white/20 text-white/40'
                                                 }`}>
                                                 <s.icon size={18} />
                                             </div>
@@ -415,7 +416,7 @@ const RegistrationPage: React.FC = () => {
 
                                                 <div className="space-y-8 text-sm">
                                                     {/* Institution Summary */}
-                                                    <div className="bg-white/5 border border-white/10 p-6 relative group hover:border-[#ff4655]/50 transition-colors">
+                                                    <div className="bg-[#0d121f]/60 border border-white/10 p-6 relative group hover:border-[#ff4655]/50 transition-all rounded-sm backdrop-blur-md">
                                                         <div className="absolute top-0 right-0 px-3 py-1 bg-[#ff4655] text-xs font-mono font-bold tracking-widest uppercase">Institution</div>
                                                         <div className="mb-4 pt-4">
                                                             <span className="text-white/40 font-mono tracking-widest text-xs uppercase block mb-1">School</span>
@@ -436,7 +437,7 @@ const RegistrationPage: React.FC = () => {
                                                     </div>
 
                                                     {/* Roster Summary */}
-                                                    <div className="bg-white/5 border border-white/10 p-6 relative group hover:border-[#ff4655]/50 transition-colors">
+                                                    <div className="bg-[#0d121f]/60 border border-white/10 p-6 relative group hover:border-[#ff4655]/50 transition-all rounded-sm backdrop-blur-md">
                                                         <div className="absolute top-0 right-0 px-3 py-1 bg-[#ff4655] text-xs font-mono font-bold tracking-widest uppercase">Roster</div>
                                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 pt-4">
                                                             <div className="flex border-b border-white/5 pb-2">
@@ -495,10 +496,12 @@ const RegistrationPage: React.FC = () => {
                                                         </div>
                                                     </div>
 
-                                                    <div className="flex items-start gap-4 p-4 bg-white/5 border border-white/10">
-                                                        <AlertCircle className="w-5 h-5 text-[#ff4655] mt-0.5 shrink-0" />
-                                                        <p className="text-xs text-white/60 leading-relaxed">
-                                                            By submitting this form, you confirm that all provided information is accurate and that the institution's administration is aware of and approves participation in ASCENT 2026. Any discrepancies may result in disqualification.
+                                                    <div className="flex items-start gap-4 p-4 bg-[#0d121f]/60 border border-white/10 hover:border-[#ff4655]/30 transition-colors group cursor-pointer" onClick={() => setIsVerified(!isVerified)}>
+                                                        <div className={`mt-0.5 w-5 h-5 border-2 rounded-sm flex items-center justify-center transition-all ${isVerified ? 'bg-[#ff4655] border-[#ff4655]' : 'border-white/20 group-hover:border-[#ff4655]/50'}`}>
+                                                            {isVerified && <CheckCircle2 className="w-3.5 h-3.5 text-white" />}
+                                                        </div>
+                                                        <p className="text-xs text-white/60 leading-relaxed select-none">
+                                                            I confirm that all provided information is accurate and that the institution's administration is aware of and approves participation in ASCENT 2026. I understand that any discrepancies may result in disqualification.
                                                         </p>
                                                     </div>
                                                 </div>
@@ -531,8 +534,8 @@ const RegistrationPage: React.FC = () => {
                                         ) : (
                                             <button
                                                 type="submit"
-                                                disabled={isSubmitting}
-                                                className="px-8 py-3 bg-[#ff4655] text-white font-teko text-xl tracking-widest hover:bg-white hover:text-black transition-all flex items-center gap-3 relative overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed rounded-sm"
+                                                disabled={isSubmitting || !isVerified}
+                                                className="px-8 py-3 bg-[#ff4655] text-white font-teko text-xl tracking-widest hover:bg-white hover:text-black transition-all flex items-center gap-3 relative overflow-hidden group disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed rounded-sm"
                                             >
                                                 <span className="relative z-10 flex items-center gap-2">
                                                     {isSubmitting ? 'PROCESSING...' : 'CONFIRM REGISTRATION'}
@@ -552,7 +555,7 @@ const RegistrationPage: React.FC = () => {
                                 key="success"
                                 initial={{ opacity: 0, scale: 0.95 }}
                                 animate={{ opacity: 1, scale: 1 }}
-                                className="bg-black/40 backdrop-blur-xl border border-[#ff4655]/30 p-12 text-center rounded-sm relative overflow-hidden"
+                                className="bg-[#0d121f]/40 backdrop-blur-xl border border-[#ff4655]/30 p-12 text-center rounded-sm relative overflow-hidden"
                             >
                                 {/* Background Glow */}
                                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-[#ff4655]/20 blur-[100px] rounded-full pointer-events-none" />

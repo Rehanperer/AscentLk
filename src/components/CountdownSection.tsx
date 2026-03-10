@@ -28,11 +28,13 @@ const CountdownSection: React.FC = () => {
     }, []);
 
     return (
-        <section id="countdown" className="relative overflow-hidden py-16 md:py-24 bg-atmospheric">
+        <section id="countdown" className="relative overflow-hidden py-16 md:py-24 bg-atmospheric-blood">
             {/* TACTICAL BACKGROUND LAYER */}
             <div className="absolute inset-0 z-0">
-                {/* Animated atmospheric glow orb */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#ff4655]/10 rounded-full blur-[150px] anim-pulse-slow pointer-events-none" />
+                {/* Atmospheric crimson glow orbs - Centered away from edges */}
+                <div className="absolute top-1/4 left-0 w-full h-80 bg-[#4a0000]/40 rounded-full blur-[120px] pointer-events-none" />
+                <div className="absolute bottom-1/4 left-0 w-full h-80 bg-[#4a0000]/40 rounded-full blur-[120px] pointer-events-none" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#4a0000]/20 rounded-full blur-[180px] anim-pulse-slow pointer-events-none" />
 
                 {/* Technical Grid Accent */}
                 <div className="absolute inset-0 bg-grid opacity-10 pointer-events-none" />
@@ -131,7 +133,7 @@ const CountdownUnit: React.FC<{ val: string; label: string }> = ({ val, label })
             onMouseLeave={handleMouseLeave}
             className="flex flex-col items-center group perspective-1000"
         >
-            <div className="relative w-20 h-28 md:w-28 md:h-40 bg-[#1a1a1f] border border-white/5 group-hover:border-[#ff4655]/50 transition-colors duration-500 overflow-hidden shadow-2xl">
+            <div className="relative w-20 h-28 md:w-28 md:h-40 bg-[#121214] border border-white/5 group-hover:border-[#ff4655]/50 transition-colors duration-500 overflow-hidden shadow-2xl">
                 {/* Card Background Patterns */}
                 <div className="absolute inset-0 opacity-[0.03] bg-grid" />
                 <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(255,70,85,0.05)_50%,transparent_75%)] bg-[length:200%_200%] group-hover:animate-shimmer" />

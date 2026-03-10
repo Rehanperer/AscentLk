@@ -10,6 +10,7 @@ import CountdownSection from './components/CountdownSection';
 import ComingSoonSection from './components/ComingSoonSection';
 import SectionReveal from './components/Effects/SectionReveal';
 import ParallaxBackground from './components/Effects/ParallaxBackground';
+import ScrollEdgeLines from './components/Effects/ScrollEdgeLines';
 import SeasonsSection from './components/SeasonsSection';
 import SchoolsCarousel from './components/Schools/SchoolsCarousel';
 import Footer from './components/Footer';
@@ -108,11 +109,12 @@ const App: React.FC = () => {
                     </Suspense>
                 } />
                 <Route path="/" element={
-                    <div className="relative min-h-screen bg-[#000000]">
+                    <div className="relative min-h-screen" style={{ background: 'var(--bg-gradient)' }}>
                         <AnimatePresence>
                             {isLoading && <LoadingScreen onComplete={handleLoadingComplete} key="loader" />}
                         </AnimatePresence>
                         <CustomCursor />
+                        <ScrollEdgeLines />
 
                         {/* Premium HUD Navigation */}
                         <Navbar
@@ -160,16 +162,17 @@ const App: React.FC = () => {
                                 </div>
 
                                 {/* Transition to next sections */}
-                                <div className="w-full mt-32">
+                                <div className="w-full mt-32 bg-atmospheric">
                                     <CountdownSection />
 
                                     {/* Participating Schools Section - Standard Import for zero perceived delay */}
-                                    <section id="schools" className="py-24 relative overflow-hidden bg-atmospheric">
-                                        {/* Animated atmospheric glow orb */}
-                                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#ff4655]/10 rounded-full blur-[150px] anim-pulse-slow pointer-events-none" />
+                                    <section id="schools" className="py-24 relative overflow-hidden bg-atmospheric-blood">
+                                        {/* Atmospheric crimson glow orbs - Centered away from edges */}
+                                        <div className="absolute top-1/4 left-0 w-full h-80 bg-[#4a0000]/40 rounded-full blur-[120px] pointer-events-none" />
+                                        <div className="absolute bottom-1/4 left-0 w-full h-80 bg-[#4a0000]/40 rounded-full blur-[120px] pointer-events-none" />
 
                                         <ParallaxBackground text="VALORANT // 5v5" velocity={-30} direction="horizontal" className="top-0 opacity-5" />
-                                        <SectionReveal className="relative z-10 p-8 border border-white/5 backdrop-blur-sm bg-black/20">
+                                        <SectionReveal className="relative z-10 p-8 border border-white/5">
                                             <div className="max-w-7xl mx-auto px-6 mb-12 flex justify-between items-end border-b border-white/10 pb-4">
                                                 <div>
                                                     <ScrambleText text="ELIGIBLE INSTITUTIONS" className="text-[#ff4655] font-bold tracking-widest text-xs mb-2 block" />
@@ -188,16 +191,18 @@ const App: React.FC = () => {
 
                                     <section id="timeline" className="relative">
                                         <Suspense fallback={
-                                            <div className="w-full h-96 flex items-center justify-center bg-[#000000]">
+                                            <div className="w-full h-96 flex items-center justify-center" style={{ background: 'var(--bg-gradient)' }}>
                                                 <div className="font-mono text-[10px] tracking-[0.5em] animate-pulse text-[#ff4655]">SYNCING_CHRONICLE...</div>
                                             </div>
                                         }>
-                                            <section className="py-24 relative overflow-hidden bg-atmospheric">
+                                            {/* Path to Ascent Section */}
+                                            <section id="path" className="py-32 relative overflow-hidden bg-atmospheric-blood">
                                                 {/* Moving Scanline - Intensified */}
                                                 <div className="bg-scanline opacity-60" />
 
-                                                {/* Animated atmospheric glow orb */}
-                                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#ff4655]/10 rounded-full blur-[150px] anim-pulse-slow pointer-events-none" />
+                                                {/* Atmospheric crimson glow orbs - Centered away from edges */}
+                                                <div className="absolute top-1/4 left-0 w-full h-80 bg-[#4a0000]/40 rounded-full blur-[120px] pointer-events-none" />
+                                                <div className="absolute bottom-1/4 left-0 w-full h-80 bg-[#4a0000]/40 rounded-full blur-[120px] pointer-events-none" />
 
                                                 <ParallaxBackground text="ASCENT" velocity={50} direction="horizontal" className="top-1/2 -translate-y-1/2 opacity-[0.03]" />
                                                 <SectionReveal className="relative z-10">

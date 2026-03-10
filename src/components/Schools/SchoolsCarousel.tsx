@@ -46,7 +46,7 @@ const SchoolCard: React.FC<{ school: School }> = ({ school }) => {
             onMouseLeave={handleMouseLeave}
             className="flex-shrink-0 perspective-1000 mx-3 py-4 will-change-transform"
         >
-            <div className="relative w-44 h-60 md:w-52 md:h-72 flex flex-col items-center justify-between p-6 bg-[#0f1923] border border-white/5 hover:border-[#ff4655]/30 transition-all duration-300 cursor-crosshair group overflow-hidden shadow-2xl">
+            <div className="relative w-44 h-60 md:w-52 md:h-72 flex flex-col items-center justify-between p-6 bg-[#0d121f] border border-white/5 hover:border-[#ff4655]/30 transition-all duration-300 cursor-crosshair group overflow-hidden shadow-2xl">
                 {/* HUD Corner Accents */}
                 <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/10 group-hover:border-[#ff4655]/50" />
                 <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-white/10 group-hover:border-[#ff4655]/50" />
@@ -104,8 +104,8 @@ const SchoolsCarousel: React.FC = () => {
         <div className="w-full relative py-8 group/carousel select-none overflow-hidden">
             <div className="w-full relative">
                 {/* Visual Fades for Premium Blending */}
-                <div className="absolute left-0 top-0 w-32 md:w-64 h-full bg-gradient-to-r from-[#0a1016] to-transparent z-10 pointer-events-none" />
-                <div className="absolute right-0 top-0 w-32 md:w-64 h-full bg-gradient-to-l from-[#0a1016] to-transparent z-10 pointer-events-none" />
+                <div className="absolute left-0 top-0 w-32 md:w-64 h-full bg-gradient-to-r from-[#0d121f] to-transparent z-10 pointer-events-none" />
+                <div className="absolute right-0 top-0 w-32 md:w-64 h-full bg-gradient-to-l from-[#0d121f] to-transparent z-10 pointer-events-none" />
 
                 <motion.div
                     className="flex will-change-transform"

@@ -77,8 +77,7 @@ const Timeline: React.FC = () => {
                         <motion.div
                             className={`
                                 h-full flex flex-col justify-between p-5 md:p-6
-                                bg-[#0f1923]/80 backdrop-blur-md 
-                                border border-white/5 
+                                glass-panel
                                 transition-all duration-500 hover:-translate-y-2
                                 hover:shadow-[0_10px_40px_-10px_rgba(255,70,85,0.1)]
                                 relative overflow-hidden
@@ -98,7 +97,7 @@ const Timeline: React.FC = () => {
                                 <div className="flex justify-between items-start mb-4">
                                     <span className="font-mono text-[9px] tracking-[0.2em] text-[#ff4655]">PHASE // {phase.id}</span>
                                     {/* Top Connector Dot (Desktop) */}
-                                    <div className="hidden md:block absolute -top-[5px] left-1/2 -translate-x-1/2 w-2 h-2 bg-[#0f1923] border border-[#ff4655] rotate-45 z-20" />
+                                    <div className="hidden md:block absolute -top-[5px] left-1/2 -translate-x-1/2 w-2 h-2 bg-[#0d121f] border border-[#ff4655] rotate-45 z-20" />
                                 </div>
 
                                 <h3 className="font-teko text-3xl md:text-3xl lg:text-3xl xl:text-4xl 2xl:text-5xl text-white mb-2 leading-[0.85] tracking-tight">{phase.title}</h3>

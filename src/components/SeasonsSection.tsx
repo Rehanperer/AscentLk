@@ -11,7 +11,7 @@ const seasons = [
 
 const SeasonsSection: React.FC = () => {
     return (
-        <section className="relative py-32 overflow-hidden bg-[#0a1016]">
+        <section className="relative py-32 overflow-hidden bg-[#0d121f]">
             {/* MULTI-COLOR ATMOSPHERIC GAS - Hidden on Mobile */}
             <div className="hidden md:block absolute inset-0 pointer-events-none z-0">
                 <motion.div
@@ -59,7 +59,7 @@ const SeasonsSection: React.FC = () => {
 
             {/* Subtle Overlay Effects */}
             <div className="absolute inset-0 bg-grid opacity-10 pointer-events-none" />
-            <div className="absolute inset-0 bg-gradient-to-b from-[#0a1016] via-transparent to-[#0a1016] pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-b from-[#0d121f] via-transparent to-[#0d121f] pointer-events-none" />
         </section>
     );
 };

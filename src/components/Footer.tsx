@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 const Footer: React.FC = () => {
     return (
-        <footer className="py-12 border-t border-white/5 text-center relative z-10 w-full bg-black/20 backdrop-blur-sm">
+        <footer className="py-12 border-t border-white/5 text-center relative z-10 w-full bg-[#0d121f]/50 backdrop-blur-xl">
             <div className="flex flex-col md:flex-row justify-center items-center gap-6 md:gap-12 text-[10px] md:text-xs text-white/40 font-medium tracking-wide uppercase mb-8">
                 <a href="https://www.instagram.com/ascent_2026/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Instagram</a>
                 <Link to="/refund-policy" className="hover:text-white transition-colors">Refund Policy</Link>

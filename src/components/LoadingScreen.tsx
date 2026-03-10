@@ -39,7 +39,7 @@ const WarpSpeedBackground: React.FC<{ speed: number }> = ({ speed }) => {
         }
 
         const animate = () => {
-            ctx.fillStyle = "#000000";
+            ctx.fillStyle = "#0d121f";
             ctx.fillRect(0, 0, rect.width, rect.height);
 
             stars.forEach(star => {
@@ -134,7 +134,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete }) => {
 
     return (
         <motion.div
-            className="fixed inset-0 z-[9999] bg-[#000000] flex flex-col items-center justify-center pointer-events-none overflow-hidden"
+            className="fixed inset-0 z-[9999] bg-[#08080a] flex flex-col items-center justify-center pointer-events-none overflow-hidden"
             initial={{ opacity: 1 }}
             exit={{
                 opacity: 0,
@@ -158,7 +158,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete }) => {
             />
 
             {/* VIGNETTE & GLOW */}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,#000000_150%)] opacity-80" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,#08080a_150%)] opacity-80" />
 
             <div className="relative z-10 flex flex-col items-center w-full max-w-xl px-6">
 

@@ -59,7 +59,7 @@ const SponsorModal: React.FC<SponsorModalProps> = ({ isOpen, onClose }) => {
 
     return (
         <div className={`modal-overlay modal-sponsor ${isOpen ? 'open' : ''}`} onClick={(e) => e.target === e.currentTarget && onClose()}>
-            <div className="modal-content angled-box relative">
+            <div className="modal-content glass-panel angled-box relative">
                 <div className="absolute top-4 right-4 text-white cursor-pointer hover:text-[#eec758] transition-colors" onClick={onClose}>
                     <X size={24} />
                 </div>
@@ -138,8 +138,8 @@ const SponsorModal: React.FC<SponsorModalProps> = ({ isOpen, onClose }) => {
                 ) : (
                     <div className="success-message mt-4 text-center py-10">
                         <Handshake className="text-[#eec758] w-16 h-16 mx-auto mb-4" />
-                        <p className="font-teko text-3xl text-[#eec758]">INQUIRY SENT</p>
-                        <p className="text-sm opacity-70 text-white font-mono">We'll get in touch within 2 days.</p>
+                        <p className="font-teko text-3xl text-[#eec758]">INQUIRY_SENT</p>
+                        <p className="text-sm opacity-70 text-white font-mono uppercase tracking-widest">A_OPERATOR_WILL_CONTACT_YOU // 48H</p>
                     </div>
                 )}
             </div>

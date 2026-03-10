@@ -57,7 +57,7 @@ const RegistrationModal: React.FC<RegistrationModalProps> = ({ isOpen, onClose, 
 
     return (
         <div className={`modal-overlay ${isOpen ? 'open' : ''}`} onClick={(e) => e.target === e.currentTarget && onClose()}>
-            <div className="modal-content angled-box relative overflow-hidden">
+            <div className="modal-content glass-panel angled-box relative">
                 {/* Decorative accent line */}
                 <div className="absolute top-0 left-0 w-1 h-full bg-[#ff4655]"></div>
 

@@ -98,7 +98,7 @@ const AdminPage: React.FC = () => {
     }, []);
 
     return (
-        <div className="min-h-screen bg-[#000000] text-white p-6 font-inter">
+        <div className="min-h-screen text-white p-6 font-inter" style={{ background: 'var(--bg-gradient)' }}>
             {/* Background Grid */}
             <div className="fixed inset-0 pointer-events-none opacity-5"
                 style={{
@@ -166,7 +166,7 @@ const AdminPage: React.FC = () => {
                             <h3 className="font-teko text-2xl mb-6">LATEST TOURNAMENT ENTRIES</h3>
                             <div className="flex-1 space-y-3 overflow-y-auto pr-2 pb-4">
                                 {tournamentTeams.slice(0, 5).map((team, idx) => (
-                                    <div key={idx} className="bg-black/40 border border-white/5 p-4 flex justify-between items-center group hover:border-[#ff4655]/30 transition-colors">
+                                    <div key={idx} className="bg-[#0d121f]/40 border border-white/5 p-4 flex justify-between items-center group hover:border-[#ff4655]/30 transition-colors">
                                         <div>
                                             <div className="font-teko text-xl text-white uppercase">{team.school}</div>
                                             <div className="font-mono text-[10px] text-white/50">{new Date(team.created_at).toLocaleString()}</div>
@@ -337,7 +337,7 @@ const AdminPage: React.FC = () => {
                             </div>
                         </div>
 
-                        <div className="max-w-4xl mx-auto bg-black/40 border border-white/5 p-6 md:p-12 mb-8">
+                        <div className="max-w-4xl mx-auto bg-[#0d121f]/40 border border-white/5 p-6 md:p-12 mb-8">
                             <SeatPicker
                                 activeLevel={monitorLevel}
                                 selectedSeats={[]}
@@ -395,7 +395,7 @@ const AdminPage: React.FC = () => {
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.95 }}
-                        className="bg-[#0f0f13] border border-white/10 w-full max-w-2xl max-h-[90vh] overflow-y-auto relative p-8 shadow-2xl"
+                        className="bg-[#0d121f] border border-white/10 w-full max-w-2xl max-h-[90vh] overflow-y-auto relative p-8 shadow-2xl"
                     >
                         <button
                             onClick={() => setSelectedTeam(null)}

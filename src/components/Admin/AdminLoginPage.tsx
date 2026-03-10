@@ -34,7 +34,7 @@ const AdminLoginPage: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[#000000] text-white flex items-center justify-center p-6 font-inter relative overflow-hidden">
+        <div className="min-h-screen text-white flex items-center justify-center p-6 font-inter relative overflow-hidden" style={{ background: 'var(--bg-gradient)' }}>
             {/* Background Grid */}
             <div className="fixed inset-0 pointer-events-none opacity-5"
                 style={{
@@ -152,7 +152,7 @@ const AdminLoginPage: React.FC = () => {
                 input:-webkit-autofill:hover, 
                 input:-webkit-autofill:focus {
                     -webkit-text-fill-color: white;
-                    -webkit-box-shadow: 0 0 0px 1000px #0a0a0a inset;
+                    -webkit-box-shadow: 0 0 0px 1000px #0d121f inset;
                     transition: background-color 5000s ease-in-out 0s;
                 }
             `}</style>

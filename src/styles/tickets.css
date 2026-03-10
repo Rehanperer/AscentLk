@@ -7,10 +7,10 @@
 .tickets-page {
     --t-primary: #ff4655;
     --t-primary-glow: rgba(255, 70, 85, 0.4);
-    --t-bg-black: #000000;
-    --t-bg-dark: #0a1016;
-    --t-bg-card: rgba(15, 25, 35, 0.8);
-    --t-border: rgba(255, 255, 255, 0.1);
+    --t-bg-black: #0d121f;
+    --t-bg-dark: #08080a;
+    --t-bg-card: rgba(255, 255, 255, 0.03);
+    --t-border: rgba(255, 255, 255, 0.08);
     --t-text-main: #ffffff;
     --t-text-muted: rgba(255, 255, 255, 0.6);
     --t-text-dim: rgba(255, 255, 255, 0.3);
@@ -184,6 +184,7 @@
 
 .tickets-picker {
     background: var(--t-bg-card);
+    backdrop-filter: blur(16px);
     border: 1px solid var(--t-border);
     position: relative;
     padding: 1.5rem;
@@ -296,6 +297,7 @@
 /* Summary Card Reskin */
 .tickets-summary .glass-card {
     background: var(--t-bg-card) !important;
+    backdrop-filter: blur(16px);
     border: 1px solid var(--t-border) !important;
     clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px);
     padding: 2rem !important;

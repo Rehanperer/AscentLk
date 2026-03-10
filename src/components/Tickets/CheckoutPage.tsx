@@ -134,7 +134,7 @@ const CheckoutPage: React.FC = () => {
 
     if (selectedSeats.length === 0 && !isSubmitted) {
         return (
-            <div className="min-h-screen bg-black flex items-center justify-center font-mono text-[#ff4655]">
+            <div className="min-h-screen bg-[#08080a] flex items-center justify-center font-mono text-[#ff4655]">
                 <Loader2 className="animate-spin mr-3" /> INITIALIZING_SECURE_CHANNEL...
             </div>
         );

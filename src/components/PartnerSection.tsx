@@ -39,7 +39,7 @@ const PartnershipCard: React.FC<{
 const PartnerSection: React.FC<PartnerSectionProps> = ({ onSponsorClick, onContactClick }) => {
     const { playHover, playClick } = useAudio();
     return (
-        <section className="relative py-24 md:py-32 overflow-hidden bg-[#0f1923]">
+        <section className="relative py-24 md:py-32 overflow-hidden bg-atmospheric" id="partners">
             {/* Background Branding */}
             <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/4 font-teko text-[20rem] md:text-[30rem] font-bold text-white/[0.01] select-none pointer-events-none">
                 CORP
