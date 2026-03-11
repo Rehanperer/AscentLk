@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, ChevronLeft, Users, User, Phone, CheckCircle2, ChevronRight, AlertCircle, Gamepad2, GraduationCap } from 'lucide-react';
+import { Shield, ChevronLeft, Users, User, Phone, CheckCircle2, ChevronRight, AlertCircle, Gamepad2, GraduationCap, Mail } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import ScrambleText from '../ScrambleText';
 import SectionReveal from '../Effects/SectionReveal';
@@ -44,6 +44,7 @@ const RegistrationPage: React.FC = () => {
     // Form State
     const [formData, setFormData] = useState({
         school: '',
+        email: '',
         player1Name: '',
         player1RiotId: '',
         player2Name: '',
@@ -94,6 +95,11 @@ const RegistrationPage: React.FC = () => {
     const validateStep1 = () => {
         const newErrors: Record<string, string> = {};
         if (!formData.school.trim()) newErrors.school = 'Required field';
+        if (!formData.email.trim()) {
+            newErrors.email = 'Required field';
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+            newErrors.email = 'Invalid email address';
+        }
         if (!formData.iglName.trim()) newErrors.iglName = 'Required field';
         if (!formData.iglPhone.trim()) newErrors.iglPhone = 'Required field';
         if (!formData.teacherName.trim()) newErrors.teacherName = 'Required field';
@@ -161,6 +167,7 @@ const RegistrationPage: React.FC = () => {
             const { error } = await supabase.from('tournament_teams').insert([
                 {
                     school: formData.school,
+                    email: formData.email,
                     player1_name: formData.player1Name,
                     player1_riot_id: formData.player1RiotId,
                     player2_name: formData.player2Name,
@@ -188,6 +195,35 @@ const RegistrationPage: React.FC = () => {
                 console.error('Error submitting registration:', error);
                 alert('There was an error saving your registration. Please try again.');
             } else {
+                // Construct detailed summary for Worker notification
+                const rosterSummary = `
+                    Main Roster:
+                    1. ${formData.player1Name} (${formData.player1RiotId}) [IGL]
+                    2. ${formData.player2Name} (${formData.player2RiotId})
+                    3. ${formData.player3Name} (${formData.player3RiotId})
+                    4. ${formData.player4Name} (${formData.player4RiotId})
+                    5. ${formData.player5Name} (${formData.player5RiotId})
+                    ${formData.sub1Name ? `Subs: ${formData.sub1Name} (${formData.sub1RiotId})` : ''}
+                    ${formData.sub2Name ? `, ${formData.sub2Name} (${formData.sub2RiotId})` : ''}
+                `.trim();
+
+                const emailData = {
+                    formType: 'TOURNAMENT REGISTRATION',
+                    fullName: formData.iglName,
+                    email: formData.email,
+                    school: formData.school,
+                    role: 'In-Game Leader',
+                    message: `Teacher Contact: ${formData.teacherName} (${formData.teacherPhone})\n\n${rosterSummary}`,
+                    submittedAt: new Date().toISOString()
+                };
+
+                // Trigger Cloudflare Worker Email Notification
+                fetch('https://ascent-forms-api.ascent2026s.workers.dev', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(emailData)
+                }).catch(err => console.error("Email Worker Error:", err));
+
                 setIsSuccess(true);
                 window.scrollTo(0, 0);
             }
@@ -304,6 +340,18 @@ const RegistrationPage: React.FC = () => {
                                                     placeholder="e.g. Royal College"
                                                     required
                                                     error={errors.school}
+                                                />
+
+                                                <InputField
+                                                    label="School/IGL Contact Email"
+                                                    name="email"
+                                                    type="email"
+                                                    value={formData.email}
+                                                    onChange={handleInputChange}
+                                                    icon={Mail}
+                                                    placeholder="igl@school.edu"
+                                                    required
+                                                    error={errors.email}
                                                 />
 
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 mt-8">
