@@ -11,7 +11,7 @@ I used the latest tech to make sure it's fast and smooth:
 *   **Framer Motion**: This is what powers all the sick animations (scroll reveals, timeline, parallax).
 *   **Fly.io**: Where I deployed it (Dockerized setup).
 
-## 🎨 Key Features I Built
+## 🎨 key Features I Built
 
 *   **Interactive Hero Section**: A video background that expands on scroll with a glitch effect title.
 *   **Animated Timeline**: A custom-built "Path to Ascent" timeline that draws itself as you scroll down.
