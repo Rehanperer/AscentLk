@@ -209,9 +209,9 @@ const AdminPage: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen text-white p-3 md:p-6 font-inter" style={{ background: 'var(--bg-gradient)' }}>
+        <div className="min-h-screen text-white p-3 md:p-6 font-inter" style={{ background: '#0d121f' }}>
             {/* Background Grid */}
-            <div className="fixed inset-0 pointer-events-none opacity-5"
+            <div className="fixed inset-0 pointer-events-none opacity-10"
                 style={{
                     backgroundImage: 'linear-gradient(#ff4655 1px, transparent 1px), linear-gradient(90deg, #ff4655 1px, transparent 1px)',
                     backgroundSize: '40px 40px'
@@ -235,7 +235,7 @@ const AdminPage: React.FC = () => {
                         >
                             SIGN_OUT
                         </button>
-                        <button className="hidden md:flex items-center gap-2 px-4 py-2 border border-white/10 bg-white/5 font-mono text-xs hover:bg-white/10 transition-colors">
+                        <button className="hidden md:flex items-center gap-2 px-4 py-2 border border-white/10 bg-[#161b2c] font-mono text-xs hover:bg-[#1a2035] transition-colors">
                             <Settings size={14} /> SYSTEM_CONFIG
                         </button>
                         <div className="hidden md:block px-4 py-2 bg-[#ff4655] text-white font-mono text-xs font-bold animate-pulse">
@@ -245,7 +245,7 @@ const AdminPage: React.FC = () => {
                 </header>
 
                 {/* Sub-nav */}
-                <nav className="flex gap-1 bg-white/5 p-1 mb-6 md:mb-8 overflow-x-auto w-full md:w-fit">
+                <nav className="flex gap-1 bg-[#161b2c] border border-white/5 p-1 mb-6 md:mb-8 overflow-x-auto w-full md:w-fit">
                     {[
                         { id: 'overview', icon: LayoutDashboard, label: 'OVERVIEW' },
                         { id: 'registrations', icon: Database, label: 'REGISTRATIONS' },
@@ -256,7 +256,7 @@ const AdminPage: React.FC = () => {
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id as any)}
-                            className={`flex items-center gap-2 md:gap-3 px-3 md:px-6 py-2 font-teko text-base md:text-xl transition-all whitespace-nowrap ${activeTab === tab.id ? 'bg-[#ff4655] text-white' : 'text-white/50 hover:text-white hover:bg-white/5'
+                            className={`flex items-center gap-2 md:gap-3 px-3 md:px-6 py-2 font-teko text-base md:text-xl transition-all whitespace-nowrap ${activeTab === tab.id ? 'bg-[#ff4655] text-white' : 'text-white/50 hover:text-white hover:bg-[#1a2035]'
                                 }`}
                         >
                             <tab.icon size={16} />
@@ -266,42 +266,62 @@ const AdminPage: React.FC = () => {
                 </nav>
 
                 {activeTab === 'overview' && (
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {/* Summary Cards */}
-                        <StatCard icon={Users} label="TOTAL_REGISTRATIONS" value={stats.totalRegistrations} color="#ff4655" />
-                        <StatCard icon={Ticket} label="SEATS_OCCUPIED" value={stats.seatsBooked} color="#00ff88" />
-                        <StatCard icon={TrendingUp} label="HELD_TRANSACTIONS" value={stats.seatsHeld} color="#f59e0b" />
-                        <StatCard icon={AlertCircle} label="REVENUE_GENERATED" value={`LKR ${stats.totalRevenue.toLocaleString()}`} color="#3b82f6" />
-
-                        {/* Latest Entries Card */}
-                        <div className="md:col-span-2 lg:col-span-3 bg-white/5 border border-white/10 p-8 clip-path-angled relative overflow-hidden flex flex-col h-full min-h-[300px]">
-                            <h3 className="font-teko text-2xl mb-6">LATEST TOURNAMENT ENTRIES</h3>
-                            <div className="flex-1 space-y-3 overflow-y-auto pr-2 pb-4">
-                                {tournamentTeams.slice(0, 5).map((team, idx) => (
-                                    <div key={idx} className="bg-[#0d121f]/40 border border-white/5 p-4 flex justify-between items-center group hover:border-[#ff4655]/30 transition-colors">
-                                        <div>
-                                            <div className="font-teko text-xl text-white uppercase">{team.school}</div>
-                                            <div className="font-mono text-[10px] text-white/50">{new Date(team.created_at).toLocaleString()}</div>
-                                        </div>
-                                        <div className="text-right">
-                                            <div className="font-mono text-xs text-[#ff4655] uppercase">{team.igl_name}</div>
-                                            <div className="font-mono text-[10px] text-white/40">IGL</div>
-                                        </div>
-                                    </div>
-                                ))}
-                                {tournamentTeams.length === 0 && (
-                                    <div className="h-full flex items-center justify-center text-white/30 font-mono text-xs opacity-50">NO ENTRIES FOUND</div>
-                                )}
-                            </div>
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6 md:space-y-8">
+                        {/* Stats Grid */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+                            <StatCard icon={Users} label="TOTAL_REGISTRATIONS" value={stats.totalRegistrations} color="#ff4655" />
+                            <StatCard icon={Ticket} label="SEATS_BOOKED" value={stats.seatsBooked} color="#00ff88" />
+                            <StatCard icon={TrendingUp} label="ESTIMATED_REVENUE" value={`RS. ${stats.totalRevenue.toLocaleString()}`} color="#3b82f6" />
+                            <StatCard icon={AlertCircle} label="HELD_IN_CHECKOUT" value={stats.seatsHeld} color="#f59e0b" />
                         </div>
 
-                        {/* Side Alerts */}
-                        <div className="bg-white/5 border border-white/10 p-6">
-                            <h3 className="font-teko text-2xl mb-4">SYSTEM_ALERTS</h3>
-                            <div className="space-y-4">
-                                <AlertItem type="warning" text="DB_CONNECTION_LIMIT_REACHED" />
-                                <AlertItem type="info" text="REALTIME_SYNC_OPTIMIZED" />
-                                <AlertItem type="success" text="BACKUP_COMPLETED_SUCCESSFULLY" />
+                        {/* Recent Activity Section */}
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
+                            <div className="lg:col-span-2 bg-[#161b2c] border border-white/10 p-4 md:p-8 clip-path-angled">
+                                <div className="flex justify-between items-center mb-6 border-b border-white/5 pb-4">
+                                    <h2 className="font-teko text-2xl md:text-3xl tracking-wider">LIVE_ENTRY_FEED</h2>
+                                    <div className="font-mono text-[10px] text-[#00ff88] animate-pulse">● LIVE_STREAM</div>
+                                </div>
+                                <div className="space-y-3">
+                                    {registrants.slice(0, 6).map((reg) => (
+                                        <div key={reg.id} className="flex flex-col md:flex-row justify-between items-start md:items-center p-3 md:p-4 bg-[#0d121f] border border-white/5 group hover:border-[#ff4655]/30 transition-colors gap-2">
+                                            <div className="flex items-center gap-3 md:gap-4">
+                                                <div className="w-8 h-8 md:w-10 md:h-10 bg-[#ff4655]/10 flex items-center justify-center font-teko text-lg md:text-xl text-[#ff4655]">
+                                                    {reg.full_name?.charAt(0)}
+                                                </div>
+                                                <div>
+                                                    <div className="font-teko text-base md:text-lg leading-none uppercase">{reg.full_name}</div>
+                                                    <div className="font-mono text-[10px] text-white/30 truncate max-w-[150px] md:max-w-none">{reg.email}</div>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end border-t md:border-t-0 border-white/5 pt-2 md:pt-0 mt-1 md:mt-0">
+                                                <div className="text-right">
+                                                    <div className="font-mono text-[#00ff88] text-[10px] md:text-xs">SEAT {reg.seat_id}</div>
+                                                    <div className="font-mono text-white/20 text-[8px] md:text-[9px]">{new Date(reg.created_at).toLocaleTimeString()}</div>
+                                                </div>
+                                                <div className="bg-[#00ff88]/10 text-[#00ff88] px-2 py-1 font-mono text-[9px] border border-[#00ff88]/20">
+                                                    VERIFIED
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="bg-[#161b2c] border border-white/10 p-6 md:p-8 clip-path-angled">
+                                <h2 className="font-teko text-2xl md:text-3xl tracking-wider mb-6 border-b border-white/5 pb-4">SYSTEM_ALERTS</h2>
+                                <div className="space-y-4">
+                                    <AlertItem type="warning" text="CRITICAL: Arena ground floor reaching 90% capacity." />
+                                    <AlertItem type="info" text="NOTICE: Real-time sync engine operating at 24ms latency." />
+                                    <AlertItem type="success" text="STABLE: Payment gateway handshake successful." />
+                                    <AlertItem type="info" text={`STATS: ${stats.totalRegistrations} total units processed.`} />
+                                </div>
+                                <div className="mt-8 pt-6 border-t border-white/5">
+                                    <div className="font-mono text-[10px] text-white/20 mb-4 tracking-widest uppercase">Quick_Actions</div>
+                                    <button className="w-full py-3 bg-[#ff4655] text-white font-teko text-xl tracking-widest hover:bg-[#ff4655]/90 mt-2">
+                                        BROADCAST_UPDATE
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </motion.div>
@@ -369,76 +389,75 @@ const AdminPage: React.FC = () => {
                 )}
 
                 {activeTab === 'tournament' && (
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-white/5 border border-white/10 p-6">
-                        <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 mb-6">
-                            <div className="relative">
+                    <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="bg-[#161b2c] border border-white/10 p-4 md:p-8 clip-path-angled">
+                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                            <div>
+                                <h2 className="font-teko text-2xl md:text-3xl tracking-wider">TOURNAMENT_ROSTER</h2>
+                                <p className="font-mono text-white/30 text-[10px]">// {tournamentTeams.length} TEAMS_DEPLOYED</p>
+                            </div>
+                            <div className="relative w-full md:w-auto">
                                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30" size={16} />
                                 <input
                                     type="text"
-                                    placeholder="SEARCH_TEAMS..."
-                                    className="bg-white/5 border border-white/10 pl-10 pr-4 py-2 font-mono text-xs w-full sm:w-80 outline-none focus:border-[#ff4655]"
+                                    placeholder="FILTER_BY_INSTITUTION..."
+                                    className="w-full md:w-80 bg-[#0d121f] border border-white/10 py-2 pl-10 pr-4 font-mono text-xs focus:border-[#ff4655] transition-colors outline-none"
                                 />
                             </div>
-                            <button className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 font-mono text-xs transition-colors">
-                                <Download size={14} /> EXPORT_CSV
-                            </button>
                         </div>
 
-                        <div className="overflow-x-auto">
+                        <div className="overflow-x-auto -mx-4 md:mx-0">
                             <table className="w-full border-collapse">
-                                <thead className="bg-[#ff4655]/10 text-left font-mono text-xs">
-                                    <tr>
-                                        <th className="p-4 border-b border-white/5">SCHOOL</th>
-                                        <th className="p-4 border-b border-white/5">IGL</th>
-                                        <th className="p-4 border-b border-white/5">TEACHER IN CHARGE</th>
-                                        <th className="p-4 border-b border-white/5">ROSTER (MAIN/SUB)</th>
-                                        <th className="p-4 border-b border-white/5">TIMESTAMP</th>
-                                        <th className="p-4 border-b border-white/5">STATUS</th>
-                                        <th className="p-4 border-b border-white/5 text-right">ACTIONS</th>
+                                <thead>
+                                    <tr className="border-b border-white/10 font-mono text-[10px] text-white/40 uppercase tracking-widest text-left">
+                                        <th className="px-4 py-4 font-normal">SCHOOL_ENTITY</th>
+                                        <th className="px-4 py-4 font-normal">IGL_UNIT</th>
+                                        <th className="px-4 py-4 font-normal">ROSTER_SIZE</th>
+                                        <th className="px-4 py-4 font-normal">SUBMITTED</th>
+                                        <th className="px-4 py-4 font-normal text-right">ACTIONS</th>
                                     </tr>
                                 </thead>
-                                <tbody className="font-mono text-xs text-white/70">
-                                    {tournamentTeams.length > 0 ? tournamentTeams.map((team, i) => (
-                                        <tr
-                                            key={i}
-                                            className="hover:bg-white/5 transition-colors border-b border-white/5 cursor-pointer"
-                                            onClick={() => setSelectedTeam(team)}
-                                        >
-                                            <td className="p-4 uppercase font-bold text-white">{team.school}</td>
-                                            <td className="p-4">
-                                                <div className="text-white uppercase">{team.igl_name}</div>
-                                                <div className="text-[10px] text-white/50">{team.igl_phone}</div>
+                                <tbody className="font-inter">
+                                    {tournamentTeams.map((team) => (
+                                        <tr key={team.id} className="border-b border-white/5 hover:bg-[#1a2035] transition-colors group">
+                                            <td className="px-4 py-4">
+                                                <div className="font-teko text-lg md:text-xl uppercase">{team.school}</div>
+                                                <div className="font-mono text-[8px] text-white/20">UUID: {team.id.slice(0, 12)}...</div>
                                             </td>
-                                            <td className="p-4">
-                                                <div className="text-white uppercase">{team.teacher_name}</div>
-                                                <div className="text-[10px] text-white/50">{team.teacher_phone}</div>
+                                            <td className="px-4 py-4">
+                                                <div className="font-mono text-xs text-white/80">{team.igl_name}</div>
+                                                <div className="font-mono text-[10px] text-[#ff4655]">{team.igl_phone}</div>
                                             </td>
-                                            <td className="p-4 text-[10px]">
-                                                <div className="flex gap-2 text-[#ff4655]">5 MAIN <span className="text-white/30 truncate max-w-[150px] inline-block align-bottom" title={`${team.player1_riot_id}, ${team.player2_riot_id}, ${team.player3_riot_id}, ${team.player4_riot_id}, ${team.player5_riot_id}`}>...</span></div>
-                                                <div className="text-white/50">{team.sub1_name ? (team.sub2_name ? '2 SUBS' : '1 SUB') : '0 SUBS'}</div>
+                                            <td className="px-4 py-4">
+                                                <div className="flex gap-1">
+                                                    {[1, 2, 3, 4, 5].map(n => (
+                                                        <div key={n} className="w-2 h-2 bg-[#00ff88] clip-path-angled opacity-60"></div>
+                                                    ))}
+                                                    {(team.sub1_name || team.sub2_name) && <div className="w-2 h-2 bg-[#3b82f6] clip-path-angled opacity-60"></div>}
+                                                </div>
                                             </td>
-                                            <td className="p-4">{new Date(team.created_at).toLocaleString()}</td>
-                                            <td className="p-4">
-                                                <span className="px-2 py-0.5 bg-[#00ff88]/20 text-[#00ff88] text-[10px]">REGISTERED</span>
-                                            </td>
-                                            <td className="p-4 text-right">
-                                                <button
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        handleDeleteTeam(team.id, team.school);
-                                                    }}
-                                                    className="p-2 text-white/30 hover:text-[#ff4655] transition-colors"
-                                                    title="Delete Team"
-                                                >
-                                                    <Trash2 size={16} />
-                                                </button>
+                                            <td className="px-4 py-4 font-mono text-[10px] text-white/40">{new Date(team.created_at).toLocaleDateString()}</td>
+                                            <td className="px-4 py-4 text-right">
+                                                <div className="flex justify-end gap-2">
+                                                    <button
+                                                        onClick={() => setSelectedTeam(team)}
+                                                        className="px-3 py-1 bg-white/5 border border-white/10 font-teko text-sm hover:bg-white/10 transition-colors"
+                                                    >
+                                                        VIEW
+                                                    </button>
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleDeleteTeam(team.id, team.school);
+                                                        }}
+                                                        className="p-2 text-white/20 hover:text-[#ff4655] hover:bg-[#ff4655]/10 transition-all rounded-sm"
+                                                        title="DELETE_TEAM"
+                                                    >
+                                                        <Trash2 size={16} />
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
-                                    )) : (
-                                        <tr>
-                                            <td colSpan={6} className="p-12 text-center opacity-30">NO_TEAMS_REGISTERED</td>
-                                        </tr>
-                                    )}
+                                    ))}
                                 </tbody>
                             </table>
                         </div>
@@ -446,14 +465,14 @@ const AdminPage: React.FC = () => {
                 )}
 
                 {activeTab === 'monitor' && (
-                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white/5 border border-white/10 p-4 md:p-8">
+                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-[#161b2c] border border-white/10 p-4 md:p-8 clip-path-angled">
                         <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-6">
                             <div className="text-left">
                                 <h2 className="font-teko text-3xl">LIVE_VENUE_MONITOR</h2>
                                 <p className="font-mono text-white/30 text-xs">// REAL-TIME_OCCUPANCY_VISUALIZATION</p>
                             </div>
 
-                            <div className="flex gap-2 bg-white/5 p-1 border border-white/10">
+                            <div className="flex gap-2 bg-[#0d121f] p-1 border border-white/10">
                                 {['Ground', 'Balcony', 'Deck'].map(lvl => (
                                     <button
                                         key={lvl}
@@ -472,7 +491,7 @@ const AdminPage: React.FC = () => {
                             </div>
                         </div>
 
-                        <div className="max-w-4xl mx-auto bg-[#0d121f]/40 border border-white/5 p-2 md:p-6 lg:p-12 mb-8">
+                        <div className="max-w-4xl mx-auto bg-[#0d121f] border border-white/5 p-2 md:p-6 lg:p-12 mb-8 shadow-inner">
                             <SeatPicker
                                 activeLevel={monitorLevel}
                                 selectedSeats={[]}
@@ -483,7 +502,7 @@ const AdminPage: React.FC = () => {
 
                         {/* Monitor Stats */}
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-                            <div className="bg-white/5 border border-white/10 p-6 flex items-center justify-between">
+                            <div className="bg-[#0d121f] border border-white/10 p-6 flex items-center justify-between">
                                 <div>
                                     <div className="text-white/30 font-mono text-xs uppercase mb-1">AVAILABLE SEATS</div>
                                     <div className="font-teko text-4xl text-[#ff4655]">
@@ -495,7 +514,7 @@ const AdminPage: React.FC = () => {
                                 </div>
                             </div>
 
-                            <div className="bg-white/5 border border-white/10 p-6 flex items-center justify-between">
+                            <div className="bg-[#0d121f] border border-white/10 p-6 flex items-center justify-between">
                                 <div>
                                     <div className="text-white/30 font-mono text-xs uppercase mb-1">BOOKED SEATS</div>
                                     <div className="font-teko text-4xl text-[#1e293b]">
@@ -507,7 +526,7 @@ const AdminPage: React.FC = () => {
                                 </div>
                             </div>
 
-                            <div className="bg-white/5 border border-white/10 p-6 flex items-center justify-between">
+                            <div className="bg-[#0d121f] border border-white/10 p-6 flex items-center justify-between">
                                 <div>
                                     <div className="text-white/30 font-mono text-xs uppercase mb-1">HELD IN CHECKOUT</div>
                                     <div className="font-teko text-4xl text-[#f59e0b]">
@@ -530,7 +549,7 @@ const AdminPage: React.FC = () => {
                             <StatCard icon={Database} label="DATA_LATENCY" value="24ms" color="#3b82f6" />
                         </div>
 
-                        <div className="bg-white/5 border border-white/10 p-8 clip-path-angled">
+                        <div className="bg-[#161b2c] border border-white/10 p-8 clip-path-angled">
                             <div className="flex items-center gap-4 mb-8 border-b border-white/10 pb-4">
                                 <div className="p-3 bg-[#ff4655]/10 text-[#ff4655] border border-[#ff4655]/20">
                                     <Settings size={24} />
@@ -543,7 +562,7 @@ const AdminPage: React.FC = () => {
 
                             <div className="space-y-8">
                                 {/* Toggle Control */}
-                                <div className="flex items-center justify-between bg-white/[0.02] p-6 border border-white/5 group hover:border-[#ff4655]/30 transition-colors">
+                                <div className="flex items-center justify-between bg-[#0d121f] p-6 border border-white/5 group hover:border-[#ff4655]/30 transition-colors">
                                     <div>
                                         <div className="text-white font-teko text-2xl uppercase mb-1">MAINTENANCE_MODE</div>
                                         <p className="text-white/40 font-mono text-xs max-w-md">
@@ -564,7 +583,7 @@ const AdminPage: React.FC = () => {
                                 </div>
 
                                 {/* Countdown Config */}
-                                <div className="bg-white/[0.02] p-6 border border-white/5 space-y-4">
+                                <div className="bg-[#0d121f] p-6 border border-white/5 space-y-4">
                                     <div className="flex items-center gap-2 text-white/40 font-mono text-[10px] tracking-widest mb-2 uppercase">
                                         <Clock size={12} /> CONFIG_END_TIME
                                     </div>
@@ -574,7 +593,7 @@ const AdminPage: React.FC = () => {
                                             type="datetime-local"
                                             value={maintenanceSettings.until}
                                             onChange={(e) => setMaintenanceSettings(prev => ({ ...prev, until: e.target.value }))}
-                                            className="flex-1 bg-white/5 border border-white/10 p-3 text-white font-mono text-sm outline-none focus:border-[#ff4655] transition-colors"
+                                            className="flex-1 bg-[#1a2035] border border-white/10 p-3 text-white font-mono text-sm outline-none focus:border-[#ff4655] transition-colors"
                                         />
                                         <button
                                             onClick={handleSaveMaintenance}
@@ -585,14 +604,14 @@ const AdminPage: React.FC = () => {
                                         </button>
                                     </div>
 
-                                    <div className="p-4 bg-orange-500/10 border border-orange-500/20 text-orange-500 font-mono text-[10px] uppercase leading-relaxed">
+                                    <div className="p-4 bg-[#ff4655]/10 border border-[#ff4655]/20 text-[#ff4655] font-mono text-[10px] uppercase leading-relaxed">
                                         [WARNING]: ENABLING MAINTENANCE MODE WILL IMMEDIATELY DISCONNECT ALL PUBLIC USERS.
                                         ENSURE ALL OTHER SYSTEM PARAMETERS ARE STABLE.
                                     </div>
                                 </div>
 
                                 {/* Preview Card */}
-                                <div className="border border-white/5 p-6 bg-black/20">
+                                <div className="border border-white/5 p-6 bg-[#0a0e1a]">
                                     <div className="text-white/30 font-mono text-[9px] mb-4 tracking-[0.3em] uppercase">SYSTEM_PREVIEW</div>
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-4">
@@ -712,7 +731,7 @@ const AdminPage: React.FC = () => {
 };
 
 const StatCard = ({ icon: Icon, label, value, color }: any) => (
-    <div className="bg-white/5 border border-white/10 p-6 clip-path-angled relative overflow-hidden group">
+    <div className="bg-[#161b2c] border border-white/10 p-6 clip-path-angled relative overflow-hidden group">
         <div className="absolute top-0 right-0 w-24 h-24 -mr-8 -mt-8 bg-white/5 rounded-full blur-3xl group-hover:bg-white/10 transition-all" />
         <Icon size={24} className="mb-4" style={{ color }} />
         <div className="font-mono text-[10px] text-white/30 mb-1">{label}</div>

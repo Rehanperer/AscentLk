@@ -34,9 +34,9 @@ const AdminLoginPage: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen text-white flex items-center justify-center p-4 md:p-6 font-inter relative overflow-hidden" style={{ background: 'var(--bg-gradient)' }}>
+        <div className="min-h-screen text-white flex items-center justify-center p-4 md:p-6 font-inter relative overflow-hidden" style={{ background: '#0d121f' }}>
             {/* Background Grid */}
-            <div className="fixed inset-0 pointer-events-none opacity-5"
+            <div className="fixed inset-0 pointer-events-none opacity-10"
                 style={{
                     backgroundImage: 'linear-gradient(#ff4655 1px, transparent 1px), linear-gradient(90deg, #ff4655 1px, transparent 1px)',
                     backgroundSize: '40px 40px'
@@ -56,7 +56,7 @@ const AdminLoginPage: React.FC = () => {
                 animate={{ opacity: 1, scale: 1 }}
                 className="w-full max-w-md relative z-10"
             >
-                <div className="bg-white/5 border border-white/10 p-6 md:p-8 clip-path-angled shadow-2xl backdrop-blur-sm">
+                <div className="bg-[#161b2c] border border-white/10 p-6 md:p-8 clip-path-angled shadow-2xl">
                     {/* Header */}
                     <header className="mb-10 text-center">
                         <div className="inline-flex items-center justify-center w-16 h-16 bg-[#ff4655]/10 border border-[#ff4655]/30 rounded-full mb-6 relative">
@@ -83,7 +83,7 @@ const AdminLoginPage: React.FC = () => {
                                         onChange={(e) => setUsername(e.target.value)}
                                         onMouseEnter={() => playHover()}
                                         required
-                                        className="w-full bg-white/5 border border-white/10 p-4 pl-12 font-mono text-xs text-white focus:border-[#ff4655] outline-none transition-all placeholder:text-white/10"
+                                        className="w-full bg-[#0d121f] border border-white/10 p-4 pl-12 font-mono text-xs text-white focus:border-[#ff4655] outline-none transition-all placeholder:text-white/20"
                                         placeholder="IDENT_REQUIRED..."
                                     />
                                 </div>
@@ -99,7 +99,7 @@ const AdminLoginPage: React.FC = () => {
                                         onChange={(e) => setPassword(e.target.value)}
                                         onMouseEnter={() => playHover()}
                                         required
-                                        className="w-full bg-white/5 border border-white/10 p-4 pl-12 font-mono text-xs text-white focus:border-[#ff4655] outline-none transition-all placeholder:text-white/10"
+                                        className="w-full bg-[#0d121f] border border-white/10 p-4 pl-12 font-mono text-xs text-white focus:border-[#ff4655] outline-none transition-all placeholder:text-white/20"
                                         placeholder="ENC_KEY_REQUIRED..."
                                     />
                                 </div>
