@@ -67,7 +67,19 @@ const RegistrationPage: React.FC = () => {
     const [errors, setErrors] = useState<Record<string, string>>({});
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
+        let { name, value } = e.target;
+
+        // Force numeric only for phone fields
+        if (name === 'iglPhone' || name === 'teacherPhone') {
+            value = value.replace(/\D/g, '');
+        }
+
+        // Force alphabetic only for name and school fields
+        const isNameField = name.includes('Name') || name === 'school';
+        if (isNameField) {
+            value = value.replace(/[^a-zA-Z\s]/g, '');
+        }
+
         setFormData(prev => ({ ...prev, [name]: value }));
         // Clear error when typing
         if (errors[name]) {
@@ -215,11 +227,11 @@ const RegistrationPage: React.FC = () => {
             </div>
 
             {/* Main Content */}
-            <div className="relative z-10 max-w-4xl mx-auto pt-12 px-6">
+            <div className="relative z-10 max-w-4xl mx-auto pt-8 md:pt-12 px-4 md:px-6">
                 <SectionReveal>
-                    <div className="text-center mb-16">
+                    <div className="text-center mb-10 md:mb-16">
                         <ScrambleText text="TOURNAMENT REGISTRATION" className="text-[#ff4655] font-bold tracking-widest text-xs md:text-sm mb-4 block" />
-                        <h1 className="font-teko text-6xl md:text-8xl font-bold leading-none mb-4 uppercase">
+                        <h1 className="font-teko text-4xl md:text-8xl font-bold leading-none mb-4 uppercase">
                             Join The Gauntlet
                         </h1>
                         <p className="text-white/60 max-w-xl mx-auto text-sm md:text-base leading-relaxed">
@@ -234,7 +246,7 @@ const RegistrationPage: React.FC = () => {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -20 }}
-                                className="bg-[#0d121f]/40 backdrop-blur-xl border border-white/10 p-8 md:p-12 relative overflow-hidden rounded-sm"
+                                className="bg-[#0d121f]/40 backdrop-blur-xl border border-white/10 p-4 md:p-8 lg:p-12 relative overflow-hidden rounded-sm"
                             >
                                 {/* Decorative Elements */}
                                 <div className="absolute top-0 left-0 w-32 h-[1px] bg-gradient-to-r from-[#ff4655] to-transparent" />
@@ -242,7 +254,7 @@ const RegistrationPage: React.FC = () => {
                                 <div className="absolute top-0 left-0 w-[1px] h-32 bg-gradient-to-b from-[#ff4655] to-transparent" />
 
                                 {/* Progress Indicator */}
-                                <div className="flex justify-between items-center mb-12 relative">
+                                <div className="flex justify-between items-center mb-8 md:mb-12 relative">
                                     <div className="absolute top-1/2 left-0 w-full h-[1px] bg-white/10 -z-10 -translate-y-1/2" />
                                     <div
                                         className="absolute top-1/2 left-0 h-[1px] bg-[#ff4655] -z-10 -translate-y-1/2 transition-all duration-500"
@@ -255,13 +267,13 @@ const RegistrationPage: React.FC = () => {
                                         { step: 3, label: "Review", icon: Shield }
                                     ].map((s) => (
                                         <div key={s.step} className="flex flex-col items-center gap-2">
-                                            <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${currentStep >= s.step
+                                            <div className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${currentStep >= s.step
                                                 ? 'bg-[#0d121f] border-[#ff4655] text-[#ff4655] shadow-[0_0_15px_rgba(255,70,85,0.3)]'
                                                 : 'bg-[#0d121f] border-white/20 text-white/40'
                                                 }`}>
-                                                <s.icon size={18} />
+                                                <s.icon size={16} />
                                             </div>
-                                            <span className={`text-[10px] font-mono tracking-widest uppercase ${currentStep >= s.step ? 'text-white' : 'text-white/40'
+                                            <span className={`text-[8px] md:text-[10px] font-mono tracking-widest uppercase ${currentStep >= s.step ? 'text-white' : 'text-white/40'
                                                 }`}>
                                                 {s.label}
                                             </span>
@@ -315,7 +327,8 @@ const RegistrationPage: React.FC = () => {
                                                         value={formData.iglPhone}
                                                         onChange={handleInputChange}
                                                         icon={Phone}
-                                                        placeholder="+94 7X XXX XXXX"
+                                                        type="tel"
+                                                        placeholder="07XXXXXXXX"
                                                         required
                                                         error={errors.iglPhone}
                                                     />
@@ -340,7 +353,8 @@ const RegistrationPage: React.FC = () => {
                                                         value={formData.teacherPhone}
                                                         onChange={handleInputChange}
                                                         icon={Phone}
-                                                        placeholder="+94 7X XXX XXXX"
+                                                        type="tel"
+                                                        placeholder="07XXXXXXXX"
                                                         required
                                                         error={errors.teacherPhone}
                                                     />
@@ -510,12 +524,12 @@ const RegistrationPage: React.FC = () => {
                                     </AnimatePresence>
 
                                     {/* Navigation Buttons */}
-                                    <div className="mt-12 flex justify-between items-center border-t border-white/10 pt-8">
+                                    <div className="mt-8 md:mt-12 flex flex-col-reverse sm:flex-row justify-between items-stretch sm:items-center gap-4 border-t border-white/10 pt-6 md:pt-8">
                                         {currentStep > 1 ? (
                                             <button
                                                 type="button"
                                                 onClick={handlePrevStep}
-                                                className="px-6 py-3 font-mono tracking-widest text-sm text-white/60 hover:text-white transition-colors border border-white/20 hover:border-white/4 rounded-sm flex items-center gap-2 group"
+                                                className="px-6 py-3 font-mono tracking-widest text-sm text-white/60 hover:text-white transition-colors border border-white/20 hover:border-white/4 rounded-sm flex items-center justify-center gap-2 group w-full sm:w-auto"
                                                 disabled={isSubmitting}
                                             >
                                                 <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
@@ -527,7 +541,7 @@ const RegistrationPage: React.FC = () => {
                                             <button
                                                 type="button"
                                                 onClick={handleNextStep}
-                                                className="px-8 py-3 bg-white text-black font-teko text-xl tracking-widest hover:bg-[#ff4655] hover:text-white transition-colors flex items-center gap-2 group relative overflow-hidden rounded-sm"
+                                                className="px-8 py-3 bg-white text-black font-teko text-xl tracking-widest hover:bg-[#ff4655] hover:text-white transition-colors flex items-center justify-center gap-2 group relative overflow-hidden rounded-sm w-full sm:w-auto"
                                             >
                                                 <span className="relative z-10 flex items-center gap-2">NEXT <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" /></span>
                                             </button>
@@ -535,7 +549,7 @@ const RegistrationPage: React.FC = () => {
                                             <button
                                                 type="submit"
                                                 disabled={isSubmitting || !isVerified}
-                                                className="px-8 py-3 bg-[#ff4655] text-white font-teko text-xl tracking-widest hover:bg-white hover:text-black transition-all flex items-center gap-3 relative overflow-hidden group disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed rounded-sm"
+                                                className="px-8 py-3 bg-[#ff4655] text-white font-teko text-xl tracking-widest hover:bg-white hover:text-black transition-all flex items-center justify-center gap-3 relative overflow-hidden group disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed rounded-sm w-full sm:w-auto"
                                             >
                                                 <span className="relative z-10 flex items-center gap-2">
                                                     {isSubmitting ? 'PROCESSING...' : 'CONFIRM REGISTRATION'}
@@ -555,7 +569,7 @@ const RegistrationPage: React.FC = () => {
                                 key="success"
                                 initial={{ opacity: 0, scale: 0.95 }}
                                 animate={{ opacity: 1, scale: 1 }}
-                                className="bg-[#0d121f]/40 backdrop-blur-xl border border-[#ff4655]/30 p-12 text-center rounded-sm relative overflow-hidden"
+                                className="bg-[#0d121f]/40 backdrop-blur-xl border border-[#ff4655]/30 p-6 md:p-12 text-center rounded-sm relative overflow-hidden"
                             >
                                 {/* Background Glow */}
                                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-[#ff4655]/20 blur-[100px] rounded-full pointer-events-none" />
@@ -564,7 +578,7 @@ const RegistrationPage: React.FC = () => {
                                     <div className="w-24 h-24 rounded-full border border-[rgba(255,70,85,0.5)] flex items-center justify-center mx-auto mb-8 shadow-[0_0_30px_rgba(255,70,85,0.2)]">
                                         <CheckCircle2 className="w-12 h-12 text-[#ff4655]" />
                                     </div>
-                                    <h2 className="font-teko text-5xl mb-4 text-white uppercase">Registration Received</h2>
+                                    <h2 className="font-teko text-3xl md:text-5xl mb-4 text-white uppercase">Registration Received</h2>
                                     <p className="text-white/60 mb-8 max-w-md mx-auto">
                                         Your institution's application for ASCENT 2026 has been successfully submitted. Our team will review your application and contact the Teacher in Charge shortly.
                                     </p>

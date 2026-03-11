@@ -11,7 +11,11 @@ import {
     X,
     Search,
     Download,
-    LayoutDashboard
+    LayoutDashboard,
+    Trash2,
+    ShieldAlert,
+    Clock,
+    Activity
 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import SeatPicker from '../Tickets/SeatPicker';
@@ -35,7 +39,14 @@ const AdminPage: React.FC = () => {
 
     const [registrants, setRegistrants] = useState<any[]>([]);
     const [tournamentTeams, setTournamentTeams] = useState<any[]>([]);
-    const [activeTab, setActiveTab] = useState<'overview' | 'registrations' | 'monitor' | 'tournament'>('overview');
+    const [activeTab, setActiveTab] = useState<'overview' | 'registrations' | 'monitor' | 'tournament' | 'system'>('overview');
+
+    // Maintenance State
+    const [maintenanceSettings, setMaintenanceSettings] = useState({
+        enabled: false,
+        until: new Date(Date.now() + 3600000).toISOString().slice(0, 16) // Default 1 hour from now
+    });
+    const [isSavingSettings, setIsSavingSettings] = useState(false);
 
     // Modal State
     const [selectedTeam, setSelectedTeam] = useState<any | null>(null);
@@ -45,37 +56,47 @@ const AdminPage: React.FC = () => {
     const [heldSeats, setHeldSeats] = useState<string[]>([]);
     const [monitorLevel, setMonitorLevel] = useState<'Ground' | 'Balcony' | 'Deck'>('Ground');
 
+    const fetchData = async () => {
+        // Fetch Registrations
+        const { data: regData } = await supabase.from('registrations').select('*').order('created_at', { ascending: false });
+        if (regData) setRegistrants(regData);
+
+        // Fetch Tournament Teams
+        const { data: teamData } = await supabase.from('tournament_teams').select('*').order('created_at', { ascending: false });
+        if (teamData) setTournamentTeams(teamData);
+
+        // Fetch Seat Stats
+        const { data: seatData } = await supabase.from('seats').select('id, status, price');
+        if (seatData) {
+            const booked = seatData.filter(s => s.status === 'booked');
+            const held = seatData.filter(s => s.status === 'held');
+            const revenue = booked.reduce((sum, s) => sum + (s.price || 750), 0);
+
+            setBookedSeats(booked.map(s => s.id));
+            setHeldSeats(held.map(s => s.id));
+
+            setStats({
+                totalRegistrations: regData?.length || 0,
+                seatsBooked: booked.length,
+                seatsHeld: held.length,
+                totalRevenue: revenue,
+                totalSeats: seatData.length
+            });
+        }
+    };
+
     useEffect(() => {
-        const fetchData = async () => {
-            // Fetch Registrations
-            const { data: regData } = await supabase.from('registrations').select('*').order('created_at', { ascending: false });
-            if (regData) setRegistrants(regData);
+        const init = async () => {
+            await fetchData();
 
-            // Fetch Tournament Teams
-            const { data: teamData } = await supabase.from('tournament_teams').select('*').order('created_at', { ascending: false });
-            if (teamData) setTournamentTeams(teamData);
-
-            // Fetch Seat Stats
-            const { data: seatData } = await supabase.from('seats').select('id, status, price');
-            if (seatData) {
-                const booked = seatData.filter(s => s.status === 'booked');
-                const held = seatData.filter(s => s.status === 'held');
-                const revenue = booked.reduce((sum, s) => sum + (s.price || 750), 0);
-
-                setBookedSeats(booked.map(s => s.id));
-                setHeldSeats(held.map(s => s.id));
-
-                setStats({
-                    totalRegistrations: regData?.length || 0,
-                    seatsBooked: booked.length,
-                    seatsHeld: held.length,
-                    totalRevenue: revenue,
-                    totalSeats: seatData.length
-                });
+            // Fetch Maintenance Settings
+            const { data: maintData } = await supabase.from('settings').select('value').eq('key', 'maintenance').single();
+            if (maintData?.value) {
+                setMaintenanceSettings(maintData.value as any);
             }
         };
 
-        fetchData();
+        init();
 
         // Subscribe to changes
         const seatChannel = supabase.channel('admin_seats_v2')
@@ -97,8 +118,98 @@ const AdminPage: React.FC = () => {
         };
     }, []);
 
+    const handleDeleteRegistration = async (id: string, seatId: string) => {
+        if (!window.confirm(`Are you sure you want to delete this registration? This will also free up seat ${seatId}.`)) return;
+
+        try {
+            // Delete registration
+            // We use count: 'exact' to see if anything was actually deleted (check if RLS blocked it)
+            const { error: regError, count } = await supabase
+                .from('registrations')
+                .delete({ count: 'exact' })
+                .eq('id', id);
+
+            if (regError) throw regError;
+
+            if (count === 0) {
+                alert('ACCESS DENIED: You do not have permission to delete this record (RLS Policy).');
+                return;
+            }
+
+            // Update seat status back to available
+            if (seatId) {
+                const { error: seatError } = await supabase
+                    .from('seats')
+                    .update({ status: 'available' })
+                    .eq('id', seatId);
+
+                if (seatError) console.error('Error freeing seat:', seatError);
+            }
+
+            // Explicit refresh instead of just relying on subscriptions
+            await fetchData();
+            alert('Registration deleted successfully.');
+        } catch (error) {
+            console.error('Error deleting registration:', error);
+            alert('Failed to delete registration. See console for details.');
+        }
+    };
+
+    const handleDeleteTeam = async (id: string, school: string) => {
+        if (!window.confirm(`Are you sure you want to delete the team from ${school}?`)) return;
+
+        try {
+            const { error, count } = await supabase
+                .from('tournament_teams')
+                .delete({ count: 'exact' })
+                .eq('id', id);
+
+            if (error) throw error;
+
+            if (count === 0) {
+                alert('ACCESS DENIED: You do not have permission to delete this record (RLS Policy).');
+                return;
+            }
+
+            await fetchData();
+            alert('Team deleted successfully.');
+        } catch (error) {
+            console.error('Error deleting team:', error);
+            alert('Failed to delete tournament team');
+        }
+    };
+
+    const handleSaveMaintenance = async () => {
+        setIsSavingSettings(true);
+        try {
+            const { error } = await supabase
+                .from('settings')
+                .upsert({
+                    key: 'maintenance',
+                    value: maintenanceSettings,
+                    updated_at: new Date().toISOString()
+                });
+
+            if (error) {
+                console.error('Supabase Error:', error);
+                if (error.code === '42501') {
+                    alert('ACCESS DENIED: Database RLS policies are blocking the update. Please run the provided SQL fix in your Supabase dashboard.');
+                } else {
+                    alert(`Failed to save settings: ${error.message}`);
+                }
+                return;
+            }
+            alert('Maintenance settings updated successfully.');
+        } catch (error: any) {
+            console.error('Error saving maintenance settings:', error);
+            alert(`An unexpected error occurred: ${error.message || 'Unknown error'}`);
+        } finally {
+            setIsSavingSettings(false);
+        }
+    };
+
     return (
-        <div className="min-h-screen text-white p-6 font-inter" style={{ background: 'var(--bg-gradient)' }}>
+        <div className="min-h-screen text-white p-3 md:p-6 font-inter" style={{ background: 'var(--bg-gradient)' }}>
             {/* Background Grid */}
             <div className="fixed inset-0 pointer-events-none opacity-5"
                 style={{
@@ -109,12 +220,12 @@ const AdminPage: React.FC = () => {
 
             <div className="max-w-7xl mx-auto relative z-10">
                 {/* Header */}
-                <header className="flex justify-between items-end mb-12 border-l-4 border-[#ff4655] pl-6">
+                <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-8 md:mb-12 border-l-4 border-[#ff4655] pl-4 md:pl-6">
                     <div>
-                        <h1 className="font-teko text-5xl leading-none">OPERATIONS_CENTER</h1>
+                        <h1 className="font-teko text-3xl md:text-5xl leading-none">OPERATIONS_CENTER</h1>
                         <p className="font-mono text-[#ff4655] text-sm tracking-widest mt-2">// ADMINISTRATIVE_CONTROL_UNIT_V3.0</p>
                     </div>
-                    <div className="flex gap-4">
+                    <div className="flex flex-wrap gap-2 md:gap-4">
                         <button
                             onClick={() => {
                                 localStorage.removeItem('admin_session');
@@ -124,31 +235,32 @@ const AdminPage: React.FC = () => {
                         >
                             SIGN_OUT
                         </button>
-                        <button className="flex items-center gap-2 px-4 py-2 border border-white/10 bg-white/5 font-mono text-xs hover:bg-white/10 transition-colors">
+                        <button className="hidden md:flex items-center gap-2 px-4 py-2 border border-white/10 bg-white/5 font-mono text-xs hover:bg-white/10 transition-colors">
                             <Settings size={14} /> SYSTEM_CONFIG
                         </button>
-                        <div className="px-4 py-2 bg-[#ff4655] text-white font-mono text-xs font-bold animate-pulse">
+                        <div className="hidden md:block px-4 py-2 bg-[#ff4655] text-white font-mono text-xs font-bold animate-pulse">
                             REALTIME_ACTIVE
                         </div>
                     </div>
                 </header>
 
                 {/* Sub-nav */}
-                <nav className="flex gap-1 bg-white/5 p-1 mb-8 w-fit">
+                <nav className="flex gap-1 bg-white/5 p-1 mb-6 md:mb-8 overflow-x-auto w-full md:w-fit">
                     {[
                         { id: 'overview', icon: LayoutDashboard, label: 'OVERVIEW' },
                         { id: 'registrations', icon: Database, label: 'REGISTRATIONS' },
                         { id: 'tournament', icon: Gamepad2, label: 'TOURNAMENT_TEAMS' },
-                        { id: 'monitor', icon: Ticket, label: 'VENUE_MONITOR' }
+                        { id: 'monitor', icon: Ticket, label: 'VENUE_MONITOR' },
+                        { id: 'system', icon: Settings, label: 'SYSTEM_CONTROL' }
                     ].map(tab => (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id as any)}
-                            className={`flex items-center gap-3 px-6 py-2 font-teko text-xl transition-all ${activeTab === tab.id ? 'bg-[#ff4655] text-white' : 'text-white/50 hover:text-white hover:bg-white/5'
+                            className={`flex items-center gap-2 md:gap-3 px-3 md:px-6 py-2 font-teko text-base md:text-xl transition-all whitespace-nowrap ${activeTab === tab.id ? 'bg-[#ff4655] text-white' : 'text-white/50 hover:text-white hover:bg-white/5'
                                 }`}
                         >
-                            <tab.icon size={18} />
-                            {tab.label}
+                            <tab.icon size={16} />
+                            <span className="hidden sm:inline">{tab.label}</span>
                         </button>
                     ))}
                 </nav>
@@ -197,13 +309,13 @@ const AdminPage: React.FC = () => {
 
                 {activeTab === 'registrations' && (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-white/5 border border-white/10 p-6">
-                        <div className="flex justify-between items-center mb-6">
+                        <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 mb-6">
                             <div className="relative">
                                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30" size={16} />
                                 <input
                                     type="text"
                                     placeholder="SEARCH_REGISTRANTS..."
-                                    className="bg-white/5 border border-white/10 pl-10 pr-4 py-2 font-mono text-xs w-80 outline-none focus:border-[#ff4655]"
+                                    className="bg-white/5 border border-white/10 pl-10 pr-4 py-2 font-mono text-xs w-full sm:w-80 outline-none focus:border-[#ff4655]"
                                 />
                             </div>
                             <button className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 font-mono text-xs transition-colors">
@@ -221,6 +333,7 @@ const AdminPage: React.FC = () => {
                                         <th className="p-4 border-b border-white/5">SCHOOL</th>
                                         <th className="p-4 border-b border-white/5">TIMESTAMP</th>
                                         <th className="p-4 border-b border-white/5">STATUS</th>
+                                        <th className="p-4 border-b border-white/5 text-right">ACTIONS</th>
                                     </tr>
                                 </thead>
                                 <tbody className="font-mono text-xs text-white/70">
@@ -231,8 +344,17 @@ const AdminPage: React.FC = () => {
                                             <td className="p-4 text-[#ff4655]">{reg.seat_id}</td>
                                             <td className="p-4 uppercase">{reg.school}</td>
                                             <td className="p-4">{new Date(reg.created_at).toLocaleString()}</td>
-                                            <td className="p-4">
+                                            <td className="p-4 px-2 py-0.5 bg-[#00ff88]/20 text-[#00ff88] text-[10px] text-center">
                                                 <span className="px-2 py-0.5 bg-[#00ff88]/20 text-[#00ff88] text-[10px]">VERIFIED</span>
+                                            </td>
+                                            <td className="p-4 text-right">
+                                                <button
+                                                    onClick={() => handleDeleteRegistration(reg.id, reg.seat_id)}
+                                                    className="p-2 text-white/30 hover:text-[#ff4655] transition-colors"
+                                                    title="Delete Registration"
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
                                             </td>
                                         </tr>
                                     )) : (
@@ -248,13 +370,13 @@ const AdminPage: React.FC = () => {
 
                 {activeTab === 'tournament' && (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-white/5 border border-white/10 p-6">
-                        <div className="flex justify-between items-center mb-6">
+                        <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 mb-6">
                             <div className="relative">
                                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30" size={16} />
                                 <input
                                     type="text"
                                     placeholder="SEARCH_TEAMS..."
-                                    className="bg-white/5 border border-white/10 pl-10 pr-4 py-2 font-mono text-xs w-80 outline-none focus:border-[#ff4655]"
+                                    className="bg-white/5 border border-white/10 pl-10 pr-4 py-2 font-mono text-xs w-full sm:w-80 outline-none focus:border-[#ff4655]"
                                 />
                             </div>
                             <button className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 font-mono text-xs transition-colors">
@@ -272,6 +394,7 @@ const AdminPage: React.FC = () => {
                                         <th className="p-4 border-b border-white/5">ROSTER (MAIN/SUB)</th>
                                         <th className="p-4 border-b border-white/5">TIMESTAMP</th>
                                         <th className="p-4 border-b border-white/5">STATUS</th>
+                                        <th className="p-4 border-b border-white/5 text-right">ACTIONS</th>
                                     </tr>
                                 </thead>
                                 <tbody className="font-mono text-xs text-white/70">
@@ -298,6 +421,18 @@ const AdminPage: React.FC = () => {
                                             <td className="p-4">
                                                 <span className="px-2 py-0.5 bg-[#00ff88]/20 text-[#00ff88] text-[10px]">REGISTERED</span>
                                             </td>
+                                            <td className="p-4 text-right">
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleDeleteTeam(team.id, team.school);
+                                                    }}
+                                                    className="p-2 text-white/30 hover:text-[#ff4655] transition-colors"
+                                                    title="Delete Team"
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            </td>
                                         </tr>
                                     )) : (
                                         <tr>
@@ -311,7 +446,7 @@ const AdminPage: React.FC = () => {
                 )}
 
                 {activeTab === 'monitor' && (
-                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white/5 border border-white/10 p-8">
+                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white/5 border border-white/10 p-4 md:p-8">
                         <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-6">
                             <div className="text-left">
                                 <h2 className="font-teko text-3xl">LIVE_VENUE_MONITOR</h2>
@@ -337,7 +472,7 @@ const AdminPage: React.FC = () => {
                             </div>
                         </div>
 
-                        <div className="max-w-4xl mx-auto bg-[#0d121f]/40 border border-white/5 p-6 md:p-12 mb-8">
+                        <div className="max-w-4xl mx-auto bg-[#0d121f]/40 border border-white/5 p-2 md:p-6 lg:p-12 mb-8">
                             <SeatPicker
                                 activeLevel={monitorLevel}
                                 selectedSeats={[]}
@@ -386,6 +521,100 @@ const AdminPage: React.FC = () => {
                         </div>
                     </motion.div>
                 )}
+
+                {activeTab === 'system' && (
+                    <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="max-w-4xl mx-auto">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                            <StatCard icon={ShieldAlert} label="SECURITY_STATUS" value="ENFORCE_PASS" color="#ff4655" />
+                            <StatCard icon={Activity} label="ENGINE_HEALTH" value="98.2%" color="#00ff88" />
+                            <StatCard icon={Database} label="DATA_LATENCY" value="24ms" color="#3b82f6" />
+                        </div>
+
+                        <div className="bg-white/5 border border-white/10 p-8 clip-path-angled">
+                            <div className="flex items-center gap-4 mb-8 border-b border-white/10 pb-4">
+                                <div className="p-3 bg-[#ff4655]/10 text-[#ff4655] border border-[#ff4655]/20">
+                                    <Settings size={24} />
+                                </div>
+                                <div>
+                                    <h2 className="font-teko text-3xl">MAINTENANCE_MODULE</h2>
+                                    <p className="font-mono text-white/30 text-[10px] tracking-widest uppercase">// GLOBAL_ROUTE_INTERCEPTION</p>
+                                </div>
+                            </div>
+
+                            <div className="space-y-8">
+                                {/* Toggle Control */}
+                                <div className="flex items-center justify-between bg-white/[0.02] p-6 border border-white/5 group hover:border-[#ff4655]/30 transition-colors">
+                                    <div>
+                                        <div className="text-white font-teko text-2xl uppercase mb-1">MAINTENANCE_MODE</div>
+                                        <p className="text-white/40 font-mono text-xs max-w-md">
+                                            When enabled, all public traffic is redirected to the maintenance page.
+                                            Admins are exempt from this redirection.
+                                        </p>
+                                    </div>
+                                    <button
+                                        onClick={() => setMaintenanceSettings(prev => ({ ...prev, enabled: !prev.enabled }))}
+                                        className={`w-16 h-8 rounded-none border transition-all relative ${maintenanceSettings.enabled
+                                            ? 'bg-[#ff4655] border-[#ff4655]'
+                                            : 'bg-white/5 border-white/20'
+                                            }`}
+                                    >
+                                        <div className={`absolute top-1 w-6 h-6 bg-white transition-all ${maintenanceSettings.enabled ? 'left-9' : 'left-1'
+                                            }`} />
+                                    </button>
+                                </div>
+
+                                {/* Countdown Config */}
+                                <div className="bg-white/[0.02] p-6 border border-white/5 space-y-4">
+                                    <div className="flex items-center gap-2 text-white/40 font-mono text-[10px] tracking-widest mb-2 uppercase">
+                                        <Clock size={12} /> CONFIG_END_TIME
+                                    </div>
+
+                                    <div className="flex flex-col md:flex-row gap-4">
+                                        <input
+                                            type="datetime-local"
+                                            value={maintenanceSettings.until}
+                                            onChange={(e) => setMaintenanceSettings(prev => ({ ...prev, until: e.target.value }))}
+                                            className="flex-1 bg-white/5 border border-white/10 p-3 text-white font-mono text-sm outline-none focus:border-[#ff4655] transition-colors"
+                                        />
+                                        <button
+                                            onClick={handleSaveMaintenance}
+                                            disabled={isSavingSettings}
+                                            className="px-8 py-3 bg-[#ff4655] text-white font-teko text-xl uppercase tracking-widest hover:bg-[#ff4655]/90 transition-all disabled:opacity-50"
+                                        >
+                                            {isSavingSettings ? 'SYNCING...' : 'COMMIT_CHANGES'}
+                                        </button>
+                                    </div>
+
+                                    <div className="p-4 bg-orange-500/10 border border-orange-500/20 text-orange-500 font-mono text-[10px] uppercase leading-relaxed">
+                                        [WARNING]: ENABLING MAINTENANCE MODE WILL IMMEDIATELY DISCONNECT ALL PUBLIC USERS.
+                                        ENSURE ALL OTHER SYSTEM PARAMETERS ARE STABLE.
+                                    </div>
+                                </div>
+
+                                {/* Preview Card */}
+                                <div className="border border-white/5 p-6 bg-black/20">
+                                    <div className="text-white/30 font-mono text-[9px] mb-4 tracking-[0.3em] uppercase">SYSTEM_PREVIEW</div>
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-3 h-3 rounded-full bg-blue-500 animate-pulse" />
+                                            <div className="font-teko text-xl text-white">REMAINING_WINDOW</div>
+                                        </div>
+                                        <div className="font-mono text-[#ff4655] text-2xl">
+                                            {(() => {
+                                                const diff = +new Date(maintenanceSettings.until) - +new Date();
+                                                if (diff <= 0) return "00:00:00";
+                                                const h = Math.floor(diff / (1000 * 60 * 60)).toString().padStart(2, '0');
+                                                const m = Math.floor((diff / 1000 / 60) % 60).toString().padStart(2, '0');
+                                                const s = Math.floor((diff / 1000) % 60).toString().padStart(2, '0');
+                                                return `${h}:${m}:${s}`;
+                                            })()}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </motion.div>
+                )}
             </div>
 
             {/* Team Details Modal */}
@@ -395,7 +624,7 @@ const AdminPage: React.FC = () => {
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.95 }}
-                        className="bg-[#0d121f] border border-white/10 w-full max-w-2xl max-h-[90vh] overflow-y-auto relative p-8 shadow-2xl"
+                        className="bg-[#0d121f] border border-white/10 w-full max-w-2xl max-h-[90vh] overflow-y-auto relative p-4 md:p-8 shadow-2xl"
                     >
                         <button
                             onClick={() => setSelectedTeam(null)}
@@ -405,7 +634,7 @@ const AdminPage: React.FC = () => {
                         </button>
 
                         <div className="mb-8 border-b border-white/10 pb-4">
-                            <h2 className="font-teko text-4xl text-white uppercase">{selectedTeam.school}</h2>
+                            <h2 className="font-teko text-2xl md:text-4xl text-white uppercase">{selectedTeam.school}</h2>
                             <p className="font-mono text-xs text-[#ff4655] tracking-widest mt-1">
                                 TEAM REGISTRATION DETAILS
                             </p>
@@ -416,7 +645,7 @@ const AdminPage: React.FC = () => {
 
                         <div className="space-y-8 font-mono text-sm">
                             {/* Contacts */}
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="bg-white/5 p-4 border-l-2 border-[#ff4655]">
                                     <h4 className="text-white/40 text-xs mb-2">IN-GAME LEADER</h4>
                                     <div className="text-white uppercase">{selectedTeam.igl_name}</div>

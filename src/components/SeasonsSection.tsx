@@ -50,10 +50,54 @@ const SeasonsSection: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-5 gap-4 perspective-1000">
+                {/* Desktop: Full Grid */}
+                <div className="hidden md:grid md:grid-cols-5 gap-4 perspective-1000">
                     {seasons.map((season, index) => (
                         <SeasonCard key={season.id} season={season} index={index} />
                     ))}
+                </div>
+
+                {/* Mobile: Active Season + Locked Summary */}
+                <div className="grid grid-cols-1 gap-4 md:hidden">
+                    {seasons.filter(s => s.active).map((season, index) => (
+                        <SeasonCard key={season.id} season={season} index={index} />
+                    ))}
+                    {/* Compact Locked Seasons Summary Card */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.2, duration: 0.5 }}
+                        className="relative group h-[180px] flex flex-col justify-center items-center p-6 border border-white/5 bg-white/[0.01]"
+                    >
+                        {/* Multi-color top bar */}
+                        <div className="absolute top-0 left-0 w-full h-[2px] flex">
+                            {seasons.filter(s => !s.active).map((s) => (
+                                <div key={s.id} className="flex-1 h-full" style={{ backgroundColor: `${s.color}66` }} />
+                            ))}
+                        </div>
+
+                        <div className="text-center">
+                            <div className="font-mono text-[9px] tracking-[0.4em] text-white/30 uppercase mb-3">Upcoming Seasons</div>
+                            <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 mb-4">
+                                {seasons.filter(s => !s.active).map((s) => (
+                                    <span key={s.id} className="font-teko text-2xl font-bold opacity-30" style={{ color: s.color }}>
+                                        {s.title}
+                                    </span>
+                                ))}
+                            </div>
+                            <div className="flex items-center justify-center gap-2">
+                                <div className="w-1.5 h-1.5 rounded-full bg-white/20" />
+                                <span className="font-mono text-[9px] tracking-[0.3em] text-white/20 uppercase">
+                                    {seasons.filter(s => !s.active).length} Seasons Locked
+                                </span>
+                                <div className="w-1.5 h-1.5 rounded-full bg-white/20" />
+                            </div>
+                        </div>
+
+                        {/* Scanline */}
+                        <div className="absolute inset-0 pointer-events-none opacity-[0.03] z-10 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_2px,3px_100%]" />
+                    </motion.div>
                 </div>
             </div>
 

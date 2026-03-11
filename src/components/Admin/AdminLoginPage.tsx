@@ -34,7 +34,7 @@ const AdminLoginPage: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen text-white flex items-center justify-center p-6 font-inter relative overflow-hidden" style={{ background: 'var(--bg-gradient)' }}>
+        <div className="min-h-screen text-white flex items-center justify-center p-4 md:p-6 font-inter relative overflow-hidden" style={{ background: 'var(--bg-gradient)' }}>
             {/* Background Grid */}
             <div className="fixed inset-0 pointer-events-none opacity-5"
                 style={{
@@ -44,10 +44,10 @@ const AdminLoginPage: React.FC = () => {
             />
 
             {/* Decorative Brackets */}
-            <div className="absolute top-10 left-10 w-20 h-20 border-t-2 border-l-2 border-[#ff4655]/30" />
-            <div className="absolute bottom-10 right-10 w-20 h-20 border-b-2 border-r-2 border-[#ff4655]/30" />
+            <div className="absolute top-6 left-6 md:top-10 md:left-10 w-12 h-12 md:w-20 md:h-20 border-t-2 border-l-2 border-[#ff4655]/30" />
+            <div className="absolute bottom-6 right-6 md:bottom-10 md:right-10 w-12 h-12 md:w-20 md:h-20 border-b-2 border-r-2 border-[#ff4655]/30" />
 
-            <Link to="/" className="absolute top-8 left-8 flex items-center gap-2 text-white/50 hover:text-white transition-colors font-mono text-xs tracking-widest">
+            <Link to="/" className="absolute top-4 left-4 md:top-8 md:left-8 flex items-center gap-2 text-white/50 hover:text-white transition-colors font-mono text-xs tracking-widest">
                 <ArrowLeft size={14} /> // RETURN_TO_SURFACE
             </Link>
 
@@ -56,7 +56,7 @@ const AdminLoginPage: React.FC = () => {
                 animate={{ opacity: 1, scale: 1 }}
                 className="w-full max-w-md relative z-10"
             >
-                <div className="bg-white/5 border border-white/10 p-8 clip-path-angled shadow-2xl backdrop-blur-sm">
+                <div className="bg-white/5 border border-white/10 p-6 md:p-8 clip-path-angled shadow-2xl backdrop-blur-sm">
                     {/* Header */}
                     <header className="mb-10 text-center">
                         <div className="inline-flex items-center justify-center w-16 h-16 bg-[#ff4655]/10 border border-[#ff4655]/30 rounded-full mb-6 relative">
@@ -67,7 +67,7 @@ const AdminLoginPage: React.FC = () => {
                                 transition={{ duration: 2, repeat: Infinity }}
                             />
                         </div>
-                        <h1 className="font-teko text-5xl leading-none uppercase tracking-tighter">OPERATIONS_AUTH</h1>
+                        <h1 className="font-teko text-4xl md:text-5xl leading-none uppercase tracking-tighter">OPERATIONS_AUTH</h1>
                         <p className="font-mono text-[#ff4655] text-[10px] tracking-[0.3em] mt-2">// RESTRICTED_ACCESS_PORTAL_V3.1</p>
                     </header>
 
