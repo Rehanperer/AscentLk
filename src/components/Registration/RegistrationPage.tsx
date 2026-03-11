@@ -243,6 +243,11 @@ const RegistrationPage: React.FC = () => {
             {/* Dynamic Background */}
             <div className="fixed inset-0 pointer-events-none z-0">
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,70,85,0.1)_0%,rgba(0,0,0,0)_60%)]" />
+
+                {/* Corner Accents */}
+                <div className="absolute -top-24 -left-24 w-96 h-96 bg-blue-600/10 rounded-full blur-[120px]" />
+                <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-[#ff4655]/10 rounded-full blur-[120px]" />
+
                 <div className="bg-grid absolute inset-0 opacity-10" />
                 <ParallaxBackground text="REGISTER" velocity={-10} className="top-20 opacity-[0.03]" />
             </div>

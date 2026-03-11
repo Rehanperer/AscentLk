@@ -147,6 +147,10 @@ const CheckoutPage: React.FC = () => {
                 {/* Animated atmospheric glow orb */}
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#ff4655]/10 rounded-full blur-[150px] anim-pulse-slow" />
 
+                {/* Corner Accents */}
+                <div className="absolute -top-24 -right-24 w-96 h-96 bg-blue-600/10 rounded-full blur-[120px]" />
+                <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-[#ff4655]/10 rounded-full blur-[120px]" />
+
                 {/* Technical Grid Accent */}
                 <div className="fixed inset-0 opacity-[0.05]"
                     style={{
