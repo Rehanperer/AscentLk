@@ -45,7 +45,7 @@ const AdminGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 };
 
 import { supabase } from './lib/supabase';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const MaintenanceGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [maintenance, setMaintenance] = useState<{ enabled: boolean; until: string } | null>(null);
@@ -99,6 +99,7 @@ const App: React.FC = () => {
     const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
     const [ticketModalTitle, setTicketModalTitle] = useState('');
     const [isSponsorModalOpen, setIsSponsorModalOpen] = useState(false);
+    const navigate = useNavigate();
 
     const [isMediaLoaded, setIsMediaLoaded] = useState(false);
 
@@ -175,7 +176,7 @@ const App: React.FC = () => {
 
                             {/* Premium HUD Navigation */}
                             <Navbar
-                                onRegister={() => openTicketModal('GENERAL REGISTRATION')}
+                                onRegister={() => navigate('/register')}
                                 onNavigate={() => setIsHeroExpanded(true)}
                             />
 
@@ -275,7 +276,7 @@ const App: React.FC = () => {
                                             </Suspense>
                                         </section>
 
-                                        <ComingSoonSection onNotifyClick={() => openTicketModal('WAITLIST')} />
+                                        <ComingSoonSection onNotifyClick={() => navigate('/register')} />
 
                                         <section id="partners" className="relative">
                                             <Suspense fallback={null}>

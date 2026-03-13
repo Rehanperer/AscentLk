@@ -10,7 +10,7 @@ interface ComingSoonProps {
 const ComingSoonSection: React.FC<ComingSoonProps> = ({ onNotifyClick }) => {
     const { playHover, playClick } = useAudio();
     return (
-        <section className="relative py-20 md:py-48 overflow-hidden bg-atmospheric-blood backdrop-blur-md" id="coming-soon">
+        <section className="relative py-24 md:py-48 overflow-hidden bg-atmospheric backdrop-blur-md" id="registration-portal">
             {/* Background Radar Sweep VFX */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
                 <motion.div
@@ -46,17 +46,29 @@ const ComingSoonSection: React.FC<ComingSoonProps> = ({ onNotifyClick }) => {
                         <motion.h2
                             initial={{ opacity: 0, scale: 0.95 }}
                             whileInView={{ opacity: 1, scale: 1 }}
-                            className="font-teko text-5xl md:text-9xl font-bold uppercase leading-none text-white tracking-widest relative"
+                            className="font-teko text-6xl md:text-8xl lg:text-9xl font-bold uppercase leading-[0.9] text-white tracking-widest relative"
                         >
-                            COMING SOON
+                            <span className="relative inline-block">
+                                REGISTER
+                                <motion.span
+                                    className="absolute inset-0 text-[#ff4655] -z-10"
+                                    animate={{
+                                        x: [-1, 1, -0.5, 0],
+                                        opacity: [0.3, 0.6, 0.3, 0]
+                                    }}
+                                    transition={{ repeat: Infinity, duration: 0.2, repeatDelay: 4 }}
+                                >REGISTER</motion.span>
+                            </span>
+                            <br />
+                            <span className="text-[#ff4655] drop-shadow-[0_0_30px_rgba(255,70,85,0.6)]">NOW LIVE</span>
                         </motion.h2>
-                        <div className="absolute -inset-4 bg-white/5 blur-[120px] rounded-full -z-10" />
+                        <div className="absolute -inset-4 bg-[#ff4655]/10 blur-[150px] rounded-full -z-10" />
                     </div>
 
-                    <div className="max-w-2xl mx-auto mb-8 md:mb-12">
-                        <p className="font-mono text-xs md:text-lg text-white/60 tracking-widest uppercase leading-relaxed border-y border-white/5 py-4 md:py-6 px-2">
-                            Secure your place in the next evolution of student esports.
-                            <span className="text-white/60 block mt-1 font-bold">REGISTRATION PORTAL OPENING SOON.</span>
+                    <div className="max-w-3xl mx-auto mb-8 md:mb-12">
+                        <p className="font-mono text-sm md:text-lg text-white/80 tracking-[0.2em] uppercase leading-relaxed border-y border-white/10 py-6 md:py-8 px-4">
+                            The gates are open. The protocol is active.
+                            <span className="text-[#ff4655] block mt-2 font-bold animate-pulse">DEPLOY YOUR SQUAD TO THE FRONT LINES.</span>
                         </p>
                     </div>
 
@@ -71,10 +83,10 @@ const ComingSoonSection: React.FC<ComingSoonProps> = ({ onNotifyClick }) => {
                             onNotifyClick?.();
                         }}
                     >
-                        <div className="absolute -inset-0.5 bg-gradient-to-r from-white/20 to-transparent rounded-sm opacity-50 group-hover:opacity-100 transition-opacity blur-[2px]" />
-                        <button className="relative px-8 md:px-12 py-3 md:py-4 bg-[#08080a]/80 text-white font-teko text-xl md:text-2xl tracking-[0.15em] md:tracking-[0.2em] rounded-sm transition-all flex items-center gap-3 md:gap-4 overflow-hidden group-hover:bg-transparent group-hover:text-white border border-white/10 uppercase pointer-events-none">
-                            <span className="relative z-10">ENABLE_NOTIFICATIONS</span>
-                            <div className="w-2 h-2 rounded-full bg-white/40 group-hover:animate-ping" />
+                        <div className="absolute -inset-1 bg-gradient-to-r from-[#ff4655] via-white/50 to-blue-500 rounded-sm opacity-50 group-hover:opacity-100 transition-opacity blur-[4px] animate-shimmer" />
+                        <button className="relative px-12 md:px-20 py-4 md:py-6 bg-[#ff4655] text-white font-teko text-2xl md:text-4xl tracking-[0.2em] rounded-sm transition-all flex items-center gap-4 md:gap-6 overflow-hidden group-hover:bg-white group-hover:text-black border border-[#ff4655] uppercase shadow-[0_0_30px_rgba(255,70,85,0.4)]">
+                            <span className="relative z-10">INITIALIZE_ENTRY</span>
+                            <div className="w-3 h-3 rounded-full bg-white group-hover:bg-black group-hover:animate-ping" />
                         </button>
                     </motion.div>
 

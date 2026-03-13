@@ -53,7 +53,9 @@ const Navbar: React.FC<NavbarProps> = ({ onRegister, onNavigate }) => {
                     <div className="relative px-4 py-2 flex justify-between items-center">
                         {/* Logo Area */}
                         <div className="flex items-center gap-6">
-                            <div className="relative group cursor-pointer flex items-center"
+                            <Link
+                                to="/"
+                                className="relative group cursor-pointer flex items-center"
                                 onMouseEnter={() => playHover()}
                                 onClick={() => {
                                     playClick();
@@ -64,7 +66,7 @@ const Navbar: React.FC<NavbarProps> = ({ onRegister, onNavigate }) => {
                                 <span className="font-teko text-2xl md:text-3xl tracking-widest text-white font-bold leading-none group-hover:text-[#ff4655] transition-colors duration-300">
                                     ASCENT <span className="text-[#ff4655] group-hover:text-white transition-colors duration-300">//</span> 2026
                                 </span>
-                            </div>
+                            </Link>
                         </div>
 
                         <div className="flex items-center gap-4 md:gap-8">
@@ -95,32 +97,28 @@ const Navbar: React.FC<NavbarProps> = ({ onRegister, onNavigate }) => {
 
 
                             {/* Register Button (Desktop) */}
-                            <div
-                                onClick={() => {
-                                    playClick();
-                                    onRegister();
-                                }}
+                            <Link
+                                to="/register"
                                 onMouseEnter={() => playHover()}
+                                onClick={() => playClick()}
                                 className="hidden md:block group cursor-pointer"
                             >
                                 <div className="relative overflow-hidden bg-[#ff4655] text-white px-8 py-2 font-bold font-teko text-xl tracking-wider rounded-sm transition-all duration-300 hover:bg-white hover:text-[#0a1016]">
                                     <div className="relative z-10">REGISTER NOW</div>
                                     <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-0 transition-transform duration-500 skew-x-12" />
                                 </div>
-                            </div>
+                            </Link>
 
                             {/* Mobile Register Button (New) */}
-                            <div
-                                onClick={() => {
-                                    playClick();
-                                    onRegister();
-                                }}
+                            <Link
+                                to="/register"
+                                onClick={() => playClick()}
                                 className="md:hidden group cursor-pointer mr-2"
                             >
                                 <div className="relative overflow-hidden bg-[#ff4655] text-white px-4 py-1.5 font-bold font-teko text-lg tracking-wider rounded-sm active:scale-95 transition-transform">
                                     REGISTER
                                 </div>
-                            </div>
+                            </Link>
 
                             {/* Mobile Toggle - Enhanced Tap Target */}
                             <button
@@ -213,15 +211,16 @@ const Navbar: React.FC<NavbarProps> = ({ onRegister, onNavigate }) => {
                                 transition={{ delay: 0.6 }}
                                 className="mt-auto border-t border-white/5 pt-8 mb-8 flex flex-col gap-4"
                             >
-                                <button
+                                <Link
+                                    to="/register"
                                     onClick={() => {
-                                        onRegister();
+                                        playClick();
                                         setIsMobileMenuOpen(false);
                                     }}
-                                    className="w-full bg-[#ff4655] text-white py-4 font-bold font-teko text-2xl tracking-widest rounded-sm active:scale-95 transition-transform"
+                                    className="w-full bg-[#ff4655] text-white py-4 font-bold font-teko text-2xl tracking-widest rounded-sm active:scale-95 transition-transform text-center"
                                 >
                                     REGISTER NOW
-                                </button>
+                                </Link>
                                 <div className="mt-8 flex justify-center gap-6">
                                     <a
                                         href="https://www.instagram.com/ascent_2026/"

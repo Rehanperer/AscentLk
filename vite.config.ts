@@ -36,12 +36,15 @@ export default defineConfig({
     port: 5173,
     host: true
   },
+  optimizeDeps: {
+    include: ['animejs']
+  },
   build: {
     rollupOptions: {
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom'],
-          animations: ['framer-motion']
+          animations: ['framer-motion', 'animejs']
         }
       }
     }
