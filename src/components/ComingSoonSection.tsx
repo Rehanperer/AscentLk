@@ -11,6 +11,10 @@ const ComingSoonSection: React.FC<ComingSoonProps> = ({ onNotifyClick }) => {
     const { playHover, playClick } = useAudio();
     return (
         <section className="relative py-24 md:py-48 overflow-hidden bg-atmospheric backdrop-blur-md" id="registration-portal">
+            {/* Blending Gradients */}
+            <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-[#0d121f] to-transparent pointer-events-none z-10" />
+            <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#0d121f] to-transparent pointer-events-none z-10" />
+
             {/* Background Radar Sweep VFX */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
                 <motion.div
@@ -27,9 +31,9 @@ const ComingSoonSection: React.FC<ComingSoonProps> = ({ onNotifyClick }) => {
             {/* Tactical Grid Overlay */}
             <div className="absolute inset-0 bg-grid opacity-10 pointer-events-none" />
 
-            {/* Atmospheric crimson glow orbs - Centered away from edges */}
-            <div className="absolute top-1/4 left-0 w-full h-80 bg-[#4a0000]/40 rounded-full blur-[120px] pointer-events-none" />
-            <div className="absolute bottom-1/4 left-0 w-full h-80 bg-[#4a0000]/40 rounded-full blur-[120px] pointer-events-none" />
+            {/* Atmospheric glow orbs - Blend Red and Blue */}
+            <div className="absolute top-1/4 right-0 w-[800px] h-[800px] bg-[#0044ff]/15 rounded-full blur-[150px] pointer-events-none" />
+            <div className="absolute bottom-1/4 left-0 w-[800px] h-[800px] bg-[#4a0000]/25 rounded-full blur-[150px] pointer-events-none" />
 
 
             <div className="max-w-7xl mx-auto px-6 relative z-10 flex flex-col items-center">

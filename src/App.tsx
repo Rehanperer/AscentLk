@@ -254,13 +254,17 @@ const App: React.FC = () => {
                                                 </div>
                                             }>
                                                 {/* Path to Ascent Section */}
-                                                <section id="path" className="py-32 relative overflow-hidden bg-atmospheric-blood">
+                                                <section id="path" className="pt-32 relative overflow-hidden bg-atmospheric-blood">
                                                     {/* Moving Scanline - Intensified */}
                                                     <div className="bg-scanline opacity-60" />
 
                                                     {/* Atmospheric crimson glow orbs - Centered away from edges */}
                                                     <div className="absolute top-1/4 left-0 w-full h-80 bg-[#4a0000]/40 rounded-full blur-[120px] pointer-events-none" />
                                                     <div className="absolute bottom-1/4 left-0 w-full h-80 bg-[#4a0000]/40 rounded-full blur-[120px] pointer-events-none" />
+
+                                                    {/* Smooth Blending Fades */}
+                                                    <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-[#0d121f] to-transparent pointer-events-none z-10" />
+                                                    <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#0d121f] to-transparent pointer-events-none z-10" />
 
                                                     <ParallaxBackground text="ASCENT" velocity={50} direction="horizontal" className="top-1/2 -translate-y-1/2 opacity-[0.03]" />
                                                     <SectionReveal className="relative z-10">
