@@ -41,10 +41,10 @@ const SchoolCard: React.FC<{ school: School }> = ({ school }) => {
 
     return (
         <motion.div
-            style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
+            style={{ rotateX, rotateY }}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
-            className="flex-shrink-0 perspective-1000 mx-3 py-4 will-change-transform"
+            className="flex-shrink-0 perspective-1000 mx-3 py-4"
         >
             <div className="relative w-44 h-60 md:w-52 md:h-72 flex flex-col items-center justify-between p-6 bg-[#0d121f] border border-white/5 hover:border-[#ff4655]/30 transition-all duration-300 cursor-crosshair group overflow-hidden shadow-2xl">
                 {/* HUD Corner Accents */}
@@ -70,6 +70,8 @@ const SchoolCard: React.FC<{ school: School }> = ({ school }) => {
                             src={`img/schools/${school.logo || school.name}.png`}
                             className="absolute inset-0 w-full h-full object-contain p-1.5 opacity-90 group-hover:opacity-100 transition-all duration-500 group-hover:scale-105 z-10"
                             alt={school.name}
+                            loading="lazy"
+                            decoding="async"
                             onError={(e) => (e.currentTarget.style.display = 'none')}
                         />
                     </div>

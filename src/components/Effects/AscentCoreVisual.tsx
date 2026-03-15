@@ -77,7 +77,7 @@ const AscentCoreVisual: React.FC = () => {
             <svg
                 ref={visualRef}
                 viewBox="0 0 200 200"
-                className="w-full h-full relative z-10 drop-shadow-[0_0_20px_rgba(255,70,85,0.3)]"
+                className="w-full h-full relative z-10"
             >
                 {/* Outer Dashed Ring */}
                 <circle
