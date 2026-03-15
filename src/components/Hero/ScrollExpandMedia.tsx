@@ -84,6 +84,7 @@ const ScrollExpandMedia = ({
         let isProcessing = false;
 
         const handleWheel = (e: WheelEvent) => {
+            if (mediaFullyExpanded && window.scrollY > 5 && e.deltaY > 0) return;
             if (e.ctrlKey) return; // Allow pinch-zoom
 
             if (isProcessing) return;
@@ -121,6 +122,7 @@ const ScrollExpandMedia = ({
 
         const handleTouchMove = (e: TouchEvent) => {
             if (!touchStartY) return;
+            if (mediaFullyExpanded && window.scrollY > 5 && (touchStartY - e.touches[0].clientY) > 0) return;
             if (e.touches.length > 1) return;
 
             if (!mediaFullyExpanded) {

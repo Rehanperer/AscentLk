@@ -109,19 +109,16 @@ const SchoolsCarousel: React.FC = () => {
                 <div className="absolute left-0 top-0 w-32 md:w-64 h-full bg-gradient-to-r from-[#0d121f] to-transparent z-10 pointer-events-none" />
                 <div className="absolute right-0 top-0 w-32 md:w-64 h-full bg-gradient-to-l from-[#0d121f] to-transparent z-10 pointer-events-none" />
 
-                <motion.div
-                    className="flex will-change-transform"
-                    animate={{ x: [0, -224 * SCHOOLS_DATA.length] }}
-                    transition={{
-                        repeat: Infinity,
-                        duration: 40,
-                        ease: "linear"
-                    }}
+                <div className="absolute right-0 top-0 w-32 md:w-64 h-full bg-gradient-to-l from-[#0d121f] to-transparent z-10 pointer-events-none" />
+
+                <div
+                    className="flex will-change-transform animate-[scrollCarousel_40s_linear_infinite]"
+                    style={{ width: `${displaySchools.length * 224}px` }}
                 >
                     {displaySchools.map((school, i) => (
                         <SchoolCard key={`${school.name}-${i}`} school={school} />
                     ))}
-                </motion.div>
+                </div>
             </div>
 
             <div className="flex flex-col items-center mt-12 gap-3 relative">

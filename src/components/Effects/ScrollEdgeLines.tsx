@@ -4,16 +4,16 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 const ScrollEdgeLines: React.FC = () => {
     const { scrollYProgress } = useScroll();
 
-    // Lines grow from 0% to 100% height as user scrolls
-    const lineHeight = useTransform(scrollYProgress, [0, 0.15, 1], ['0%', '100%', '100%']);
+    // Lines grow from 0% to 100% height as user scrolls. Using scaleY for better GPU performance.
+    const lineScaleY = useTransform(scrollYProgress, [0, 0.15, 1], [0, 1, 1]);
     const lineOpacity = useTransform(scrollYProgress, [0, 0.05, 0.15], [0, 0.6, 1]);
 
     return (
         <div className="fixed inset-0 z-40 pointer-events-none">
             {/* Left Edge Line */}
             <motion.div
-                style={{ height: lineHeight, opacity: lineOpacity }}
-                className="absolute top-0 left-0 w-[1px] md:w-[2px]"
+                style={{ scaleY: lineScaleY, opacity: lineOpacity, transformOrigin: 'top' }}
+                className="absolute top-0 left-0 w-[1px] md:w-[2px] h-full"
             >
                 <div className="w-full h-full bg-gradient-to-b from-[#ff4655] via-[#ff4655]/60 to-transparent" />
                 {/* Glow effect */}
@@ -22,8 +22,8 @@ const ScrollEdgeLines: React.FC = () => {
 
             {/* Right Edge Line */}
             <motion.div
-                style={{ height: lineHeight, opacity: lineOpacity }}
-                className="absolute top-0 right-0 w-[1px] md:w-[2px]"
+                style={{ scaleY: lineScaleY, opacity: lineOpacity, transformOrigin: 'top' }}
+                className="absolute top-0 right-0 w-[1px] md:w-[2px] h-full"
             >
                 <div className="w-full h-full bg-gradient-to-b from-[#ff4655] via-[#ff4655]/60 to-transparent" />
                 {/* Glow effect */}

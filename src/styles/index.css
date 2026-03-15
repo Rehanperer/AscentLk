@@ -397,3 +397,13 @@ body.cursor-hover #cursor-ring {
 .anim-pulse-slow {
     animation: pulse-slow 6s ease-in-out infinite;
 }
+
+@keyframes scrollCarousel {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(-50%);
+    }
+}
