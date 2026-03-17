@@ -71,7 +71,6 @@ const AscentCoreVisual: React.FC = () => {
 
     return (
         <div className="relative w-64 h-64 md:w-80 md:h-80 flex items-center justify-center">
-            {/* Background Glow */}
             <div className="absolute inset-0 bg-[#ff4655]/5 rounded-full blur-[60px] core-glow" />
 
             <svg

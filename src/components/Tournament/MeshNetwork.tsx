@@ -4,6 +4,14 @@ import { motion } from 'framer-motion';
 const TournamentMesh: React.FC = () => {
     const [days, setDays] = useState('00');
     const [hours, setHours] = useState('00');
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     useEffect(() => {
         const target = new Date("2026-07-17T09:00:00").getTime();
@@ -44,9 +52,10 @@ const TournamentMesh: React.FC = () => {
                             key={i}
                             x1="400" y1="400" x2={coords.x} y2={coords.y}
                             className="mesh-line active"
-                            initial={{ pathLength: 0, opacity: 0 }}
-                            whileInView={{ pathLength: 1, opacity: 1 }}
-                            transition={{ duration: 1, delay: i * 0.1 }}
+                            initial={isMobile ? { pathLength: 1, opacity: 1 } : { pathLength: 0, opacity: 0 }}
+                            animate={isMobile ? { pathLength: 1, opacity: 1 } : undefined}
+                            whileInView={!isMobile ? { pathLength: 1, opacity: 1 } : undefined}
+                            transition={!isMobile ? { duration: 1, delay: i * 0.1 } : undefined}
                         />
                     );
                 })}
@@ -66,9 +75,10 @@ const TournamentMesh: React.FC = () => {
                             key={`outer-${i}`}
                             x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y}
                             className="mesh-line"
-                            initial={{ pathLength: 0, opacity: 0 }}
-                            whileInView={{ pathLength: 1, opacity: 0.3 }}
-                            transition={{ duration: 1, delay: 0.5 + i * 0.1 }}
+                            initial={isMobile ? { pathLength: 1, opacity: 0.3 } : { pathLength: 0, opacity: 0 }}
+                            animate={isMobile ? { pathLength: 1, opacity: 0.3 } : undefined}
+                            whileInView={!isMobile ? { pathLength: 1, opacity: 0.3 } : undefined}
+                            transition={!isMobile ? { duration: 1, delay: 0.5 + i * 0.1 } : undefined}
                         />
                     );
                 })}
@@ -76,9 +86,10 @@ const TournamentMesh: React.FC = () => {
 
             {/* Central Hub */}
             <motion.div
-                initial={{ scale: 0, opacity: 0 }}
-                whileInView={{ scale: 1, opacity: 1 }}
-                transition={{ type: 'spring', damping: 15 }}
+                initial={isMobile ? { scale: 1, opacity: 1 } : { scale: 0, opacity: 0 }}
+                animate={isMobile ? { scale: 1, opacity: 1 } : undefined}
+                whileInView={!isMobile ? { scale: 1, opacity: 1 } : undefined}
+                transition={!isMobile ? { type: 'spring', damping: 15 } : undefined}
                 className="hub-core absolute z-20 w-[clamp(140px,25vw,220px)] aspect-square rounded-full border border-[#ff4655]/50 flex flex-col items-center justify-center bg-radial-gradient"
                 style={{ background: 'radial-gradient(circle, rgba(255, 70, 85, 0.2) 0%, rgba(15, 25, 35, 1) 70%)', boxShadow: '0 0 50px rgba(255, 70, 85, 0.2)' }}
             >
@@ -98,9 +109,10 @@ const TournamentMesh: React.FC = () => {
             ].map((node, i) => (
                 <motion.div
                     key={i}
-                    initial={{ scale: 0, opacity: 0 }}
-                    whileInView={{ scale: 1, opacity: 1 }}
-                    transition={{ delay: 0.2 + i * 0.1 }}
+                    initial={isMobile ? { scale: 1, opacity: 1 } : { scale: 0, opacity: 0 }}
+                    animate={isMobile ? { scale: 1, opacity: 1 } : undefined}
+                    whileInView={!isMobile ? { scale: 1, opacity: 1 } : undefined}
+                    transition={!isMobile ? { delay: 0.2 + i * 0.1 } : undefined}
                     className={`mesh-node absolute -translate-x-1/2 -translate-y-1/2 z-10 w-[clamp(100px,18vw,140px)] p-2 bg-[#0f1923]/90 border ${node.border || 'border-white/20'} text-center interactive-element ${node.pos}`}
                 >
                     <div className={`text-[11px] uppercase tracking-widest mb-1 ${node.color || 'text-white/50'}`}>{node.label}</div>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 interface SectionRevealProps {
@@ -8,6 +8,24 @@ interface SectionRevealProps {
 }
 
 const SectionReveal: React.FC<SectionRevealProps> = ({ children, className = "", delay = 0 }) => {
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
+    // Bypass Framer Motion observers entirely on mobile to fix scroll lag
+    if (isMobile) {
+        return (
+            <div className={`relative ${className}`}>
+                <div>{children}</div>
+            </div>
+        );
+    }
+
     return (
         <div className={`relative ${className}`}>
             {/* Tactical Corners - Hidden on Mobile for Performance */}

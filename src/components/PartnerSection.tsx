@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Instagram, Youtube, Globe, Shield, Users, Trophy } from 'lucide-react';
 import ScrambleText from './ScrambleText';
@@ -38,6 +38,15 @@ const PartnershipCard: React.FC<{
 
 const PartnerSection: React.FC<PartnerSectionProps> = ({ onSponsorClick, onContactClick }) => {
     const { playHover, playClick } = useAudio();
+    const [isMobile, setIsMobile] = useState(false); // Added isMobile state
+
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
     return (
         <section className="relative py-24 md:py-32 overflow-hidden bg-atmospheric" id="partners">
             {/* Background Branding */}

@@ -1,9 +1,18 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import AscentCoreVisual from './Effects/AscentCoreVisual';
 import AscentRegisterButton from './Effects/AscentRegisterButton';
 
 const CountdownSection: React.FC = () => {
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
     return (
         <section id="countdown" className="relative overflow-hidden py-16 md:py-24 bg-atmospheric-blood">
             {/* TACTICAL BACKGROUND LAYER */}
@@ -32,9 +41,10 @@ const CountdownSection: React.FC = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-2 items-center gap-12 lg:gap-20">
                     <div className="text-center lg:text-left">
                         <motion.div
-                            initial={{ opacity: 0, x: -20 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            viewport={{ once: true }}
+                            initial={isMobile ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
+                            animate={isMobile ? { opacity: 1, x: 0 } : undefined}
+                            whileInView={!isMobile ? { opacity: 1, x: 0 } : undefined}
+                            viewport={!isMobile ? { once: true } : undefined}
                             className="inline-flex items-center gap-2 px-3 py-1 border border-[#ff4655]/30 bg-[#ff4655]/10 text-[#ff4655] font-mono text-xs mb-6 uppercase tracking-wider"
                         >
                             <span className="w-1.5 h-1.5 rounded-full bg-[#00ff88] animate-pulse" />
@@ -42,9 +52,10 @@ const CountdownSection: React.FC = () => {
                         </motion.div>
 
                         <motion.h2
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
+                            initial={isMobile ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+                            animate={isMobile ? { opacity: 1, y: 0 } : undefined}
+                            whileInView={!isMobile ? { opacity: 1, y: 0 } : undefined}
+                            viewport={!isMobile ? { once: true } : undefined}
                             className="font-teko text-5xl md:text-7xl font-bold text-white leading-[0.9] mb-6 uppercase tracking-tight"
                         >
                             REGISTRATION IS<br />
@@ -52,10 +63,11 @@ const CountdownSection: React.FC = () => {
                         </motion.h2>
 
                         <motion.p
-                            initial={{ opacity: 0 }}
-                            whileInView={{ opacity: 1 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: 0.2 }}
+                            initial={isMobile ? { opacity: 1 } : { opacity: 0 }}
+                            animate={isMobile ? { opacity: 1 } : undefined}
+                            whileInView={!isMobile ? { opacity: 1 } : undefined}
+                            viewport={!isMobile ? { once: true } : undefined}
+                            transition={!isMobile ? { delay: 0.2 } : undefined}
                             className="text-white/40 font-mono text-sm md:text-base max-w-md mx-auto lg:mx-0 leading-relaxed mb-10"
                         >
                             REGISTRATION PORTAL IS NOW OPERATIONAL.
@@ -63,10 +75,11 @@ const CountdownSection: React.FC = () => {
                         </motion.p>
 
                         <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: 0.8 }}
+                            initial={isMobile ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+                            animate={isMobile ? { opacity: 1, y: 0 } : undefined}
+                            whileInView={!isMobile ? { opacity: 1, y: 0 } : undefined}
+                            viewport={!isMobile ? { once: true } : undefined}
+                            transition={!isMobile ? { delay: 0.8 } : undefined}
                             className="flex justify-center lg:justify-start"
                         >
                             <AscentRegisterButton />

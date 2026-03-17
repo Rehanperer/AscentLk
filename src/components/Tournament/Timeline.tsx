@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
 
 const phases = [
@@ -29,6 +29,14 @@ const phases = [
 const Timeline: React.FC = () => {
     const ref = useRef(null);
     const isInView = useInView(ref, { once: true, margin: "-100px" });
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     const containerVariants = {
         hidden: {},
@@ -60,8 +68,8 @@ const Timeline: React.FC = () => {
             <motion.div
                 className="grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-8 relative z-10"
                 variants={containerVariants}
-                initial="hidden"
-                animate={isInView ? "visible" : "hidden"}
+                initial={isMobile ? "visible" : "hidden"}
+                animate={isMobile ? "visible" : (isInView ? "visible" : "hidden")}
             >
                 {phases.map((phase) => (
                     <motion.div
@@ -82,14 +90,16 @@ const Timeline: React.FC = () => {
                                 hover:shadow-[0_10px_40px_-10px_rgba(255,70,85,0.1)]
                                 relative overflow-hidden
                             `}
-                            whileInView={{ borderColor: 'rgba(255, 70, 85, 0.3)' }}
-                            viewport={{ margin: "-20%" }}
+                            animate={isMobile ? { borderColor: 'rgba(255, 70, 85, 0.3)' } : undefined}
+                            whileInView={!isMobile ? { borderColor: 'rgba(255, 70, 85, 0.3)' } : undefined}
+                            viewport={!isMobile ? { margin: "-20%" } : undefined}
                         >
                             {/* Mobile/Desktop Shine Effect */}
                             <motion.div
                                 className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/0"
                                 initial={{ x: '-100%' }}
-                                whileInView={{ x: '100%' }}
+                                animate={isMobile ? { x: '100%' } : undefined}
+                                whileInView={!isMobile ? { x: '100%' } : undefined}
                                 transition={{ repeat: Infinity, repeatDelay: 3, duration: 1.5, ease: "easeInOut" }}
                             />
 
@@ -125,15 +135,17 @@ const Timeline: React.FC = () => {
                         <div className="font-teko text-[7rem] md:text-[6.5rem] lg:text-[7.5rem] font-bold leading-[0.8] text-white tracking-tighter relative">
                             <motion.span
                                 className="relative z-10 transition-all duration-500"
-                                whileInView={{ color: "transparent", WebkitTextStroke: "1px #ff4655" } as any}
-                                viewport={{ margin: "-10%" }}
+                                animate={isMobile ? { color: "transparent", WebkitTextStroke: "1px #ff4655" } as any : undefined}
+                                whileInView={!isMobile ? { color: "transparent", WebkitTextStroke: "1px #ff4655" } as any : undefined}
+                                viewport={!isMobile ? { margin: "-10%" } : undefined}
                             >
                                 300K
                             </motion.span>
                             <motion.div
-                                className="absolute -inset-4 bg-[#ff4655]/20 blur-3xl"
+                                className="absolute -inset-4 bg-[#ff4655]/20 blur-3xl opacity-0 md:opacity-100"
                                 initial={{ opacity: 0 }}
-                                whileInView={{ opacity: 1 }}
+                                animate={isMobile ? { opacity: 1 } : undefined}
+                                whileInView={!isMobile ? { opacity: 1 } : undefined}
                                 transition={{ duration: 0.5 }}
                             />
                         </div>
