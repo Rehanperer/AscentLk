@@ -100,7 +100,7 @@ const AscentRegisterButton: React.FC = () => {
         <Link
             to="/register"
             ref={buttonRef}
-            className="relative group inline-flex items-center justify-center px-12 py-4 bg-transparent transition-all duration-300 overflow-hidden"
+            className="relative group inline-flex items-center justify-center px-8 md:px-12 py-3 md:py-4 bg-transparent transition-all duration-300 overflow-hidden"
         >
             {/* SVG Border Drawing Layer */}
             <svg
@@ -129,7 +129,7 @@ const AscentRegisterButton: React.FC = () => {
 
             <span
                 ref={textRef}
-                className="relative z-10 font-teko text-3xl tracking-[0.2em] text-[#ff4655] group-hover:text-white transition-colors duration-300 font-bold uppercase"
+                className="relative z-10 font-teko text-xl md:text-3xl tracking-[0.2em] text-[#ff4655] group-hover:text-white transition-colors duration-300 font-bold uppercase whitespace-nowrap"
             >
                 REGISTER_NOW
             </span>
