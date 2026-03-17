@@ -10,30 +10,43 @@ const seasons = [
 ];
 
 const SeasonsSection: React.FC = () => {
+    // Window check for unmounting heavy elements
+    const [isMobileLayout, setIsMobileLayout] = useState(false);
+    useEffect(() => {
+        setIsMobileLayout(window.innerWidth < 768);
+        const handleResize = () => setIsMobileLayout(window.innerWidth < 768);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
     return (
         <section className="relative py-32 overflow-hidden bg-transparent">
-            {/* MULTI-COLOR ATMOSPHERIC GAS - Hidden on Mobile */}
+            {/* MULTI-COLOR ATMOSPHERIC GAS - Unmounted on Mobile for Performance */}
             <div className="hidden md:block absolute inset-0 pointer-events-none z-0">
-                <motion.div
-                    className="absolute left-[-10%] top-[-10%] w-[60%] h-[70%] opacity-20 blur-[120px]"
-                    style={{ background: 'radial-gradient(circle, rgba(0,255,102,0.15) 0%, transparent 70%)' }}
-                    animate={{
-                        x: [0, 50, 0],
-                        y: [0, 30, 0],
-                        opacity: [0.1, 0.25, 0.1],
-                    }}
-                    transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-                />
-                <motion.div
-                    className="absolute right-[-10%] bottom-[-10%] w-[60%] h-[70%] opacity-20 blur-[120px]"
-                    style={{ background: 'radial-gradient(circle, rgba(0,212,255,0.1) 0%, transparent 70%)' }}
-                    animate={{
-                        x: [0, -50, 0],
-                        y: [0, -30, 0],
-                        opacity: [0.1, 0.2, 0.1],
-                    }}
-                    transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
-                />
+                {!isMobileLayout && (
+                    <>
+                        <motion.div
+                            className="absolute left-[-10%] top-[-10%] w-[60%] h-[70%] opacity-20 blur-[120px]"
+                            style={{ background: 'radial-gradient(circle, rgba(0,255,102,0.15) 0%, transparent 70%)' }}
+                            animate={{
+                                x: [0, 50, 0],
+                                y: [0, 30, 0],
+                                opacity: [0.1, 0.25, 0.1],
+                            }}
+                            transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+                        />
+                        <motion.div
+                            className="absolute right-[-10%] bottom-[-10%] w-[60%] h-[70%] opacity-20 blur-[120px]"
+                            style={{ background: 'radial-gradient(circle, rgba(0,212,255,0.1) 0%, transparent 70%)' }}
+                            animate={{
+                                x: [0, -50, 0],
+                                y: [0, -30, 0],
+                                opacity: [0.1, 0.2, 0.1],
+                            }}
+                            transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
+                        />
+                    </>
+                )}
             </div>
 
             <div className="max-w-7xl mx-auto px-6 relative z-10">
@@ -81,8 +94,8 @@ const SeasonsSection: React.FC = () => {
                             <div className="font-mono text-[9px] tracking-[0.4em] text-white/30 uppercase mb-3">Upcoming Seasons</div>
                             <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 mb-4">
                                 {seasons.filter(s => !s.active).map((s) => (
-                                    <span key={s.id} className="font-teko text-2xl font-bold opacity-30" style={{ color: s.color }}>
-                                        {s.title}
+                                    <span key={s.id} className="font-teko text-2xl font-bold opacity-30 glitch" data-text="ENCRYPTED" style={{ color: s.color }}>
+                                        ENCRYPTED
                                     </span>
                                 ))}
                             </div>
@@ -293,7 +306,9 @@ const SeasonCard: React.FC<{ season: any; index: number }> = ({ season, index })
                         </div>
                     ) : (
                         <div className="translate-z-40">
-                            <PersistentGlitch text={season.title} />
+                            <span className="font-mono tracking-tighter block overflow-hidden whitespace-nowrap opacity-20 group-hover:opacity-60 glitch" data-text={season.title}>
+                                {season.title}
+                            </span>
                         </div>
                     )}
                 </h3>
@@ -313,25 +328,6 @@ const SeasonCard: React.FC<{ season: any; index: number }> = ({ season, index })
             {/* Scanline Effect on Card */}
             <div className="absolute inset-0 pointer-events-none opacity-[0.03] z-10 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_2px,3px_100%]" />
         </motion.div>
-    );
-};
-
-// AUTO-ACTIVE Persistent Glitch for Encrypted Seasons
-const PersistentGlitch: React.FC<{ text: string }> = ({ text }) => {
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
-    const [scrambled, setScrambled] = useState(text.split('').map(() => chars[Math.floor(Math.random() * chars.length)]).join(''));
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setScrambled(text.split('').map(() => chars[Math.floor(Math.random() * chars.length)]).join(''));
-        }, 120);
-        return () => clearInterval(interval);
-    }, [text]);
-
-    return (
-        <span className="font-mono tracking-tighter transition-opacity block overflow-hidden whitespace-nowrap opacity-20 group-hover:opacity-60">
-            {scrambled}
-        </span>
     );
 };
 
