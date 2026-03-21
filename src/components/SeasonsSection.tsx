@@ -305,9 +305,10 @@ const SeasonCard: React.FC<{ season: any; index: number }> = ({ season, index })
                             {season.title}
                         </div>
                     ) : (
-                        <div className="translate-z-40">
-                            <span className="font-mono tracking-tighter block overflow-hidden whitespace-nowrap opacity-20 group-hover:opacity-60 glitch" data-text={season.title}>
-                                {season.title}
+                        <div className="translate-z-40 flex flex-col w-full">
+                            <span className="text-xs font-mono tracking-[0.4em] font-normal mb-1 opacity-40">LOCKED</span>
+                            <span className="font-teko text-4xl md:text-5xl tracking-widest block overflow-hidden text-ellipsis w-full whitespace-nowrap opacity-20 group-hover:opacity-60 glitch" data-text="ENCRYPTED">
+                                ENCRYPTED
                             </span>
                         </div>
                     )}
