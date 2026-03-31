@@ -407,3 +407,15 @@ body.cursor-hover #cursor-ring {
         transform: translateX(-50%);
     }
 }
+
+/* --- MOBILE PERFORMANCE OPTIMIZATIONS --- */
+@media (max-width: 767px) {
+    .bg-scanline {
+        animation: none;
+        display: none;
+    }
+
+    .anim-pulse-slow {
+        animation: none;
+    }
+}

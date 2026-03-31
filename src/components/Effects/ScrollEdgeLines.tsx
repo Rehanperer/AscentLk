@@ -16,8 +16,8 @@ const ScrollEdgeLines: React.FC = () => {
                 className="absolute top-0 left-0 w-[1px] md:w-[2px] h-full"
             >
                 <div className="w-full h-full bg-gradient-to-b from-[#ff4655] via-[#ff4655]/60 to-transparent" />
-                {/* Glow effect */}
-                <div className="absolute top-0 left-0 w-[6px] md:w-[10px] h-full -translate-x-1/2 bg-gradient-to-b from-[#ff4655]/40 via-[#ff4655]/20 to-transparent blur-[4px] md:blur-[6px]" />
+                {/* Glow effect - Desktop only */}
+                <div className="absolute top-0 left-0 w-[10px] h-full -translate-x-1/2 bg-gradient-to-b from-[#ff4655]/40 via-[#ff4655]/20 to-transparent blur-[6px] hidden md:block" />
             </motion.div>
 
             {/* Right Edge Line */}
@@ -26,8 +26,8 @@ const ScrollEdgeLines: React.FC = () => {
                 className="absolute top-0 right-0 w-[1px] md:w-[2px] h-full"
             >
                 <div className="w-full h-full bg-gradient-to-b from-[#ff4655] via-[#ff4655]/60 to-transparent" />
-                {/* Glow effect */}
-                <div className="absolute top-0 right-0 w-[6px] md:w-[10px] h-full translate-x-1/2 bg-gradient-to-b from-[#ff4655]/40 via-[#ff4655]/20 to-transparent blur-[4px] md:blur-[6px]" />
+                {/* Glow effect - Desktop only */}
+                <div className="absolute top-0 right-0 w-[10px] h-full translate-x-1/2 bg-gradient-to-b from-[#ff4655]/40 via-[#ff4655]/20 to-transparent blur-[6px] hidden md:block" />
             </motion.div>
         </div>
     );

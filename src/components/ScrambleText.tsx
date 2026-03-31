@@ -10,7 +10,22 @@ interface TextScrambleProps {
 
 const chars = '!<>-_\\/[]{}—=+*^?#________';
 
+// Cache mobile check to avoid repeated matchMedia calls
+const isMobileDevice = typeof window !== 'undefined' && window.innerWidth < 768;
+
 const ScrambleText: React.FC<TextScrambleProps> = ({ text, className, delay = 0, duration = 40, triggerOnScroll = false }) => {
+    // On mobile, skip the entire scramble animation and render text directly
+    const elementRef = useRef<HTMLSpanElement>(null);
+
+    if (isMobileDevice) {
+        return <span ref={elementRef} className={className}>{text}</span>;
+    }
+
+    return <ScrambleTextDesktop text={text} className={className} delay={delay} duration={duration} triggerOnScroll={triggerOnScroll} />;
+};
+
+// Desktop-only scramble component (all animation logic isolated here)
+const ScrambleTextDesktop: React.FC<TextScrambleProps> = ({ text, className, delay = 0, duration = 40, triggerOnScroll = false }) => {
     const [displayText, setDisplayText] = useState(text);
     const [isComplete, setIsComplete] = useState(false);
     const [hasTriggered, setHasTriggered] = useState(false);
@@ -35,7 +50,7 @@ const ScrambleText: React.FC<TextScrambleProps> = ({ text, className, delay = 0,
                 }
                 output += char;
             } else {
-                output += ''; // Start empty or keep existing char if needed, but logic below handles it
+                output += '';
             }
         }
 
@@ -49,7 +64,6 @@ const ScrambleText: React.FC<TextScrambleProps> = ({ text, className, delay = 0,
         }
     }, []);
 
-    // Handle Trigger
     useEffect(() => {
         if (!triggerOnScroll) {
             setHasTriggered(true);
@@ -73,14 +87,8 @@ const ScrambleText: React.FC<TextScrambleProps> = ({ text, className, delay = 0,
         return () => observer.disconnect();
     }, [triggerOnScroll]);
 
-    // Handle Scramble Logic
     useEffect(() => {
         if (!hasTriggered) {
-            // Keep initial text hidden or processed
-            // Ideally we might want it to be invisible or just static until triggered.
-            // But for scramble effect, usually it starts empty or from placeholder.
-            // Based on update logic, it builds up.
-            //lets jkeep it like this for now
             setDisplayText('');
             return;
         }

@@ -78,7 +78,7 @@ const MaintenanceGuard: React.FC<{ children: React.ReactNode }> = ({ children })
         };
     }, []);
 
-    if (isLoading) return <LoadingScreen onComplete={() => { }} />;
+    if (isLoading) return null; // Let the global LoadingScreen handle the initial load
 
     const isMaintenanceActive = maintenance?.enabled && new Date(maintenance.until) > new Date();
 
@@ -115,6 +115,10 @@ const App: React.FC = () => {
     };
 
     return (
+        <div className="relative min-h-screen" style={{ background: 'var(--bg-gradient)' }}>
+            <AnimatePresence>
+                {isLoading && <LoadingScreen onComplete={handleLoadingComplete} key="loader" />}
+            </AnimatePresence>
         <AnimatePresence mode="wait">
             <MaintenanceGuard>
                 <Routes>
@@ -168,9 +172,7 @@ const App: React.FC = () => {
                     } />
                     <Route path="/" element={
                         <div className="relative min-h-screen" style={{ background: 'var(--bg-gradient)' }}>
-                            <AnimatePresence>
-                                {isLoading && <LoadingScreen onComplete={handleLoadingComplete} key="loader" />}
-                            </AnimatePresence>
+                            {/* Global LoadingScreen is now at the root of App */}
                             <CustomCursor />
                             <ScrollEdgeLines />
 
@@ -226,8 +228,8 @@ const App: React.FC = () => {
                                         {/* Participating Schools Section - Standard Import for zero perceived delay */}
                                         <section id="schools" className="py-24 relative overflow-hidden bg-atmospheric-blood">
                                             {/* Atmospheric crimson glow orbs - Centered away from edges */}
-                                            <div className="absolute top-1/4 left-0 w-full h-80 bg-[#4a0000]/40 rounded-full blur-[120px] pointer-events-none" />
-                                            <div className="absolute bottom-1/4 left-0 w-full h-80 bg-[#4a0000]/40 rounded-full blur-[120px] pointer-events-none" />
+                                            <div className="absolute top-1/4 left-0 w-full h-80 bg-[#4a0000]/40 rounded-full blur-[40px] md:blur-[120px] pointer-events-none" />
+                                            <div className="absolute bottom-1/4 left-0 w-full h-80 bg-[#4a0000]/40 rounded-full blur-[40px] md:blur-[120px] pointer-events-none" />
 
                                             <ParallaxBackground text="VALORANT // 5v5" velocity={-30} direction="horizontal" className="top-0 opacity-5" />
                                             <SectionReveal className="relative z-10 p-8 border border-white/5">
@@ -259,8 +261,8 @@ const App: React.FC = () => {
                                                     <div className="bg-scanline opacity-60" />
 
                                                     {/* Atmospheric crimson glow orbs - Centered away from edges */}
-                                                    <div className="absolute top-1/4 left-0 w-full h-80 bg-[#4a0000]/40 rounded-full blur-[120px] pointer-events-none" />
-                                                    <div className="absolute bottom-1/4 left-0 w-full h-80 bg-[#4a0000]/40 rounded-full blur-[120px] pointer-events-none" />
+                                                    <div className="absolute top-1/4 left-0 w-full h-80 bg-[#4a0000]/40 rounded-full blur-[40px] md:blur-[120px] pointer-events-none" />
+                                                    <div className="absolute bottom-1/4 left-0 w-full h-80 bg-[#4a0000]/40 rounded-full blur-[40px] md:blur-[120px] pointer-events-none" />
 
                                                     {/* Smooth Blending Fades */}
                                                     <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-[#0d121f] to-transparent pointer-events-none z-10" />
@@ -315,6 +317,7 @@ const App: React.FC = () => {
                 </Routes>
             </MaintenanceGuard>
         </AnimatePresence>
+        </div>
     );
 };
 

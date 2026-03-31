@@ -1,12 +1,17 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 // @ts-ignore
 import anime from 'animejs';
 
 const AscentCoreVisual: React.FC = () => {
     const visualRef = useRef<SVGSVGElement>(null);
+    const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
-        if (!visualRef.current) return;
+        setIsMobile(window.innerWidth < 768);
+    }, []);
+
+    useEffect(() => {
+        if (!visualRef.current || isMobile) return;
 
         // Reset any existing animations
         anime.remove('.core-ring');
@@ -67,7 +72,7 @@ const AscentCoreVisual: React.FC = () => {
             loop: true
         });
 
-    }, []);
+    }, [isMobile]);
 
     return (
         <div className="relative w-64 h-64 md:w-80 md:h-80 flex items-center justify-center">

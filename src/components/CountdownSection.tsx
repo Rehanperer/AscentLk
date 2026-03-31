@@ -18,9 +18,9 @@ const CountdownSection: React.FC = () => {
             {/* TACTICAL BACKGROUND LAYER */}
             <div className="absolute inset-0 z-0">
                 {/* Atmospheric crimson glow orbs - Centered away from edges */}
-                <div className="absolute top-1/4 left-0 w-full h-80 bg-[#4a0000]/40 rounded-full blur-[120px] pointer-events-none" />
-                <div className="absolute bottom-1/4 left-0 w-full h-80 bg-[#4a0000]/40 rounded-full blur-[120px] pointer-events-none" />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#4a0000]/20 rounded-full blur-[180px] anim-pulse-slow pointer-events-none" />
+                <div className="absolute top-1/4 left-0 w-full h-80 bg-[#4a0000]/40 rounded-full blur-[40px] md:blur-[120px] pointer-events-none" />
+                <div className="absolute bottom-1/4 left-0 w-full h-80 bg-[#4a0000]/40 rounded-full blur-[40px] md:blur-[120px] pointer-events-none" />
+                <div className="hidden md:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#4a0000]/20 rounded-full blur-[180px] anim-pulse-slow pointer-events-none" />
 
                 {/* Technical Grid Accent */}
                 <div className="absolute inset-0 bg-grid opacity-10 pointer-events-none" />

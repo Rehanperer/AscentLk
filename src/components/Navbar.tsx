@@ -45,7 +45,7 @@ const Navbar: React.FC<NavbarProps> = ({ onRegister, onNavigate }) => {
             <nav className="fixed top-0 left-0 w-full z-[999] px-4 py-3 md:px-8 md:py-4 pointer-events-none">
                 <div className="max-w-7xl mx-auto relative pointer-events-auto">
                     {/* Mobile optimized blur (reduced intensity) */}
-                    <div className="absolute inset-0 bg-[#0d121f]/60 backdrop-blur-xl border border-white/5 shadow-2xl rounded-sm" />
+                    <div className="absolute inset-0 bg-[#0d121f]/60 backdrop-blur-sm md:backdrop-blur-xl border border-white/5 shadow-2xl rounded-sm" />
 
                     {/* Stealth Progress Bar */}
                     <div className="absolute top-0 left-0 h-[1px] bg-[#ff4655]/60 transition-all duration-100 ease-out" style={{ width: `${scrollPercent}%` }} />

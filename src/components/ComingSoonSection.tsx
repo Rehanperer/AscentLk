@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import ScrambleText from './ScrambleText';
 import { useAudio } from '../hooks/useAudio';
@@ -9,31 +9,39 @@ interface ComingSoonProps {
 
 const ComingSoonSection: React.FC<ComingSoonProps> = ({ onNotifyClick }) => {
     const { playHover, playClick } = useAudio();
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        setIsMobile(window.innerWidth < 768);
+    }, []);
+
     return (
-        <section className="relative py-24 md:py-48 overflow-hidden bg-atmospheric backdrop-blur-md" id="registration-portal">
+        <section className={`relative py-24 md:py-48 overflow-hidden bg-atmospheric ${isMobile ? '' : 'backdrop-blur-md'}`} id="registration-portal">
             {/* Blending Gradients */}
             <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-[#0d121f] to-transparent pointer-events-none z-10" />
             <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#0d121f] to-transparent pointer-events-none z-10" />
 
-            {/* Background Radar Sweep VFX */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
-                <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-                    className="w-[400px] md:w-[800px] h-[400px] md:h-[800px] rounded-full border border-white/20 relative"
-                >
-                    <div className="absolute top-0 left-1/2 w-[1px] h-1/2 bg-gradient-to-t from-transparent to-white/40 origin-bottom shadow-[0_0_15px_white]" />
-                </motion.div>
-                <div className="absolute w-[600px] h-[600px] rounded-full border border-white/5" />
-                <div className="absolute w-[400px] h-[400px] rounded-full border border-white/5" />
-            </div>
+            {/* Background Radar Sweep VFX - Desktop Only */}
+            {!isMobile && (
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
+                    <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                        className="w-[400px] md:w-[800px] h-[400px] md:h-[800px] rounded-full border border-white/20 relative"
+                    >
+                        <div className="absolute top-0 left-1/2 w-[1px] h-1/2 bg-gradient-to-t from-transparent to-white/40 origin-bottom shadow-[0_0_15px_white]" />
+                    </motion.div>
+                    <div className="absolute w-[600px] h-[600px] rounded-full border border-white/5" />
+                    <div className="absolute w-[400px] h-[400px] rounded-full border border-white/5" />
+                </div>
+            )}
 
             {/* Tactical Grid Overlay */}
             <div className="absolute inset-0 bg-grid opacity-10 pointer-events-none" />
 
-            {/* Atmospheric glow orbs - Blend Red and Blue */}
-            <div className="absolute top-1/4 right-0 w-[800px] h-[800px] bg-[#0044ff]/15 rounded-full blur-[150px] pointer-events-none" />
-            <div className="absolute bottom-1/4 left-0 w-[800px] h-[800px] bg-[#4a0000]/25 rounded-full blur-[150px] pointer-events-none" />
+            {/* Atmospheric glow orbs - Reduced on mobile */}
+            <div className={`absolute top-1/4 right-0 w-[800px] h-[800px] bg-[#0044ff]/15 rounded-full ${isMobile ? 'blur-[40px]' : 'blur-[150px]'} pointer-events-none`} />
+            <div className={`absolute bottom-1/4 left-0 w-[800px] h-[800px] bg-[#4a0000]/25 rounded-full ${isMobile ? 'blur-[40px]' : 'blur-[150px]'} pointer-events-none`} />
 
 
             <div className="max-w-7xl mx-auto px-6 relative z-10 flex flex-col items-center">

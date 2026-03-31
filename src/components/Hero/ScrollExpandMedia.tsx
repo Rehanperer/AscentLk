@@ -1,4 +1,5 @@
 import {
+    useCallback,
     useEffect,
     useRef,
     useState,
@@ -38,13 +39,28 @@ const ScrollExpandMedia = ({
     onMediaLoaded,
     forceExpand = false,
 }: ScrollExpandMediaProps) => {
-    const [scrollProgress, setScrollProgress] = useState<number>(0);
+    // Use refs for high-frequency scroll values to avoid React re-renders on every touch tick
+    const scrollProgressRef = useRef<number>(0);
+    const touchStartYRef = useRef<number>(0);
+    const mediaContainerRef = useRef<HTMLDivElement | null>(null);
+    const bgOverlayRef = useRef<HTMLDivElement | null>(null);
+    const titleRef1 = useRef<HTMLHeadingElement | null>(null);
+    const titleRef2 = useRef<HTMLHeadingElement | null>(null);
+    const overlayRef = useRef<HTMLDivElement | null>(null);
+
     const [showContent, setShowContent] = useState<boolean>(false);
     const [mediaFullyExpanded, setMediaFullyExpanded] = useState<boolean>(false);
-    const [touchStartY, setTouchStartY] = useState<number>(0);
     const [isMobileState, setIsMobileState] = useState<boolean>(false);
+    // Keep a state-based scrollProgress for initial render only
+    const [scrollProgress, setScrollProgress] = useState<number>(0);
 
     const sectionRef = useRef<HTMLDivElement | null>(null);
+    const mediaFullyExpandedRef = useRef<boolean>(false);
+
+    // Sync ref with state
+    useEffect(() => {
+        mediaFullyExpandedRef.current = mediaFullyExpanded;
+    }, [mediaFullyExpanded]);
 
     // If it's a YouTube embed, we can't easily track load, so we treat it as loaded immediately (or after a timeout)
     useEffect(() => {
@@ -62,6 +78,7 @@ const ScrollExpandMedia = ({
     };
 
     useEffect(() => {
+        scrollProgressRef.current = 0;
         setScrollProgress(0);
         setShowContent(false);
         setMediaFullyExpanded(false);
@@ -71,34 +88,70 @@ const ScrollExpandMedia = ({
     useEffect(() => {
         if (forceExpand) {
             setMediaFullyExpanded(true);
+            scrollProgressRef.current = 1;
             setScrollProgress(1);
             setShowContent(true);
         }
     }, [forceExpand]);
 
-    // ... rest of effects ...
+    // Apply scroll progress to DOM elements directly (bypasses React re-renders)
+    const applyScrollProgress = useCallback((progress: number) => {
+        const isMobile = isMobileState;
+        const w = isMobile
+            ? 240 + progress * (window.innerWidth - 240)
+            : 300 + progress * 1250;
+        const h = isMobile
+            ? 340 + progress * (window.innerHeight - 340)
+            : 400 + progress * 400;
 
-    // (Skipping existing useEffect for scroll logic - assume it's unchanged)
+        if (mediaContainerRef.current) {
+            mediaContainerRef.current.style.width = `${w}px`;
+            mediaContainerRef.current.style.height = `${h}px`;
+            if (isMobile) {
+                mediaContainerRef.current.style.borderRadius = `${(1 - progress) * 32}px`;
+            }
+        }
+
+        if (bgOverlayRef.current) {
+            bgOverlayRef.current.style.opacity = String(1 - progress);
+        }
+
+        const textTranslateX = progress * (isMobile ? 100 : 150);
+        // Title scaling is handled via style props in the JSX below
+        if (titleRef1.current) {
+            titleRef1.current.style.transform = `scale(${1 - progress * 0.2})`;
+        }
+        if (titleRef2.current) {
+            titleRef2.current.style.transform = `scale(${1 + progress * 0.2})`;
+        }
+
+        if (overlayRef.current) {
+            overlayRef.current.style.opacity = String(0.5 - progress * 0.3);
+        }
+    }, [isMobileState]);
+
     useEffect(() => {
         let rafId: number;
         let isProcessing = false;
 
         const handleWheel = (e: WheelEvent) => {
-            if (mediaFullyExpanded && window.scrollY > 5) return;
+            if (mediaFullyExpandedRef.current && window.scrollY > 5) return;
             if (e.ctrlKey) return; // Allow pinch-zoom
 
             if (isProcessing) return;
             isProcessing = true;
 
             rafId = requestAnimationFrame(() => {
-                if (mediaFullyExpanded && e.deltaY < 0 && window.scrollY <= 5) {
+                if (mediaFullyExpandedRef.current && e.deltaY < 0 && window.scrollY <= 5) {
                     setMediaFullyExpanded(false);
-                } else if (!mediaFullyExpanded) {
+                } else if (!mediaFullyExpandedRef.current) {
                     const scrollDelta = e.deltaY * 0.0012;
-                    const newProgress = Math.min(Math.max(scrollProgress + scrollDelta, 0), 1);
+                    const newProgress = Math.min(Math.max(scrollProgressRef.current + scrollDelta, 0), 1);
 
-                    if (newProgress !== scrollProgress) {
+                    if (newProgress !== scrollProgressRef.current) {
+                        scrollProgressRef.current = newProgress;
                         setScrollProgress(newProgress);
+                        applyScrollProgress(newProgress);
                     }
 
                     if (newProgress >= 1) {
@@ -111,21 +164,21 @@ const ScrollExpandMedia = ({
                 isProcessing = false;
             });
 
-            if (!mediaFullyExpanded || (mediaFullyExpanded && e.deltaY < 0 && window.scrollY <= 5)) {
+            if (!mediaFullyExpandedRef.current || (mediaFullyExpandedRef.current && e.deltaY < 0 && window.scrollY <= 5)) {
                 e.preventDefault();
             }
         };
 
         const handleTouchStart = (e: TouchEvent) => {
-            setTouchStartY(e.touches[0].clientY);
+            touchStartYRef.current = e.touches[0].clientY;
         };
 
         const handleTouchMove = (e: TouchEvent) => {
-            if (!touchStartY) return;
-            if (mediaFullyExpanded && window.scrollY > 5) return;
+            if (!touchStartYRef.current) return;
+            if (mediaFullyExpandedRef.current && window.scrollY > 5) return;
             if (e.touches.length > 1) return;
 
-            if (!mediaFullyExpanded) {
+            if (!mediaFullyExpandedRef.current) {
                 if (e.cancelable) e.preventDefault();
             }
 
@@ -134,17 +187,20 @@ const ScrollExpandMedia = ({
 
             rafId = requestAnimationFrame(() => {
                 const touchY = e.touches[0].clientY;
-                const deltaY = touchStartY - touchY;
+                const deltaY = touchStartYRef.current - touchY;
 
-                if (mediaFullyExpanded && deltaY < -20 && window.scrollY <= 5) {
+                if (mediaFullyExpandedRef.current && deltaY < -20 && window.scrollY <= 5) {
                     setMediaFullyExpanded(false);
-                } else if (!mediaFullyExpanded) {
+                } else if (!mediaFullyExpandedRef.current) {
                     const scrollFactor = deltaY < 0 ? 0.008 : 0.005;
                     const scrollDelta = deltaY * scrollFactor;
-                    const newProgress = Math.min(Math.max(scrollProgress + scrollDelta, 0), 1);
+                    const newProgress = Math.min(Math.max(scrollProgressRef.current + scrollDelta, 0), 1);
 
-                    if (newProgress !== scrollProgress) {
+                    if (newProgress !== scrollProgressRef.current) {
+                        scrollProgressRef.current = newProgress;
+                        // Only update React state for render-dependent elements
                         setScrollProgress(newProgress);
+                        applyScrollProgress(newProgress);
                     }
 
                     if (newProgress >= 1) {
@@ -153,18 +209,18 @@ const ScrollExpandMedia = ({
                     } else if (newProgress < 0.75) {
                         setShowContent(false);
                     }
-                    setTouchStartY(touchY);
+                    touchStartYRef.current = touchY;
                 }
                 isProcessing = false;
             });
         };
 
         const handleTouchEnd = (): void => {
-            setTouchStartY(0);
+            touchStartYRef.current = 0;
         };
 
         const handleScroll = (): void => {
-            if (!mediaFullyExpanded) {
+            if (!mediaFullyExpandedRef.current) {
                 window.scrollTo(0, 0);
             }
         };
@@ -183,7 +239,7 @@ const ScrollExpandMedia = ({
             window.removeEventListener('touchend', handleTouchEnd as EventListener);
             cancelAnimationFrame(rafId);
         };
-    }, [scrollProgress, mediaFullyExpanded, touchStartY]);
+    }, [isMobileState, applyScrollProgress]);
 
     useEffect(() => {
         const checkIfMobile = (): void => {
