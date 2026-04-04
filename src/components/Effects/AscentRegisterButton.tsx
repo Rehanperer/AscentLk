@@ -2,12 +2,15 @@ import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 // @ts-ignore
 import anime from 'animejs';
+import { devicePerf } from '../../hooks/useDevicePerformance';
 
 const AscentRegisterButton: React.FC = () => {
     const buttonRef = useRef<HTMLAnchorElement>(null);
     const textRef = useRef<HTMLSpanElement>(null);
 
     useEffect(() => {
+        // Skip all animejs on mobile — render static button
+        if (devicePerf.isMobile) return;
         if (!buttonRef.current || !textRef.current) return;
 
         // 1. Initial State: Hide text and reset paths

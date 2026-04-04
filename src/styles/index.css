@@ -396,6 +396,14 @@ body.cursor-hover #cursor-ring {
    MOBILE PERFORMANCE OPTIMIZATIONS
    ========================================================================== */
 @media (max-width: 767px) {
+    /* Disable glass-panel backdrop-filter on mobile — this is the #1 cause of scroll lag.
+       backdrop-filter forces the browser to re-composite layers during every scroll frame. */
+    .glass-panel {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        background: rgba(255, 255, 255, 0.05) !important;
+    }
+
     /* Disable expensive CSS animations */
     .bg-scanline {
         animation: none;
@@ -415,24 +423,32 @@ body.cursor-hover #cursor-ring {
 
     /* Reduce blur radii globally — blur is very expensive on mobile GPUs */
     .blur-\[120px\] {
-        filter: blur(40px) !important;
+        filter: blur(30px) !important;
     }
 
     .blur-\[150px\] {
-        filter: blur(40px) !important;
+        filter: blur(30px) !important;
     }
 
     .blur-\[180px\] {
-        filter: blur(40px) !important;
+        filter: blur(30px) !important;
+    }
+
+    .blur-\[60px\] {
+        filter: blur(20px) !important;
     }
 
     /* Reduce backdrop-blur on mobile */
     .backdrop-blur-3xl {
-        backdrop-filter: blur(12px) !important;
+        backdrop-filter: blur(8px) !important;
     }
 
     .backdrop-blur-xl {
-        backdrop-filter: blur(8px) !important;
+        backdrop-filter: blur(6px) !important;
+    }
+
+    .backdrop-blur-md {
+        backdrop-filter: blur(4px) !important;
     }
 
     /* GPU-optimize the carousel animation */
@@ -440,11 +456,17 @@ body.cursor-hover #cursor-ring {
         will-change: transform;
         -webkit-backface-visibility: hidden;
         backface-visibility: hidden;
+        transform: translateZ(0);
     }
 
     /* Reduce modal backdrop-filter on mobile */
     .modal-overlay {
         backdrop-filter: blur(4px);
+    }
+
+    /* Promote scrolling sections to GPU layers */
+    section {
+        transform: translateZ(0);
     }
 }
 
