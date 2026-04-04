@@ -1,7 +1,5 @@
 @import "tailwindcss";
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Rajdhani:wght@500;600;700&display=swap');
-
 @layer base {
     :root {
         --glass-bg: rgba(255, 255, 255, 0.03);
@@ -61,18 +59,6 @@
     opacity: 0.15;
 }
 
-.grain {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
-    opacity: 0.02;
-    z-index: 101;
-    pointer-events: none;
-}
-
 /* --- CUSTOM CURSOR --- */
 #cursor-dot,
 #cursor-ring {
@@ -82,7 +68,6 @@
     left: 0;
     border-radius: 50%;
     z-index: 9999;
-    transition: transform 0.1s ease-out, width 0.3s ease, height 0.3s ease, border-color 0.3s ease;
 }
 
 #cursor-dot {
@@ -202,7 +187,6 @@ body.cursor-hover #cursor-ring {
     background: rgba(255, 70, 85, 0.1);
 }
 
-/* --- GRID BACKGROUND --- */
 /* --- UTILITIES --- */
 .angled-box {
     clip-path: polygon(10px 0, 100% 0,
@@ -408,8 +392,11 @@ body.cursor-hover #cursor-ring {
     }
 }
 
-/* --- MOBILE PERFORMANCE OPTIMIZATIONS --- */
+/* ==========================================================================
+   MOBILE PERFORMANCE OPTIMIZATIONS
+   ========================================================================== */
 @media (max-width: 767px) {
+    /* Disable expensive CSS animations */
     .bg-scanline {
         animation: none;
         display: none;
@@ -417,5 +404,70 @@ body.cursor-hover #cursor-ring {
 
     .anim-pulse-slow {
         animation: none;
+    }
+
+    /* Disable glitch pseudo-element animations on mobile */
+    .glitch::before,
+    .glitch::after {
+        animation: none !important;
+        display: none;
+    }
+
+    /* Reduce blur radii globally — blur is very expensive on mobile GPUs */
+    .blur-\[120px\] {
+        filter: blur(40px) !important;
+    }
+
+    .blur-\[150px\] {
+        filter: blur(40px) !important;
+    }
+
+    .blur-\[180px\] {
+        filter: blur(40px) !important;
+    }
+
+    /* Reduce backdrop-blur on mobile */
+    .backdrop-blur-3xl {
+        backdrop-filter: blur(12px) !important;
+    }
+
+    .backdrop-blur-xl {
+        backdrop-filter: blur(8px) !important;
+    }
+
+    /* GPU-optimize the carousel animation */
+    .animate-\[scrollCarousel_40s_linear_infinite\] {
+        will-change: transform;
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+    }
+
+    /* Reduce modal backdrop-filter on mobile */
+    .modal-overlay {
+        backdrop-filter: blur(4px);
+    }
+}
+
+/* Respect user's reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    .bg-scanline {
+        display: none;
+    }
+
+    .anim-pulse-slow {
+        animation: none;
+    }
+
+    .glitch::before,
+    .glitch::after {
+        display: none;
     }
 }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Instagram, Ticket } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -12,8 +12,9 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = ({ onRegister, onNavigate }) => {
     const { playHover, playClick } = useAudio();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const [scrollPercent, setScrollPercent] = useState(0);
+    const progressBarRef = useRef<HTMLDivElement>(null);
 
+    // Scroll progress — direct DOM manipulation, no React state
     useEffect(() => {
         let ticking = false;
         const handleScroll = () => {
@@ -22,13 +23,15 @@ const Navbar: React.FC<NavbarProps> = ({ onRegister, onNavigate }) => {
                     const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
                     const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
                     const scrolled = (winScroll / height) * 100;
-                    setScrollPercent(scrolled);
+                    if (progressBarRef.current) {
+                        progressBarRef.current.style.width = `${scrolled}%`;
+                    }
                     ticking = false;
                 });
                 ticking = true;
             }
         };
-        window.addEventListener('scroll', handleScroll);
+        window.addEventListener('scroll', handleScroll, { passive: true });
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
@@ -47,8 +50,12 @@ const Navbar: React.FC<NavbarProps> = ({ onRegister, onNavigate }) => {
                     {/* Mobile optimized blur (reduced intensity) */}
                     <div className="absolute inset-0 bg-[#0d121f]/60 backdrop-blur-sm md:backdrop-blur-xl border border-white/5 shadow-2xl rounded-sm" />
 
-                    {/* Stealth Progress Bar */}
-                    <div className="absolute top-0 left-0 h-[1px] bg-[#ff4655]/60 transition-all duration-100 ease-out" style={{ width: `${scrollPercent}%` }} />
+                    {/* Stealth Progress Bar — now driven by ref, no re-renders */}
+                    <div
+                        ref={progressBarRef}
+                        className="absolute top-0 left-0 h-[1px] bg-[#ff4655]/60 transition-none"
+                        style={{ width: '0%', willChange: 'width' }}
+                    />
 
                     <div className="relative px-4 py-2 flex justify-between items-center">
                         {/* Logo Area */}
@@ -163,7 +170,6 @@ const Navbar: React.FC<NavbarProps> = ({ onRegister, onNavigate }) => {
 
                         {/* Background VFX - Simplified for Mobile */}
                         <div className="absolute inset-0 bg-grid opacity-5 pointer-events-none" />
-                        {/* Removed heavy blur circle for performance */}
 
                         <div className="h-full flex flex-col p-8 pt-32 overflow-y-auto">
                             <div className="flex flex-col gap-8">

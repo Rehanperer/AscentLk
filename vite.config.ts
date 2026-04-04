@@ -40,11 +40,14 @@ export default defineConfig({
     include: ['animejs']
   },
   build: {
+    cssMinify: 'lightningcss',
     rollupOptions: {
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom'],
-          animations: ['framer-motion', 'animejs']
+          animations: ['framer-motion', 'animejs'],
+          router: ['react-router-dom'],
+          supabase: ['@supabase/supabase-js']
         }
       }
     }

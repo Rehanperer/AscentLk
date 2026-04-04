@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { devicePerf } from '../hooks/useDevicePerformance';
 
 const seasons = [
     { id: 1, title: 'TOXIC', status: 'ACTIVE', color: '#00ff66', active: true, coords: "34.0522° N, 118.2437° W" },
@@ -10,44 +11,35 @@ const seasons = [
 ];
 
 const SeasonsSection: React.FC = () => {
-    // Window check for unmounting heavy elements
-    const [isMobileLayout, setIsMobileLayout] = useState(false);
-    useEffect(() => {
-        setIsMobileLayout(window.innerWidth < 768);
-        const handleResize = () => setIsMobileLayout(window.innerWidth < 768);
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
+    const isMobile = devicePerf.isMobile;
 
     return (
         <section className="relative py-32 overflow-hidden bg-transparent">
-            {/* MULTI-COLOR ATMOSPHERIC GAS - Unmounted on Mobile for Performance */}
-            <div className="hidden md:block absolute inset-0 pointer-events-none z-0">
-                {!isMobileLayout && (
-                    <>
-                        <motion.div
-                            className="absolute left-[-10%] top-[-10%] w-[60%] h-[70%] opacity-20 blur-[120px]"
-                            style={{ background: 'radial-gradient(circle, rgba(0,255,102,0.15) 0%, transparent 70%)' }}
-                            animate={{
-                                x: [0, 50, 0],
-                                y: [0, 30, 0],
-                                opacity: [0.1, 0.25, 0.1],
-                            }}
-                            transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-                        />
-                        <motion.div
-                            className="absolute right-[-10%] bottom-[-10%] w-[60%] h-[70%] opacity-20 blur-[120px]"
-                            style={{ background: 'radial-gradient(circle, rgba(0,212,255,0.1) 0%, transparent 70%)' }}
-                            animate={{
-                                x: [0, -50, 0],
-                                y: [0, -30, 0],
-                                opacity: [0.1, 0.2, 0.1],
-                            }}
-                            transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
-                        />
-                    </>
-                )}
-            </div>
+            {/* MULTI-COLOR ATMOSPHERIC GAS - Desktop Only */}
+            {!isMobile && (
+                <div className="absolute inset-0 pointer-events-none z-0">
+                    <motion.div
+                        className="absolute left-[-10%] top-[-10%] w-[60%] h-[70%] opacity-20 blur-[120px]"
+                        style={{ background: 'radial-gradient(circle, rgba(0,255,102,0.15) 0%, transparent 70%)' }}
+                        animate={{
+                            x: [0, 50, 0],
+                            y: [0, 30, 0],
+                            opacity: [0.1, 0.25, 0.1],
+                        }}
+                        transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+                    />
+                    <motion.div
+                        className="absolute right-[-10%] bottom-[-10%] w-[60%] h-[70%] opacity-20 blur-[120px]"
+                        style={{ background: 'radial-gradient(circle, rgba(0,212,255,0.1) 0%, transparent 70%)' }}
+                        animate={{
+                            x: [0, -50, 0],
+                            y: [0, -30, 0],
+                            opacity: [0.1, 0.2, 0.1],
+                        }}
+                        transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
+                    />
+                </div>
+            )}
 
             <div className="max-w-7xl mx-auto px-6 relative z-10">
                 <div className="flex flex-col md:flex-row justify-between items-end mb-16 border-b border-white/5 pb-8">
@@ -66,21 +58,17 @@ const SeasonsSection: React.FC = () => {
                 {/* Desktop: Full Grid */}
                 <div className="hidden md:grid md:grid-cols-5 gap-4 perspective-1000">
                     {seasons.map((season, index) => (
-                        <SeasonCard key={season.id} season={season} index={index} />
+                        <SeasonCard key={season.id} season={season} index={index} isMobile={false} />
                     ))}
                 </div>
 
                 {/* Mobile: Active Season + Locked Summary */}
                 <div className="grid grid-cols-1 gap-4 md:hidden">
                     {seasons.filter(s => s.active).map((season, index) => (
-                        <SeasonCard key={season.id} season={season} index={index} />
+                        <SeasonCard key={season.id} season={season} index={index} isMobile={true} />
                     ))}
-                    {/* Compact Locked Seasons Summary Card */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: 0.2, duration: 0.5 }}
+                    {/* Compact Locked Seasons Summary Card — No glitch animation on mobile */}
+                    <div
                         className="relative group h-[180px] flex flex-col justify-center items-center p-6 border border-white/5 bg-white/[0.01]"
                     >
                         {/* Multi-color top bar */}
@@ -94,7 +82,7 @@ const SeasonsSection: React.FC = () => {
                             <div className="font-mono text-[9px] tracking-[0.4em] text-white/30 uppercase mb-3">Upcoming Seasons</div>
                             <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 mb-4">
                                 {seasons.filter(s => !s.active).map((s) => (
-                                    <span key={s.id} className="font-teko text-2xl font-bold opacity-30 glitch" data-text="ENCRYPTED" style={{ color: s.color }}>
+                                    <span key={s.id} className="font-teko text-2xl font-bold opacity-30" style={{ color: s.color }}>
                                         ENCRYPTED
                                     </span>
                                 ))}
@@ -108,9 +96,9 @@ const SeasonsSection: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* Scanline */}
+                        {/* Scanline — static on mobile */}
                         <div className="absolute inset-0 pointer-events-none opacity-[0.03] z-10 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_2px,3px_100%]" />
-                    </motion.div>
+                    </div>
                 </div>
             </div>
 
@@ -120,60 +108,145 @@ const SeasonsSection: React.FC = () => {
     );
 };
 
-const SeasonCard: React.FC<{ season: any; index: number }> = ({ season, index }) => {
+const SeasonCard: React.FC<{ season: any; index: number; isMobile: boolean }> = ({ season, index, isMobile }) => {
     const isActive = season.active;
     const themeColor = season.color;
 
-    // 3D TILT EFFECT
-    const x = useMotionValue(0);
-    const y = useMotionValue(0);
-    const mouseXSpring = useSpring(x);
-    const mouseYSpring = useSpring(y);
-    const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["7deg", "-7deg"]);
-    const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-7deg", "7deg"]);
+    // 3D TILT: Desktop only with lightweight CSS transform
+    const cardRef = useRef<HTMLDivElement>(null);
 
-    const particles = React.useMemo(() => {
+    const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+        if (isMobile || !cardRef.current) return;
+        const rect = e.currentTarget.getBoundingClientRect();
+        const xPct = (e.clientX - rect.left) / rect.width - 0.5;
+        const yPct = (e.clientY - rect.top) / rect.height - 0.5;
+        cardRef.current.style.transform = `perspective(800px) rotateX(${yPct * -14}deg) rotateY(${xPct * 14}deg)`;
+    }, [isMobile]);
+
+    const handleMouseLeave = useCallback(() => {
+        if (cardRef.current) {
+            cardRef.current.style.transform = 'perspective(800px) rotateX(0deg) rotateY(0deg)';
+        }
+    }, []);
+
+    const particles = useMemo(() => {
+        if (isMobile || !isActive) return [];
         return [...Array(8)].map(() => ({
             left: `${Math.random() * 100}%`,
             xMove: (Math.random() - 0.5) * 100,
             duration: 3 + Math.random() * 4,
             delay: Math.random() * 2
         }));
-    }, []);
+    }, [isMobile, isActive]);
 
-    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-        if (window.innerWidth < 768) return; // Disable tilt on mobile
-        const rect = e.currentTarget.getBoundingClientRect();
-        const width = rect.width;
-        const height = rect.height;
-        const mouseX = e.clientX - rect.left;
-        const mouseY = e.clientY - rect.top;
-        const xPct = mouseX / width - 0.5;
-        const yPct = mouseY / height - 0.5;
-        x.set(xPct);
-        y.set(yPct);
-    };
+    // Mobile: static card with no motion wrapper
+    if (isMobile) {
+        return (
+            <div
+                className={`relative group h-[420px] flex flex-col justify-end p-6 border border-white/5 bg-white/[0.01]`}
+            >
+                {/* Top Status Bar */}
+                <div
+                    className="absolute top-0 left-0 w-full h-[2px] z-30"
+                    style={{
+                        backgroundColor: isActive ? themeColor : `${themeColor}66`,
+                        boxShadow: isActive ? `0 0 15px ${themeColor}` : `0 0 5px ${themeColor}33`
+                    }}
+                />
 
-    const handleMouseLeave = () => {
-        x.set(0);
-        y.set(0);
-    };
+                {/* Simple Mobile Active State */}
+                {isActive && (
+                    <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+                        <div
+                            className="absolute inset-0 opacity-10"
+                            style={{ background: `linear-gradient(to top, ${themeColor}, transparent)` }}
+                        />
+                    </div>
+                )}
 
-    // Optimization: Check for mobile to conditionally render expensive effects
-    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+                {/* Persistent Ambient Glow for locked */}
+                {!isActive && (
+                    <div
+                        className="absolute inset-0 opacity-10 pointer-events-none"
+                        style={{
+                            background: `radial-gradient(circle at 50% 100%, ${themeColor} 0%, transparent 80%)`
+                        }}
+                    />
+                )}
 
+                <div className="relative z-10">
+                    <div className="flex justify-between items-center mb-6">
+                        <span
+                            className="font-mono text-[10px] tracking-widest"
+                            style={{ color: isActive ? themeColor : `${themeColor}99` }}
+                        >
+                            0{season.id}
+                        </span>
+                        <span
+                            className="font-mono text-[9px] px-2 py-0.5 border rounded-full uppercase tracking-tighter"
+                            style={{
+                                borderColor: isActive ? themeColor : `${themeColor}66`,
+                                color: themeColor,
+                                backgroundColor: isActive ? `${themeColor}1a` : `${themeColor}0d`,
+                                opacity: isActive ? 1 : 0.7
+                            }}
+                        >
+                            {season.status}
+                        </span>
+                    </div>
+
+                    <h3
+                        className="font-teko text-5xl font-bold leading-none mb-6"
+                        style={{
+                            color: themeColor,
+                            textShadow: isActive ? `0 0 20px ${themeColor}4d` : 'none',
+                            opacity: isActive ? 1 : 0.4
+                        }}
+                    >
+                        {isActive ? (
+                            <div className="flex flex-col">
+                                <span className="text-xs font-mono tracking-[0.4em] font-normal mb-1 opacity-60">PHASE_0{season.id}</span>
+                                {season.title}
+                            </div>
+                        ) : (
+                            <div className="flex flex-col w-full">
+                                <span className="text-xs font-mono tracking-[0.4em] font-normal mb-1 opacity-40">LOCKED</span>
+                                <span className="font-teko text-4xl tracking-widest block overflow-hidden text-ellipsis w-full whitespace-nowrap opacity-20">
+                                    ENCRYPTED
+                                </span>
+                            </div>
+                        )}
+                    </h3>
+
+                    {/* Status Bar */}
+                    <div className="h-[1px] w-full bg-white/5 relative overflow-hidden">
+                        <div
+                            className="h-full"
+                            style={{ backgroundColor: themeColor, width: isActive ? '100%' : '15%' }}
+                        />
+                    </div>
+                </div>
+
+                {/* Scanline */}
+                <div className="absolute inset-0 pointer-events-none opacity-[0.03] z-10 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_2px,3px_100%]" />
+            </div>
+        );
+    }
+
+    // Desktop: Full animated card
     return (
         <motion.div
+            ref={cardRef}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: index * 0.1, duration: 0.5 }}
-            style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
             className={`relative group h-[420px] flex flex-col justify-end p-6 border border-white/5 transition-all duration-500 bg-white/[0.01] hover:bg-white/[0.02] cursor-crosshair`}
+            style={{ transition: 'transform 0.15s ease-out', transformStyle: 'preserve-3d' }}
         >
-            {/* Top Status Bar with Season Color - ALWAYS VISIBLE */}
+            {/* Top Status Bar with Season Color */}
             <div
                 className={`absolute top-0 left-0 w-full h-[2px] transition-all duration-700 z-30`}
                 style={{
@@ -182,8 +255,8 @@ const SeasonCard: React.FC<{ season: any; index: number }> = ({ season, index })
                 }}
             />
 
-            {/* Active Green Energy Effect */}
-            {isActive && !isMobile && (
+            {/* Active Energy Effect — Desktop Only */}
+            {isActive && (
                 <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden translate-z-0">
                     <motion.div
                         className="absolute inset-0 opacity-20"
@@ -241,16 +314,6 @@ const SeasonCard: React.FC<{ season: any; index: number }> = ({ season, index })
                     ))}
                 </div>
             )}
-
-            {/* Simple Mobile Active State */
-                isActive && isMobile && (
-                    <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-                        <div
-                            className="absolute inset-0 opacity-10"
-                            style={{ background: `linear-gradient(to top, ${themeColor}, transparent)` }}
-                        />
-                    </div>
-                )}
 
             {/* Persistent Ambient Glow for all locked seasons */}
             {!isActive && (

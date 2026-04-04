@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ScrambleText from './ScrambleText';
 import { useAudio } from '../hooks/useAudio';
+import { devicePerf } from '../hooks/useDevicePerformance';
 
 // Warp Speed Canvas Component - Optimized
 const WarpSpeedBackground: React.FC<{ speed: number }> = ({ speed }) => {
@@ -24,7 +25,7 @@ const WarpSpeedBackground: React.FC<{ speed: number }> = ({ speed }) => {
 
         let stars: { x: number; y: number; z: number; o: number }[] = [];
         // Reduced star count for better performance (Mobile: 75, Desktop: 150)
-        const count = window.innerWidth < 768 ? 75 : 150;
+        const count = window.innerWidth < 768 ? 40 : 150;
         const focalLength = rect.width / 2;
         let animationFrameId: number;
 
@@ -144,7 +145,8 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete }) => {
                 transition: { duration: 0.5, ease: "circIn" }
             }}
         >
-            <WarpSpeedBackground speed={warpSpeed} />
+            {/* Skip heavy canvas on very low-end devices */}
+            {!(devicePerf.isLowEnd && devicePerf.isMobile) && <WarpSpeedBackground speed={warpSpeed} />}
 
             {/* TACTICAL BACKGROUND GRID */}
             <div className="absolute inset-0 bg-grid opacity-20" />

@@ -150,7 +150,6 @@ const ScrollExpandMedia = ({
 
                     if (newProgress !== scrollProgressRef.current) {
                         scrollProgressRef.current = newProgress;
-                        setScrollProgress(newProgress);
                         applyScrollProgress(newProgress);
                     }
 
@@ -198,8 +197,6 @@ const ScrollExpandMedia = ({
 
                     if (newProgress !== scrollProgressRef.current) {
                         scrollProgressRef.current = newProgress;
-                        // Only update React state for render-dependent elements
-                        setScrollProgress(newProgress);
                         applyScrollProgress(newProgress);
                     }
 
@@ -252,13 +249,16 @@ const ScrollExpandMedia = ({
         return () => window.removeEventListener('resize', checkIfMobile);
     }, []);
 
+    // These values are used only for the initial render.
+    // During scroll, applyScrollProgress handles layout via direct DOM updates.
+    const initProgress = scrollProgressRef.current;
     const mediaWidth = isMobileState
-        ? 240 + scrollProgress * (window.innerWidth - 240)
-        : 300 + scrollProgress * 1250;
+        ? 240 + initProgress * (window.innerWidth - 240)
+        : 300 + initProgress * 1250;
     const mediaHeight = isMobileState
-        ? 340 + scrollProgress * (window.innerHeight - 340)
-        : 400 + scrollProgress * 400;
-    const textTranslateX = scrollProgress * (isMobileState ? 100 : 150);
+        ? 340 + initProgress * (window.innerHeight - 340)
+        : 400 + initProgress * 400;
+    const textTranslateX = initProgress * (isMobileState ? 100 : 150);
 
     const firstWord = title ? title.split(' ')[0] : '';
     const restOfTitle = title ? title.split(' ').slice(1).join(' ') : '';
@@ -297,14 +297,16 @@ const ScrollExpandMedia = ({
                     <div className='container mx-auto flex flex-col items-center justify-start relative z-10'>
                         <div className='flex flex-col items-center justify-center w-full h-[100dvh] relative'>
                             <motion.div
+                                ref={mediaContainerRef}
                                 className='absolute z-0 top-1/2 left-1/2 rounded-3xl overflow-hidden'
                                 style={{
                                     x: '-50%',
                                     y: '-50%',
                                     width: mediaWidth,
                                     height: mediaHeight,
-                                    borderRadius: isMobileState ? (1 - scrollProgress) * 32 : 4,
-                                    boxShadow: '0px 0px 50px rgba(0, 0, 0, 0.4)'
+                                    borderRadius: isMobileState ? (1 - initProgress) * 32 : 4,
+                                    boxShadow: '0px 0px 50px rgba(0, 0, 0, 0.4)',
+                                    willChange: 'width, height, border-radius'
                                 }}
                             >
                                 {mediaType === 'video' ? (

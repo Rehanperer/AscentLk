@@ -7,13 +7,15 @@ import ScrollExpandMedia from './components/Hero/ScrollExpandMedia';
 import CustomCursor from './components/CustomCursor';
 import ScrambleText from './components/ScrambleText';
 import CountdownSection from './components/CountdownSection';
-import ComingSoonSection from './components/ComingSoonSection';
 import SectionReveal from './components/Effects/SectionReveal';
 import ParallaxBackground from './components/Effects/ParallaxBackground';
 import ScrollEdgeLines from './components/Effects/ScrollEdgeLines';
-import SeasonsSection from './components/SeasonsSection';
-import SchoolsCarousel from './components/Schools/SchoolsCarousel';
 import Footer from './components/Footer';
+
+// Lazy load below-fold heavy components
+const ComingSoonSection = lazy(() => import('./components/ComingSoonSection'));
+const SeasonsSection = lazy(() => import('./components/SeasonsSection'));
+const SchoolsCarousel = lazy(() => import('./components/Schools/SchoolsCarousel'));
 
 // Lazy Load Heavy Components
 import LoadingScreen from './components/LoadingScreen';
@@ -243,7 +245,9 @@ const App: React.FC = () => {
                                                         <div className="text-xs tracking-[0.4em] text-white/40 uppercase">Auth_Required // Gauntlet_V2</div>
                                                     </div>
                                                 </div>
-                                                <SchoolsCarousel />
+                                                <Suspense fallback={null}>
+                                                    <SchoolsCarousel />
+                                                </Suspense>
                                             </SectionReveal>
                                         </section>
 
@@ -282,7 +286,9 @@ const App: React.FC = () => {
                                             </Suspense>
                                         </section>
 
-                                        <ComingSoonSection onNotifyClick={() => navigate('/register')} />
+                                        <Suspense fallback={null}>
+                                            <ComingSoonSection onNotifyClick={() => navigate('/register')} />
+                                        </Suspense>
 
                                         <section id="partners" className="relative">
                                             <Suspense fallback={null}>

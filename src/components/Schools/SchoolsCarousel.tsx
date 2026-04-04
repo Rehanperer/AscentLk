@@ -1,8 +1,13 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useCallback } from 'react';
 import { SCHOOLS_DATA, School } from '../../data/config';
-import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { devicePerf } from '../../hooks/useDevicePerformance';
 
-const SchoolCard: React.FC<{ school: School }> = ({ school }) => {
+/**
+ * SchoolCard — Performance-optimized.
+ * Mobile: Pure CSS, no Framer Motion springs, no 3D tilt.
+ * Desktop: Lightweight CSS-based 3D tilt instead of 4 Framer Motion springs per card.
+ */
+const SchoolCard: React.FC<{ school: School; isMobile: boolean }> = ({ school, isMobile }) => {
     let statusText = "PENDING";
     let statusColor = "text-white/30";
     let isConfirmed = false;
@@ -17,34 +22,30 @@ const SchoolCard: React.FC<{ school: School }> = ({ school }) => {
         isConfirmed = true;
     }
 
-    // High Performance Spring Config
-    const x = useMotionValue(0);
-    const y = useMotionValue(0);
-    const mouseXSpring = useSpring(x, { stiffness: 100, damping: 20 });
-    const mouseYSpring = useSpring(y, { stiffness: 100, damping: 20 });
-    const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["5deg", "-5deg"]);
-    const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-5deg", "5deg"]);
+    const cardRef = useRef<HTMLDivElement>(null);
 
-    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-        // Optimization: Disable 3D tilt on mobile/touch devices
-        if (window.innerWidth < 768) return;
-
+    // Lightweight CSS-based 3D tilt — Desktop only, no Framer Motion springs
+    const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+        if (isMobile || !cardRef.current) return;
         const rect = e.currentTarget.getBoundingClientRect();
-        x.set((e.clientX - rect.left) / rect.width - 0.5);
-        y.set((e.clientY - rect.top) / rect.height - 0.5);
-    };
+        const xPct = (e.clientX - rect.left) / rect.width - 0.5;
+        const yPct = (e.clientY - rect.top) / rect.height - 0.5;
+        cardRef.current.style.transform = `perspective(600px) rotateX(${yPct * -10}deg) rotateY(${xPct * 10}deg)`;
+    }, [isMobile]);
 
-    const handleMouseLeave = () => {
-        x.set(0);
-        y.set(0);
-    };
+    const handleMouseLeave = useCallback(() => {
+        if (cardRef.current) {
+            cardRef.current.style.transform = 'perspective(600px) rotateX(0deg) rotateY(0deg)';
+        }
+    }, []);
 
     return (
-        <motion.div
-            style={{ rotateX, rotateY }}
+        <div
+            ref={cardRef}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
-            className="flex-shrink-0 perspective-1000 mx-3 py-4"
+            className="flex-shrink-0 mx-3 py-4"
+            style={{ transition: 'transform 0.15s ease-out' }}
         >
             <div className="relative w-44 h-60 md:w-52 md:h-72 flex flex-col items-center justify-between p-6 bg-[#0d121f] border border-white/5 hover:border-[#ff4655]/30 transition-all duration-300 cursor-crosshair group overflow-hidden shadow-2xl">
                 {/* HUD Corner Accents */}
@@ -55,7 +56,7 @@ const SchoolCard: React.FC<{ school: School }> = ({ school }) => {
 
                 {/* Status Indicator Top Right */}
                 <div className="absolute top-3 right-3 flex items-center gap-1.5 z-20">
-                    <span className={`w-1 h-1 rounded-full ${isConfirmed ? 'bg-[#ff4655]' : 'bg-white/20'} animate-pulse`} />
+                    <span className={`w-1 h-1 rounded-full ${isConfirmed ? 'bg-[#ff4655]' : 'bg-white/20'} ${!isMobile ? 'animate-pulse' : ''}`} />
                     <span className={`text-[8px] font-mono tracking-tighter uppercase ${statusColor}`}>{statusText}</span>
                 </div>
 
@@ -93,11 +94,12 @@ const SchoolCard: React.FC<{ school: School }> = ({ school }) => {
                 {/* Bottom Bar Highlight */}
                 <div className={`absolute bottom-0 left-0 w-full h-0.5 transition-all duration-500 ${isConfirmed ? 'bg-[#ff4655]' : 'bg-white/10'} opacity-30 group-hover:opacity-100 shadow-[0_0_20px_rgba(255,70,85,0.3)]`} />
             </div>
-        </motion.div>
+        </div>
     );
 };
 
 const SchoolsCarousel: React.FC = () => {
+    const isMobile = devicePerf.isMobile;
     // Optimized data set size for performance
     const displaySchools = useMemo(() => [...SCHOOLS_DATA, ...SCHOOLS_DATA], []);
     const confirmedCount = SCHOOLS_DATA.filter(s => s.status === 'Confirmed' || s.status === 'Qualified').length;
@@ -109,14 +111,12 @@ const SchoolsCarousel: React.FC = () => {
                 <div className="absolute left-0 top-0 w-32 md:w-64 h-full bg-gradient-to-r from-[#0d121f] to-transparent z-10 pointer-events-none" />
                 <div className="absolute right-0 top-0 w-32 md:w-64 h-full bg-gradient-to-l from-[#0d121f] to-transparent z-10 pointer-events-none" />
 
-                <div className="absolute right-0 top-0 w-32 md:w-64 h-full bg-gradient-to-l from-[#0d121f] to-transparent z-10 pointer-events-none" />
-
                 <div
                     className="flex will-change-transform animate-[scrollCarousel_40s_linear_infinite]"
                     style={{ width: `${displaySchools.length * 224}px` }}
                 >
                     {displaySchools.map((school, i) => (
-                        <SchoolCard key={`${school.name}-${i}`} school={school} />
+                        <SchoolCard key={`${school.name}-${i}`} school={school} isMobile={isMobile} />
                     ))}
                 </div>
             </div>

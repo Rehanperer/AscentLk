@@ -1,71 +1,116 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 
-const CustomCursor: React.FC = () => {
-    const [mousePos, setMousePos] = useState({ x: -100, y: -100 });
-    const [ringPos, setRingPos] = useState({ x: -100, y: -100 });
-    const [isHovering, setIsHovering] = useState(false);
-    const [isFinePointer, setIsFinePointer] = useState(false);
+/**
+ * CustomCursor — Performance-optimized version.
+ * - Uses direct DOM manipulation via refs instead of React state (no re-renders)
+ * - The rAF loop only writes to DOM elements, never triggers setState
+ * - Skips entirely on touch/non-fine-pointer devices
+ */
+const CustomCursor: React.FC = React.memo(() => {
+    const dotRef = useRef<HTMLDivElement>(null);
+    const ringRef = useRef<HTMLDivElement>(null);
+    const mousePos = useRef({ x: -100, y: -100 });
+    const ringPos = useRef({ x: -100, y: -100 });
+    const isHovering = useRef(false);
+    const rafId = useRef<number>(0);
+    const isFinePointer = useRef(false);
+    const mounted = useRef(true);
 
+    // Check pointer type once
     useEffect(() => {
-        const checkPointer = () => setIsFinePointer(window.matchMedia("(pointer: fine)").matches);
-        checkPointer();
+        isFinePointer.current = window.matchMedia("(pointer: fine)").matches;
+        if (!isFinePointer.current) return;
+
+        mounted.current = true;
 
         const handleMouseMove = (e: MouseEvent) => {
-            setMousePos({ x: e.clientX, y: e.clientY });
+            mousePos.current.x = e.clientX;
+            mousePos.current.y = e.clientY;
+
+            // Move dot immediately (no lerp needed)
+            if (dotRef.current) {
+                dotRef.current.style.transform = `translate(${e.clientX - 2}px, ${e.clientY - 2}px)`;
+            }
         };
 
         const handleMouseOver = (e: MouseEvent) => {
             const target = e.target as HTMLElement;
-            const isInteractive = target.closest('.interactive-element, a, button, .cursor-pointer, input, textarea, .mesh-node');
-            setIsHovering(!!isInteractive);
+            const interactive = target.closest('.interactive-element, a, button, .cursor-pointer, input, textarea, .mesh-node');
+            const hovering = !!interactive;
+
+            if (hovering !== isHovering.current) {
+                isHovering.current = hovering;
+                if (ringRef.current) {
+                    if (hovering) {
+                        ringRef.current.style.width = '48px';
+                        ringRef.current.style.height = '48px';
+                        ringRef.current.style.backgroundColor = 'rgba(255, 70, 85, 0.1)';
+                        ringRef.current.style.borderColor = '#ff4655';
+                    } else {
+                        ringRef.current.style.width = '32px';
+                        ringRef.current.style.height = '32px';
+                        ringRef.current.style.backgroundColor = 'transparent';
+                        ringRef.current.style.borderColor = 'rgba(255, 70, 85, 0.5)';
+                    }
+                }
+            }
         };
 
-        window.addEventListener('mousemove', handleMouseMove);
-        window.addEventListener('mouseover', handleMouseOver);
+        // Ring lerp animation — pure DOM, no React state
+        const animate = () => {
+            if (!mounted.current) return;
+
+            ringPos.current.x += (mousePos.current.x - ringPos.current.x) * 0.15;
+            ringPos.current.y += (mousePos.current.y - ringPos.current.y) * 0.15;
+
+            if (ringRef.current) {
+                ringRef.current.style.transform = `translate(${ringPos.current.x - 16}px, ${ringPos.current.y - 16}px)`;
+            }
+
+            rafId.current = requestAnimationFrame(animate);
+        };
+
+        window.addEventListener('mousemove', handleMouseMove, { passive: true });
+        window.addEventListener('mouseover', handleMouseOver, { passive: true });
+        rafId.current = requestAnimationFrame(animate);
 
         return () => {
+            mounted.current = false;
             window.removeEventListener('mousemove', handleMouseMove);
             window.removeEventListener('mouseover', handleMouseOver);
+            cancelAnimationFrame(rafId.current);
         };
     }, []);
 
-    useEffect(() => {
-        let rafId: number;
-        const animate = () => {
-            setRingPos(prev => ({
-                x: prev.x + (mousePos.x - prev.x) * 0.15,
-                y: prev.y + (mousePos.y - prev.y) * 0.15
-            }));
-            rafId = requestAnimationFrame(animate);
-        };
-        rafId = requestAnimationFrame(animate);
-        return () => cancelAnimationFrame(rafId);
-    }, [mousePos]);
-
-    if (!isFinePointer) return null;
+    // Only render on fine-pointer (desktop with mouse)
+    // Use a quick sync check to avoid an initial flash
+    if (typeof window !== 'undefined' && !window.matchMedia("(pointer: fine)").matches) {
+        return null;
+    }
 
     return (
         <>
-            <style>
-                {`
-                    @media (pointer: fine) {
-                        body { cursor: none !important; }
-                        body * { cursor: none !important; }
-                    }
-                `}
-            </style>
+            <style>{`
+                @media (pointer: fine) {
+                    body { cursor: none !important; }
+                    body * { cursor: none !important; }
+                }
+            `}</style>
             <div
-                id="cursor-dot"
-                className="fixed bg-[#ff4655] rounded-full pointer-events-none z-[9999] w-1 h-1"
-                style={{ left: mousePos.x, top: mousePos.y, transform: 'translate(-50%, -50%)' }}
+                ref={dotRef}
+                className="fixed top-0 left-0 bg-[#ff4655] rounded-full pointer-events-none z-[9999] w-1 h-1"
+                style={{ willChange: 'transform' }}
             />
             <div
-                id="cursor-ring"
-                className={`fixed border border-[#ff4655]/50 rounded-full pointer-events-none z-[9998] transition-[width,height,background-color,border-color] duration-300 ${isHovering ? 'w-12 h-12 bg-[#ff4655]/10 border-[#ff4655]' : 'w-8 h-8'}`}
-                style={{ left: ringPos.x, top: ringPos.y, transform: 'translate(-50%, -50%)' }}
+                ref={ringRef}
+                className="fixed top-0 left-0 border border-[#ff4655]/50 rounded-full pointer-events-none z-[9998] w-8 h-8"
+                style={{
+                    willChange: 'transform',
+                    transition: 'width 0.3s ease, height 0.3s ease, background-color 0.3s ease, border-color 0.3s ease'
+                }}
             />
         </>
     );
-};
+});
 
 export default CustomCursor;
