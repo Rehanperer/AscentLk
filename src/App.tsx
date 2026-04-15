@@ -1,29 +1,25 @@
 import React, { useState, useEffect, Suspense, lazy } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Routes, Route, Navigate, Link } from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
+import { Routes, Route, Navigate } from 'react-router-dom';
 
-import Navbar from './components/Navbar';
-import ScrollExpandMedia from './components/Hero/ScrollExpandMedia';
+import ModernNavbar from './components/Home/ModernNavbar';
+import HeroSection from './components/Home/HeroSection';
+import AboutSection from './components/Home/AboutSection';
+import SchoolsMarquee from './components/Home/SchoolsMarquee';
+import PathSection from './components/Home/PathSection';
+import SeasonsSection from './components/Home/SeasonsSection';
+import PartnerSection from './components/PartnerSection';
 import CustomCursor from './components/CustomCursor';
-import ScrambleText from './components/ScrambleText';
-import CountdownSection from './components/CountdownSection';
-import SectionReveal from './components/Effects/SectionReveal';
-import ParallaxBackground from './components/Effects/ParallaxBackground';
-import ScrollEdgeLines from './components/Effects/ScrollEdgeLines';
 import Footer from './components/Footer';
 
-// Lazy load below-fold heavy components
-const ComingSoonSection = lazy(() => import('./components/ComingSoonSection'));
-const SeasonsSection = lazy(() => import('./components/SeasonsSection'));
-const SchoolsCarousel = lazy(() => import('./components/Schools/SchoolsCarousel'));
 
 // Lazy Load Heavy Components
 import LoadingScreen from './components/LoadingScreen';
+import TacticalLoader from './components/TacticalLoader';
 
 // Lazy Load Pages/Components
 const MaintenancePage = lazy(() => import('./components/MaintenancePage'));
 const TicketsPage = lazy(() => import('./components/Tickets/TicketsPage'));
-const Timeline = lazy(() => import('./components/Tournament/Timeline'));
 const PartnerSection = lazy(() => import('./components/PartnerSection'));
 const RegistrationModal = lazy(() => import('./components/RegistrationModal'));
 const SponsorModal = lazy(() => import('./components/SponsorModal'));
@@ -36,6 +32,10 @@ const RegistrationPage = lazy(() => import('./components/Registration/Registrati
 const RefundPolicy = lazy(() => import('./pages/Policies/RefundPolicy'));
 const PrivacyPolicy = lazy(() => import('./pages/Policies/PrivacyPolicy'));
 const TermsOfService = lazy(() => import('./pages/Policies/TermsOfService'));
+
+// Demos
+const AsciiDemoPage = lazy(() => import('./pages/AsciiDemoPage'));
+const SchoolsDemoPage = lazy(() => import('./pages/SchoolsDemoPage'));
 
 // Simple Auth Guard component
 const AdminGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -97,7 +97,18 @@ const MaintenanceGuard: React.FC<{ children: React.ReactNode }> = ({ children })
 
 
 const App: React.FC = () => {
-    const [isLoading, setIsLoading] = useState(true);
+    const location = useLocation();
+    const isHomePage = location.pathname === '/';
+    
+    // Check if the intro has already played this session
+    const hasIntroPlayed = sessionStorage.getItem('ascent_intro_played') === 'true';
+    
+    // Only show the full cinematic intro on homepage AND if it hasn't played yet
+    const showCinematicIntro = isHomePage && !hasIntroPlayed;
+    // Show the quick tactical loader on homepage refreshes (intro already played)
+    const showTacticalReload = isHomePage && hasIntroPlayed;
+    
+    const [isLoading, setIsLoading] = useState(showCinematicIntro || showTacticalReload);
     const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
     const [ticketModalTitle, setTicketModalTitle] = useState('');
     const [isSponsorModalOpen, setIsSponsorModalOpen] = useState(false);
@@ -106,8 +117,23 @@ const App: React.FC = () => {
     const [isMediaLoaded, setIsMediaLoaded] = useState(false);
 
     const handleLoadingComplete = () => {
+        sessionStorage.setItem('ascent_intro_played', 'true');
         setIsLoading(false);
     };
+
+    const handleTacticalComplete = () => {
+        setIsLoading(false);
+    };
+
+    // Auto-dismiss tactical loader after 2 seconds
+    React.useEffect(() => {
+        if (showTacticalReload && isLoading) {
+            const timer = setTimeout(() => {
+                setIsLoading(false);
+            }, 2000);
+            return () => clearTimeout(timer);
+        }
+    }, [showTacticalReload, isLoading]);
 
     const [isHeroExpanded, setIsHeroExpanded] = useState(false);
 
@@ -119,56 +145,67 @@ const App: React.FC = () => {
     return (
         <div className="relative min-h-screen" style={{ background: 'var(--bg-gradient)' }}>
             <AnimatePresence>
-                {isLoading && <LoadingScreen onComplete={handleLoadingComplete} key="loader" />}
+                {isLoading && showCinematicIntro && <LoadingScreen onComplete={handleLoadingComplete} key="intro-loader" />}
+                {isLoading && showTacticalReload && <TacticalLoader key="tactical-loader" />}
             </AnimatePresence>
         <AnimatePresence mode="wait">
             <MaintenanceGuard>
                 <Routes>
                     <Route path="/maintenance" element={
-                        <Suspense fallback={<LoadingScreen onComplete={() => { }} />}>
+                        <Suspense fallback={<TacticalLoader />}>
                             {/* We'll pass the 'until' prop later or fetch it in the component */}
                             <MaintenancePageWithProps />
                         </Suspense>
                     } />
                     <Route path="/tickets" element={
-                        <Suspense fallback={<LoadingScreen onComplete={() => { }} />}>
+                        <Suspense fallback={<TacticalLoader />}>
                             <TicketsPage />
                         </Suspense>
                     } />
                     <Route path="/checkout" element={
-                        <Suspense fallback={<LoadingScreen onComplete={() => { }} />}>
+                        <Suspense fallback={<TacticalLoader />}>
                             <CheckoutPage />
                         </Suspense>
                     } />
                     <Route path="/admin" element={
-                        <Suspense fallback={<LoadingScreen onComplete={() => { }} />}>
+                        <Suspense fallback={<TacticalLoader />}>
                             <AdminGuard>
                                 <AdminPage />
                             </AdminGuard>
                         </Suspense>
                     } />
                     <Route path="/admin/login" element={
-                        <Suspense fallback={<LoadingScreen onComplete={() => { }} />}>
+                        <Suspense fallback={<TacticalLoader />}>
                             <AdminLoginPage />
                         </Suspense>
                     } />
                     <Route path="/register" element={
-                        <Suspense fallback={<LoadingScreen onComplete={() => { }} />}>
+                        <Suspense fallback={<TacticalLoader />}>
                             <RegistrationPage />
                         </Suspense>
                     } />
                     <Route path="/refund-policy" element={
-                        <Suspense fallback={<LoadingScreen onComplete={() => { }} />}>
+                        <Suspense fallback={<TacticalLoader />}>
                             <RefundPolicy />
                         </Suspense>
                     } />
+                    <Route path="/ascii-demo" element={
+                        <Suspense fallback={<TacticalLoader />}>
+                            <AsciiDemoPage />
+                        </Suspense>
+                    } />
+                    <Route path="/schools-demo" element={
+                        <Suspense fallback={<TacticalLoader />}>
+                            <SchoolsDemoPage />
+                        </Suspense>
+                    } />
                     <Route path="/privacy-policy" element={
-                        <Suspense fallback={<LoadingScreen onComplete={() => { }} />}>
+                        <Suspense fallback={<TacticalLoader />}>
                             <PrivacyPolicy />
                         </Suspense>
                     } />
                     <Route path="/terms-of-service" element={
-                        <Suspense fallback={<LoadingScreen onComplete={() => { }} />}>
+                        <Suspense fallback={<TacticalLoader />}>
                             <TermsOfService />
                         </Suspense>
                     } />
@@ -176,135 +213,33 @@ const App: React.FC = () => {
                         <div className="relative min-h-screen" style={{ background: 'var(--bg-gradient)' }}>
                             {/* Global LoadingScreen is now at the root of App */}
                             <CustomCursor />
-                            <ScrollEdgeLines />
 
                             {/* Premium HUD Navigation */}
-                            <Navbar
-                                onRegister={() => navigate('/register')}
-                                onNavigate={() => setIsHeroExpanded(true)}
+                            <ModernNavbar />
+
+                            {/* Phase 1: Modern Hero Block */}
+                            <HeroSection />
+
+                            {/* Phase 2: About Ascent (Split scrolling unblur) */}
+                            <AboutSection />
+
+                            {/* Phase 3: Schools Dual-Row Marquee */}
+                            <SchoolsMarquee />
+
+                            {/* Phase 4: Path to Ascent & Prize Pool */}
+                            <PathSection />
+
+                            {/* Phase 5: Toxic Season (ASCII Snake) */}
+                            <SeasonsSection />
+
+                            {/* Phase 6: Partnerships */}
+                            <PartnerSection 
+                                onSponsorClick={() => setIsSponsorModalOpen(true)}
+                                onContactClick={() => setIsSponsorModalOpen(true)} 
                             />
 
-                            {/* Hero Section with Scroll Expansion */}
-                            <ScrollExpandMedia
-                                mediaType="video"
-                                mediaSrc="ascent_vid.mp4"
-                                bgImageSrc="grid"
-                                title="ASCENT 2026"
-                                date="Tournament // 01"
-                                scrollToExpand="SCROLL"
-                                partners={['img/StarGarments.svg', 'img/Aivance.svg']}
-                                textBlend={false}
-                                onMediaLoaded={() => setIsMediaLoaded(true)}
-                                forceExpand={isHeroExpanded}
-                            >
-                                {/* Children content that shows after expansion */}
-                                <div className="flex flex-col items-center">
-                                    <div className="w-full max-w-2xl mb-16 px-6">
-                                        <div className="h-[2px] bg-white/10 w-full relative overflow-hidden">
-                                            <motion.div
-                                                className="absolute left-0 top-0 h-full bg-[#ff4655]"
-                                                initial={{ width: 0 }}
-                                                whileInView={{ width: '60%' }}
-                                                transition={{ duration: 1.5, ease: "easeOut" }}
-                                            />
-                                        </div>
-                                        <div className="flex justify-between items-center mt-3 font-mono text-[9px] md:text-[11px] tracking-[0.2em] text-white/40 uppercase">
-                                            <span className="opacity-0">.</span>
-                                            <span className="text-white/60 font-teko text-sm tracking-[0.3em]">Where Legends Ascend</span>
-                                            <span className="opacity-0">.</span>
-                                        </div>
-                                    </div>
-
-                                    <div className="max-w-xl text-center px-6">
-                                        <ScrambleText
-                                            text="THE ULTIMATE STUDENT-LED ESPORTS GAUNTLET IN SRI LANKA."
-                                            className="text-lg md:text-2xl font-medium tracking-wide opacity-80 uppercase"
-                                            duration={80}
-                                        />
-                                    </div>
-
-                                    {/* Transition to next sections */}
-                                    <div className="w-full mt-32 bg-atmospheric">
-                                        <CountdownSection />
-
-                                        {/* Participating Schools Section - Standard Import for zero perceived delay */}
-                                        <section id="schools" className="py-24 relative overflow-hidden bg-atmospheric-blood">
-                                            {/* Atmospheric crimson glow orbs - Centered away from edges */}
-                                            <div className="absolute top-1/4 left-0 w-full h-80 bg-[#4a0000]/40 rounded-full blur-[40px] md:blur-[120px] pointer-events-none" />
-                                            <div className="absolute bottom-1/4 left-0 w-full h-80 bg-[#4a0000]/40 rounded-full blur-[40px] md:blur-[120px] pointer-events-none" />
-
-                                            <ParallaxBackground text="VALORANT // 5v5" velocity={-30} direction="horizontal" className="top-0 opacity-5" />
-                                            <SectionReveal className="relative z-10 p-8 border border-white/5">
-                                                <div className="max-w-7xl mx-auto px-6 mb-12 flex justify-between items-end border-b border-white/10 pb-4">
-                                                    <div>
-                                                        <ScrambleText text="ELIGIBLE INSTITUTIONS" className="text-[#ff4655] font-bold tracking-widest text-xs mb-2 block" />
-                                                        <h2 className="font-teko text-4xl md:text-8xl font-bold leading-[0.9] md:leading-none"><ScrambleText text="PARTICIPATING SCHOOLS" triggerOnScroll /></h2>
-                                                    </div>
-                                                    <div className="text-right hidden md:block">
-                                                        <div className="text-3xl font-teko">SEASON 2026</div>
-                                                        <div className="text-xs tracking-[0.4em] text-white/40 uppercase">Auth_Required // Gauntlet_V2</div>
-                                                    </div>
-                                                </div>
-                                                <Suspense fallback={null}>
-                                                    <SchoolsCarousel />
-                                                </Suspense>
-                                            </SectionReveal>
-                                        </section>
-
-                                        {/* Other Lazy Components */}
-
-                                        <section id="timeline" className="relative">
-                                            <Suspense fallback={
-                                                <div className="w-full h-96 flex items-center justify-center" style={{ background: 'var(--bg-gradient)' }}>
-                                                    <div className="font-mono text-[10px] tracking-[0.5em] animate-pulse text-[#ff4655]">SYNCING_CHRONICLE...</div>
-                                                </div>
-                                            }>
-                                                {/* Path to Ascent Section */}
-                                                <section id="path" className="pt-32 relative overflow-hidden bg-atmospheric-blood">
-                                                    {/* Moving Scanline - Intensified */}
-                                                    <div className="bg-scanline opacity-60" />
-
-                                                    {/* Atmospheric crimson glow orbs - Centered away from edges */}
-                                                    <div className="absolute top-1/4 left-0 w-full h-80 bg-[#4a0000]/40 rounded-full blur-[40px] md:blur-[120px] pointer-events-none" />
-                                                    <div className="absolute bottom-1/4 left-0 w-full h-80 bg-[#4a0000]/40 rounded-full blur-[40px] md:blur-[120px] pointer-events-none" />
-
-                                                    {/* Smooth Blending Fades */}
-                                                    <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-[#0d121f] to-transparent pointer-events-none z-10" />
-                                                    <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#0d121f] to-transparent pointer-events-none z-10" />
-
-                                                    <ParallaxBackground text="ASCENT" velocity={50} direction="horizontal" className="top-1/2 -translate-y-1/2 opacity-[0.03]" />
-                                                    <SectionReveal className="relative z-10">
-                                                        <div className="max-w-7xl mx-auto px-6 mb-16 text-center">
-
-                                                            <ScrambleText text="TOURNAMENT STRUCTURE" className="text-[#ff4655] font-bold tracking-widest text-xs mb-2 block" />
-                                                            <h2 className="font-teko text-6xl md:text-8xl font-bold leading-none">PATH TO ASCENT</h2>
-                                                        </div>
-                                                        <Timeline />
-                                                        <SeasonsSection />
-                                                    </SectionReveal>
-                                                </section>
-                                            </Suspense>
-                                        </section>
-
-                                        <Suspense fallback={null}>
-                                            <ComingSoonSection onNotifyClick={() => navigate('/register')} />
-                                        </Suspense>
-
-                                        <section id="partners" className="relative">
-                                            <Suspense fallback={null}>
-                                                <SectionReveal>
-                                                    <PartnerSection
-                                                        onSponsorClick={() => setIsSponsorModalOpen(true)}
-                                                        onContactClick={() => openTicketModal('GENERAL INQUIRY')}
-                                                    />
-                                                </SectionReveal>
-                                            </Suspense>
-                                        </section>
-
-                                        <Footer />
-                                    </div>
-                                </div>
-                            </ScrollExpandMedia>
+                            {/* Footer */}
+                            <Footer />
 
                             {/* Modals */}
                             <Suspense fallback={null}>

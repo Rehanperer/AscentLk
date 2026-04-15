@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 
 // ── ASCII chars used for the morph ──
 const CHARS = 'ASCENT20@#$%&*+O0X!?=-:.';
@@ -28,11 +28,7 @@ interface Spark {
     char: string;
 }
 
-interface LoadingScreenProps {
-    onComplete?: () => void;
-}
-
-const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete }) => {
+const AsciiDemoPage: React.FC = () => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [logoVisible, setLogoVisible] = useState(false);
 
@@ -55,22 +51,21 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete }) => {
         let particles: Particle[] = [];
         let sparks: Spark[] = [];
         
-        // Mutable time trackers
+        // Mutable time trackers so init() can safely reset them during resize events
         let lastTime = 0;
         let elapsed = 0;
-        let hasCompleted = false;
 
         let loadedLogo: HTMLImageElement | null = null;
-
         let logoProps = { x: 0, y: 0, w: 0, h: 0 };
         let textProps = { subSize: 0, subY: 0, mainSize: 0, mainY: 0 };
 
         let running = true;
 
+        // ── Shared Layout calculation for PERFECT Canvas/DOM match ──
         const getLayout = () => {
             const isMobile = W < 768;
             const _logoW = isMobile ? Math.min(W * 0.5, 300) : Math.min(W * 0.22, 350);
-            const _logoH = _logoW;
+            const _logoH = _logoW; // Square image
             const _logoY = H * 0.05;
 
             const _subSize = Math.max(Math.min(W * 0.055, 55), 24);
@@ -78,17 +73,16 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete }) => {
 
             const _mainSize = Math.min(W * 0.18, 220);
             const _mainY = H * 0.70;
-            
-            const _bottomY = H * 0.88;
-            const _bottomW = isMobile ? W * 0.25 : Math.min(W * 0.1, 150);
 
-            return { _logoW, _logoH, _logoY, _subSize, _subY, _mainSize, _mainY, _bottomY, _bottomW };
+            return { _logoW, _logoH, _logoY, _subSize, _subY, _mainSize, _mainY };
         };
 
+        // ────────── INIT: sample text + logo into particle targets ──────────
         const init = async (isResize = false) => {
             cx = W / 2;
             cy = H / 2;
             
+            // Wait for fonts but only if not unmounted
             await document.fonts.ready;
             if (!running) return;
 
@@ -100,27 +94,25 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete }) => {
             o.fillStyle = '#000';
             o.fillRect(0, 0, W, H);
 
-            const { _logoW, _logoH, _logoY, _subSize, _subY, _mainSize, _mainY, _bottomY, _bottomW } = getLayout();
+            const { _logoW, _logoH, _logoY, _subSize, _subY, _mainSize, _mainY } = getLayout();
             
             logoProps.w = _logoW;
             logoProps.h = _logoH;
             logoProps.x = cx - (_logoW / 2);
             logoProps.y = _logoY;
 
+            // ── 1. Draw new Crest Logo ──
             const logo = new Image();
-            
-            await Promise.all([
-                new Promise<void>(r => { logo.onload = () => r(); logo.onerror = () => r(); logo.src = 'img/crest.jpg'; })
-            ]);
+            logo.src = 'img/crest.jpg';
+            await new Promise<void>(r => { logo.onload = () => r(); logo.onerror = () => r(); });
             if (!running) return;
 
             if (logo.complete && logo.naturalWidth > 0 && logo.naturalHeight > 0) {
                 loadedLogo = logo;
                 o.drawImage(logo, logoProps.x, logoProps.y, logoProps.w, logoProps.h);
             }
-            
 
-
+            // ── 2. Draw "2026" and "ASCENT" EXACTLY matching the DOM properties ──
             o.textAlign = 'center';
             o.textBaseline = 'middle';
 
@@ -128,28 +120,33 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete }) => {
             textProps.subY = _subY;
             o.font = `700 ${_subSize}px Rajdhani, monospace`;
             o.fillStyle = '#ff4655';
-            (o as any).letterSpacing = '0.4em';
+            (o as any).letterSpacing = '0.4em'; // Force canvas to match DOM letter-spacing
             o.fillText('2026', W / 2, _subY);
 
             textProps.mainSize = _mainSize;
             textProps.mainY = _mainY;
             o.font = `900 ${_mainSize}px Teko, sans-serif`;
             o.fillStyle = '#ffffff';
-            (o as any).letterSpacing = '0.1em';
+            (o as any).letterSpacing = '0.1em'; // Matches tracking-widest
             o.fillText('ASCENT', W / 2, _mainY);
             (o as any).letterSpacing = '0px';
 
+            // Reset arrays
             particles = [];
             sparks = [];
 
+            // ── 3. Sample pixels ──
             const data = o.getImageData(0, 0, W, H).data;
-            const gap = W < 768 ? 6 : 8;
+            const gap = W < 768 ? 6 : 8; // denser grid
             
             for (let y = 0; y < H; y += gap) {
                 for (let x = 0; x < W; x += gap) {
                     const i = (y * W + x) * 4;
                     const r = data[i], g = data[i + 1], b = data[i + 2];
 
+                    // STRICT Threshold to ignore JPEG compression black background noise
+                    // The crest.jpg has a black background, which might be rgb(20,20,30).
+                    // We only want to sample the vibrant RED and WHITE triangles.
                     if (r > 60 || g > 60 || b > 60) {
                         const bright = (r + g + b) / 3;
                         const isRed = r > g + 40;
@@ -172,6 +169,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete }) => {
                 }
             }
 
+            // Initial spark burst
             for (let i = 0; i < 300; i++) {
                 const a = Math.random() * Math.PI * 2;
                 const s = 3 + Math.random() * 12;
@@ -185,30 +183,27 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete }) => {
                 });
             }
 
+            // Reset time trackers so animation completely restarts
+            lastTime = performance.now();
+            elapsed = 0;
+            
             if (!isResize) {
-                lastTime = performance.now();
-                elapsed = 0;
                 loop();
             }
         };
 
+        // ────────── ANIMATION LOOP ──────────
         const loop = () => {
             if (!running) return;
             const now = performance.now();
             
             let dt = now - lastTime;
-            if (dt > 100) dt = 16;
+            if (dt > 100) dt = 16; // Prevent massive leaps in time from background tabs
             
             lastTime = now;
             elapsed += dt;
             
             const time = elapsed * 0.001;
-
-            // Send completion event to App to fade into website
-            if (elapsed > T_FORM + 1500 && !hasCompleted) {
-                hasCompleted = true;
-                if (onComplete) onComplete();
-            }
 
             let trail = 0.88;
             if      (elapsed < T_EXPLODE) trail = 0.1;
@@ -242,6 +237,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete }) => {
 
             const friction = settled ? 0.84 : 0.93;
 
+            // ── Update particles ──
             for (const p of particles) {
                 if (inExplode) {
                     p.vx += (Math.random() - 0.5) * 1.2;
@@ -302,9 +298,12 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete }) => {
                 const dTarget = Math.sqrt((p.x - p.tx) ** 2 + (p.y - p.ty) ** 2);
 
                 if (settled && dTarget < 8) {
+                    // Make settled particles virtually invisible so they don't form a "fat shadow" 
+                    // behind the crisp DOM text. Double text solved.
                     ctx.fillStyle = p.color;
                     ctx.globalAlpha = 0.01; 
                 } else {
+                    // Particles flying around or disturbed by mouse are glowing and visible
                     const a = settled ? Math.max(0.1, 1 - dTarget / 80) : 0.5 + Math.random() * 0.5;
                     ctx.fillStyle = (settled && dTarget < 40) ? p.color : '#ff4655';
                     ctx.globalAlpha = a;
@@ -333,6 +332,9 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete }) => {
                 }
             }
 
+            // ── DRAW EFFECTS ──
+            ctx.globalAlpha = 1;
+
             if (settled) {
                 const sy = (elapsed * 0.07) % H;
                 ctx.fillStyle = 'rgba(255, 70, 85, 0.025)';
@@ -345,25 +347,10 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete }) => {
         const onMM = (e: MouseEvent) => { mouse.x = e.clientX; mouse.y = e.clientY; };
         const onTM = (e: TouchEvent) => { if (e.touches[0]) { mouse.x = e.touches[0].clientX; mouse.y = e.touches[0].clientY; } };
         const onML = () => { mouse.x = -9999; mouse.y = -9999; };
-        let lastW = window.innerWidth;
-        let lastH = window.innerHeight;
-
         const onResize = () => {
-            const newW = window.innerWidth;
-            const newH = window.innerHeight;
-
-            // Ignore tiny layout shifts (like standard 15px scrollbars appearing)
-            if (Math.abs(newW - lastW) < 50 && Math.abs(newH - lastH) < 50) {
-                return;
-            }
-
-            lastW = newW;
-            lastH = newH;
-            W = newW; 
-            H = newH;
-            canvas.width = W; 
-            canvas.height = H;
-            init(true);
+            W = window.innerWidth; H = window.innerHeight;
+            canvas.width = W; canvas.height = H;
+            init(true); // pass true so it doesn't double-call loop()
         };
 
         canvas.addEventListener('mousemove', onMM);
@@ -381,10 +368,10 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete }) => {
             canvas.removeEventListener('touchmove', onTM);
             canvas.removeEventListener('mouseleave', onML);
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const { _logoW, _logoH, _logoY, _subSize, _subY, _mainSize, _mainY, _bottomY, _bottomW } = (() => {
+    const { _logoW, _logoH, _logoY, _subSize, _subY, _mainSize, _mainY } = (() => {
+        // Safe replicate for initial render sizing
         const w = typeof window !== 'undefined' ? window.innerWidth : 1000;
         const h = typeof window !== 'undefined' ? window.innerHeight : 800;
         const isMobile = w < 768;
@@ -395,41 +382,35 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete }) => {
             _subSize: Math.max(Math.min(w * 0.055, 55), 24),
             _subY: h * 0.52,
             _mainSize: Math.min(w * 0.18, 220),
-            _mainY: h * 0.70,
-            _bottomY: h * 0.88,
-            _bottomW: isMobile ? w * 0.25 : Math.min(w * 0.1, 150)
+            _mainY: h * 0.70
         };
     })();
 
     return (
-        <motion.div 
-            className="fixed inset-0 z-[9999] bg-[#08080a] overflow-hidden font-teko"
-            initial={{ opacity: 1 }}
-            exit={{
-                opacity: 0,
-                filter: "brightness(200%) blur(5px)",
-                transition: { duration: 1.2, ease: "easeInOut" }
-            }}
-        >
+        <div className="relative w-full h-screen bg-[#08080a] overflow-hidden font-teko">
             <canvas ref={canvasRef} className="absolute inset-0 w-full h-full cursor-crosshair z-0" />
 
+            {/* DOM Overlay for Premium Crisp Graphics */}
             <div 
+                // We apply mix-blend-screen to the wrapper so it blends safely through the stacking context into the document
                 className="absolute inset-0 pointer-events-none flex flex-col items-center z-10 transition-opacity duration-1000 ease-in mix-blend-screen"
                 style={{ opacity: logoVisible ? 1 : 0 }}
             >
+                {/* Extracted exactly matching the offscreen pixel target coordinates */}
                 <img 
                     src="img/crest.jpg" 
                     alt="Ascent Crest" 
-                    className="absolute z-10"
+                    className="absolute z-10 transition-transform duration-1000 hover:scale-105 pointer-events-auto"
                     style={{
                         top: `${_logoY}px`,
                         width: `${_logoW}px`,
                         height: `${_logoH}px`,
+                        transform: 'translateX(0)'
                     }}
                 />
 
                 <div 
-                    className="absolute text-[#ff4655] font-rajdhani font-bold drop-shadow-md z-10"
+                    className="absolute text-[#ff4655] font-rajdhani font-bold drop-shadow-md z-10 pointer-events-auto"
                     style={{ 
                         top: `${_subY}px`, 
                         transform: 'translate(-50%, -50%)',
@@ -442,26 +423,45 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete }) => {
                 </div>
 
                 <h1 
-                    className="absolute text-transparent bg-clip-text bg-gradient-to-br from-white via-gray-100 to-gray-500 font-teko font-black whitespace-nowrap z-10"
+                    className="absolute text-transparent bg-clip-text bg-gradient-to-br from-white via-gray-100 to-gray-500 font-teko font-black whitespace-nowrap z-10 pointer-events-auto"
                     style={{ 
                         top: `${_mainY}px`, 
                         transform: 'translate(-50%, -50%)',
                         left: '50%',
                         fontSize: `${_mainSize}px`,
-                        letterSpacing: '0.1em',
+                        letterSpacing: '0.1em', // Matches canvas tracking
                         lineHeight: 0.8,
                         filter: 'drop-shadow(0 0 25px rgba(255, 255, 255, 0.15))' 
                     }}
                 >
                     ASCENT
                 </h1>
-
-
             </div>
 
+            {/* Top HUD */}
+            <div className="absolute top-0 left-0 w-full p-6 z-10 flex justify-between items-center pointer-events-none">
+                <div className="font-mono text-[10px] text-[#ff4655] tracking-[0.3em] uppercase opacity-60">
+                    ASCII_MORPH_ENGINE // V3
+                </div>
+                <Link
+                    to="/"
+                    className="pointer-events-auto border border-white/10 bg-[#0d121f]/60 px-5 py-2 text-[10px] font-mono text-white/60 hover:bg-white hover:text-black transition-colors tracking-widest font-sans"
+                >
+                    ← BACK
+                </Link>
+            </div>
+
+            {/* Bottom hint */}
+            <div className="absolute bottom-8 inset-x-0 z-10 pointer-events-none flex justify-center">
+                <div className="border border-white/5 bg-[#08080a]/70 px-6 py-2.5 font-mono text-[10px] text-white/30 tracking-[0.3em] uppercase">
+                    move cursor to disturb the field
+                </div>
+            </div>
+
+            {/* Scanline texture */}
             <div className="absolute inset-0 pointer-events-none opacity-[0.025] bg-[linear-gradient(to_bottom,transparent_50%,#fff_50%)] bg-[length:100%_4px] z-20 mix-blend-overlay" />
-        </motion.div>
+        </div>
     );
 };
 
-export default LoadingScreen;
+export default AsciiDemoPage;
