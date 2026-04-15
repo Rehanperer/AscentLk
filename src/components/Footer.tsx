@@ -151,6 +151,7 @@ const STYLES = `
 export type MagneticButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & 
   React.AnchorHTMLAttributes<HTMLAnchorElement> & {
     as?: React.ElementType;
+    [key: string]: any;
   };
 
 const MagneticButton = React.forwardRef<HTMLElement, MagneticButtonProps>(

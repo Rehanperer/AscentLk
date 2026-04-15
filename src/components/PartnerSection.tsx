@@ -43,7 +43,7 @@ const StrategicTier: React.FC<StrategicTierProps> = ({ index, title, sub, desc, 
                         <div className="absolute inset-2 border border-white/5 rounded-full animate-[spin_15s_linear_infinite_reverse]" />
                         <div className="absolute inset-6 border-2 border-t-[#ff4655] border-transparent rounded-full animate-spin" />
                         <div className="text-[#ff4655] drop-shadow-[0_0_15px_rgba(255,70,85,0.5)]">
-                            {React.cloneElement(icon as React.ReactElement, { size: 64, strokeWidth: 1 })}
+                            {React.cloneElement(icon as React.ReactElement<any>, { size: 64, strokeWidth: 1 })}
                         </div>
                     </div>
                 </div>
@@ -94,6 +94,11 @@ const RadarGrid: React.FC = () => {
         </div>
     );
 };
+
+interface PartnerSectionProps {
+    onSponsorClick?: () => void;
+    onContactClick?: () => void;
+}
 
 const PartnerSection: React.FC<PartnerSectionProps> = ({ onSponsorClick, onContactClick }) => {
     const { playHover, playClick } = useAudio();

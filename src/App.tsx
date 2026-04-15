@@ -8,7 +8,6 @@ import AboutSection from './components/Home/AboutSection';
 import SchoolsMarquee from './components/Home/SchoolsMarquee';
 import PathSection from './components/Home/PathSection';
 import SeasonsSection from './components/Home/SeasonsSection';
-import PartnerSection from './components/PartnerSection';
 import CustomCursor from './components/CustomCursor';
 import Footer from './components/Footer';
 
