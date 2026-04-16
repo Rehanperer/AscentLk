@@ -8,6 +8,7 @@ import AboutSection from './components/Home/AboutSection';
 import SchoolsMarquee from './components/Home/SchoolsMarquee';
 import PathSection from './components/Home/PathSection';
 import SeasonsSection from './components/Home/SeasonsSection';
+import AsciiShootout from './components/Home/AsciiShootout';
 import CustomCursor from './components/CustomCursor';
 import Footer from './components/Footer';
 
@@ -35,6 +36,7 @@ const TermsOfService = lazy(() => import('./pages/Policies/TermsOfService'));
 // Demos
 const AsciiDemoPage = lazy(() => import('./pages/AsciiDemoPage'));
 const SchoolsDemoPage = lazy(() => import('./pages/SchoolsDemoPage'));
+const TransitionsDemoPage = lazy(() => import('./pages/TransitionsDemoPage'));
 
 // Simple Auth Guard component
 const AdminGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -198,6 +200,11 @@ const App: React.FC = () => {
                             <SchoolsDemoPage />
                         </Suspense>
                     } />
+                    <Route path="/transitions-demo" element={
+                        <Suspense fallback={<TacticalLoader />}>
+                            <TransitionsDemoPage />
+                        </Suspense>
+                    } />
                     <Route path="/privacy-policy" element={
                         <Suspense fallback={<TacticalLoader />}>
                             <PrivacyPolicy />
@@ -218,6 +225,9 @@ const App: React.FC = () => {
 
                             {/* Phase 1: Modern Hero Block */}
                             <HeroSection />
+
+                            {/* High-performance cinematic ASCII transition */}
+                            <AsciiShootout />
 
                             {/* Phase 2: About Ascent (Split scrolling unblur) */}
                             <AboutSection />
