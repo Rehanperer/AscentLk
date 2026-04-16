@@ -8,7 +8,7 @@ import AboutSection from './components/Home/AboutSection';
 import SchoolsMarquee from './components/Home/SchoolsMarquee';
 import PathSection from './components/Home/PathSection';
 import SeasonsSection from './components/Home/SeasonsSection';
-import AsciiShootout from './components/Home/AsciiShootout';
+import CinematicDoors from './components/Home/CinematicDoors';
 import CustomCursor from './components/CustomCursor';
 import Footer from './components/Footer';
 
@@ -226,8 +226,8 @@ const App: React.FC = () => {
                             {/* Phase 1: Modern Hero Block */}
                             <HeroSection />
 
-                            {/* High-performance cinematic ASCII transition */}
-                            <AsciiShootout />
+                            {/* Cinematic door reveal transition */}
+                            <CinematicDoors />
 
                             {/* Phase 2: About Ascent (Split scrolling unblur) */}
                             <AboutSection />
