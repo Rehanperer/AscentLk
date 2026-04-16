@@ -25,10 +25,13 @@ const CinematicDoors: React.FC = () => {
     // Right door: Slides across 100% of the screen width
     const rightX = useTransform(smoothProgress, [0.1, 0.8], ["0%", "100%"]);
     
-    // Background text reveal
-    const textScale = useTransform(smoothProgress, [0.1, 0.9], [0.8, 1.2]);
-    const textOpacity = useTransform(smoothProgress, [0.1, 0.4, 0.9], [0, 1, 0.8]);
-    const coreGlow = useTransform(smoothProgress, [0.2, 0.8], [0, 1]);
+    // Background text reveal: Wait until doors are open significantly
+    const textScale = useTransform(smoothProgress, [0.3, 0.9], [0.7, 1.2]);
+    const textOpacity = useTransform(smoothProgress, [0.3, 0.6], [0, 1]); // Reveal later
+    const coreGlow = useTransform(smoothProgress, [0.3, 0.8], [0, 1]);
+    
+    // Initial Hint: Show when user first reaches the section, fade as they start
+    const initialHintOpacity = useTransform(smoothProgress, [0, 0.15], [1, 0]);
 
     return (
         <section 
@@ -51,7 +54,7 @@ const CinematicDoors: React.FC = () => {
                         style={{ scale: textScale, opacity: textOpacity }}
                         className="relative z-10 flex flex-col items-center text-center px-4"
                     >
-                        <h2 className="font-teko text-[10vw] md:text-[8rem] font-bold text-white leading-tight drop-shadow-[0_0_50px_rgba(255,255,255,0.3)] uppercase">
+                        <h2 className="font-teko text-[8vw] md:text-[7rem] font-bold text-white leading-tight drop-shadow-[0_0_50px_rgba(255,255,255,0.3)] uppercase">
                             Where Legends <span className="text-[#ff4655]">Ascend</span>
                         </h2>
                         <div className="flex items-center gap-4 mt-4">
@@ -122,6 +125,23 @@ const CinematicDoors: React.FC = () => {
                         <div className="font-mono text-[8px] text-white/10 tracking-[0.5em] uppercase mb-1">Restricted Access</div>
                         <div className="font-teko text-3xl text-white/5 opacity-50 uppercase">Maintenance Required</div>
                     </div>
+                </motion.div>
+
+                {/* ── INITIAL SCROLL HINT ── */}
+                <motion.div 
+                    style={{ opacity: initialHintOpacity }}
+                    className="absolute top-[10vh] inset-x-0 z-40 flex flex-col items-center gap-4 pointer-events-none"
+                >
+                    <div className="w-6 h-10 border-2 border-white/20 rounded-full flex justify-center p-2">
+                        <motion.div 
+                            animate={{ y: [0, 12, 0] }}
+                            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                            className="w-1 h-2 bg-[#ff4655] rounded-full"
+                        />
+                    </div>
+                    <span className="font-mono text-[9px] tracking-[0.4em] text-white/40 uppercase">
+                        Scroll to Decrypt
+                    </span>
                 </motion.div>
 
                 {/* ── GAP PARTICLES / HYDRAULIC STEAM ── */}
