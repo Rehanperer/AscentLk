@@ -49,6 +49,7 @@ const AdminGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
 import { supabase } from './lib/supabase';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { usePageView } from './hooks/usePageView';
 
 const MaintenanceGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [maintenance, setMaintenance] = useState<{ enabled: boolean; until: string } | null>(null);
@@ -100,6 +101,9 @@ const MaintenanceGuard: React.FC<{ children: React.ReactNode }> = ({ children })
 const App: React.FC = () => {
     const location = useLocation();
     const isHomePage = location.pathname === '/';
+
+    // Track page views for analytics
+    usePageView();
     
     // Check if the intro has already played this session
     const hasIntroPlayed = sessionStorage.getItem('ascent_intro_played') === 'true';
