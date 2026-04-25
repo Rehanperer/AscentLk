@@ -37,6 +37,13 @@ const TermsOfService = lazy(() => import('./pages/Policies/TermsOfService'));
 const AsciiDemoPage = lazy(() => import('./pages/AsciiDemoPage'));
 const SchoolsDemoPage = lazy(() => import('./pages/SchoolsDemoPage'));
 const TransitionsDemoPage = lazy(() => import('./pages/TransitionsDemoPage'));
+const EclipseDemo = lazy(() => import('./pages/EclipseDemo'));
+const FocusDemo = lazy(() => import('./pages/FocusDemo'));
+const StadiumDemo = lazy(() => import('./pages/StadiumDemo'));
+const DemoCountdown = lazy(() => import('./pages/DemoCountdown'));
+const DemoRedacted = lazy(() => import('./pages/DemoRedacted'));
+const DemoSignal = lazy(() => import('./pages/DemoSignal'));
+const DemoAperture = lazy(() => import('./pages/DemoAperture'));
 
 // Simple Auth Guard component
 const AdminGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -207,6 +214,41 @@ const App: React.FC = () => {
                     <Route path="/transitions-demo" element={
                         <Suspense fallback={<TacticalLoader />}>
                             <TransitionsDemoPage />
+                        </Suspense>
+                    } />
+                    <Route path="/demo-eclipse" element={
+                        <Suspense fallback={<TacticalLoader />}>
+                            <EclipseDemo />
+                        </Suspense>
+                    } />
+                    <Route path="/demo-focus" element={
+                        <Suspense fallback={<TacticalLoader />}>
+                            <FocusDemo />
+                        </Suspense>
+                    } />
+                    <Route path="/demo-stadium" element={
+                        <Suspense fallback={<TacticalLoader />}>
+                            <StadiumDemo />
+                        </Suspense>
+                    } />
+                    <Route path="/demo-countdown" element={
+                        <Suspense fallback={<TacticalLoader />}>
+                            <DemoCountdown />
+                        </Suspense>
+                    } />
+                    <Route path="/demo-redacted" element={
+                        <Suspense fallback={<TacticalLoader />}>
+                            <DemoRedacted />
+                        </Suspense>
+                    } />
+                    <Route path="/demo-signal" element={
+                        <Suspense fallback={<TacticalLoader />}>
+                            <DemoSignal />
+                        </Suspense>
+                    } />
+                    <Route path="/demo-aperture" element={
+                        <Suspense fallback={<TacticalLoader />}>
+                            <DemoAperture />
                         </Suspense>
                     } />
                     <Route path="/privacy-policy" element={

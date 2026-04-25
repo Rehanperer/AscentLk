@@ -1,465 +1,161 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
-
-// ── ASCII chars used for the morph ──
-const CHARS = 'ASCENT20@#$%&*+O0X!?=-:.';
-
-// ── Phase timing (ms) ──
-const T_EXPLODE = 1800;
-const T_SPIRAL  = 4000;
-const T_WAVE    = 5800;
-const T_FORM    = 8000;
-
-interface Particle {
-    x: number; y: number;
-    vx: number; vy: number;
-    tx: number; ty: number;
-    char: string;
-    color: string;
-    baseAlpha: number;
-    orbitSpeed: number;
-}
-
-interface Spark {
-    x: number; y: number;
-    vx: number; vy: number;
-    life: number;
-    maxLife: number;
-    char: string;
-}
+import React, { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface LoadingScreenProps {
     onComplete?: () => void;
 }
 
 const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete }) => {
-    const canvasRef = useRef<HTMLCanvasElement>(null);
-    const [logoVisible, setLogoVisible] = useState(false);
+    const [phase, setPhase] = useState(0);
 
     useEffect(() => {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-        const ctx = canvas.getContext('2d', { alpha: false });
-        if (!ctx) return;
-
-        let animId = 0;
-        let W = window.innerWidth;
-        let H = window.innerHeight;
-        canvas.width = W;
-        canvas.height = H;
-
-        const mouse = { x: -9999, y: -9999 };
-        let cx = W / 2;
-        let cy = H / 2;
-
-        let particles: Particle[] = [];
-        let sparks: Spark[] = [];
-        
-        // Mutable time trackers
-        let lastTime = 0;
-        let elapsed = 0;
-        let hasCompleted = false;
-
-        let loadedLogo: HTMLImageElement | null = null;
-
-        let logoProps = { x: 0, y: 0, w: 0, h: 0 };
-        let textProps = { subSize: 0, subY: 0, mainSize: 0, mainY: 0 };
-
-        let running = true;
-
-        const getLayout = () => {
-            const isMobile = W < 768;
-            const _logoW = isMobile ? Math.min(W * 0.5, 300) : Math.min(W * 0.22, 350);
-            const _logoH = _logoW;
-            const _logoY = H * 0.05;
-
-            const _subSize = Math.max(Math.min(W * 0.055, 55), 24);
-            const _subY = H * 0.52;
-
-            const _mainSize = Math.min(W * 0.18, 220);
-            const _mainY = H * 0.70;
-            
-            const _bottomY = H * 0.88;
-            const _bottomW = isMobile ? W * 0.25 : Math.min(W * 0.1, 150);
-
-            return { _logoW, _logoH, _logoY, _subSize, _subY, _mainSize, _mainY, _bottomY, _bottomW };
-        };
-
-        const init = async (isResize = false) => {
-            cx = W / 2;
-            cy = H / 2;
-            
-            await document.fonts.ready;
-            if (!running) return;
-
-            const off = document.createElement('canvas');
-            off.width = W;
-            off.height = H;
-            const o = off.getContext('2d', { willReadFrequently: true })!;
-
-            o.fillStyle = '#000';
-            o.fillRect(0, 0, W, H);
-
-            const { _logoW, _logoH, _logoY, _subSize, _subY, _mainSize, _mainY, _bottomY, _bottomW } = getLayout();
-            
-            logoProps.w = _logoW;
-            logoProps.h = _logoH;
-            logoProps.x = cx - (_logoW / 2);
-            logoProps.y = _logoY;
-
-            const logo = new Image();
-            
-            await Promise.all([
-                new Promise<void>(r => { logo.onload = () => r(); logo.onerror = () => r(); logo.src = 'img/crest.jpg'; })
-            ]);
-            if (!running) return;
-
-            if (logo.complete && logo.naturalWidth > 0 && logo.naturalHeight > 0) {
-                loadedLogo = logo;
-                o.drawImage(logo, logoProps.x, logoProps.y, logoProps.w, logoProps.h);
-            }
-            
-
-
-            o.textAlign = 'center';
-            o.textBaseline = 'middle';
-
-            textProps.subSize = _subSize;
-            textProps.subY = _subY;
-            o.font = `700 ${_subSize}px Rajdhani, monospace`;
-            o.fillStyle = '#ff4655';
-            (o as any).letterSpacing = '0.4em';
-            o.fillText('2026', W / 2, _subY);
-
-            textProps.mainSize = _mainSize;
-            textProps.mainY = _mainY;
-            o.font = `900 ${_mainSize}px Teko, sans-serif`;
-            o.fillStyle = '#ffffff';
-            (o as any).letterSpacing = '0.1em';
-            o.fillText('ASCENT', W / 2, _mainY);
-            (o as any).letterSpacing = '0px';
-
-            particles = [];
-            sparks = [];
-
-            const data = o.getImageData(0, 0, W, H).data;
-            const gap = W < 768 ? 6 : 8;
-            
-            for (let y = 0; y < H; y += gap) {
-                for (let x = 0; x < W; x += gap) {
-                    const i = (y * W + x) * 4;
-                    const r = data[i], g = data[i + 1], b = data[i + 2];
-
-                    if (r > 60 || g > 60 || b > 60) {
-                        const bright = (r + g + b) / 3;
-                        const isRed = r > g + 40;
-                        const angle = Math.random() * Math.PI * 2;
-                        const speed = 4 + Math.random() * 14;
-
-                        particles.push({
-                            x: cx + (Math.random() - 0.5) * 6,
-                            y: cy + (Math.random() - 0.5) * 6,
-                            vx: Math.cos(angle) * speed,
-                            vy: Math.sin(angle) * speed,
-                            tx: x,
-                            ty: y,
-                            char: CHARS[Math.floor(Math.random() * CHARS.length)],
-                            color: isRed ? '#ff4655' : `rgb(${r},${g},${b})`,
-                            baseAlpha: Math.min(1, bright / 160),
-                            orbitSpeed: 0.0015 + Math.random() * 0.004,
-                        });
-                    }
-                }
-            }
-
-            for (let i = 0; i < 300; i++) {
-                const a = Math.random() * Math.PI * 2;
-                const s = 3 + Math.random() * 12;
-                sparks.push({
-                    x: cx, y: cy,
-                    vx: Math.cos(a) * s,
-                    vy: Math.sin(a) * s,
-                    life: 0,
-                    maxLife: 50 + Math.random() * 150,
-                    char: CHARS[Math.floor(Math.random() * CHARS.length)],
-                });
-            }
-
-            if (!isResize) {
-                lastTime = performance.now();
-                elapsed = 0;
-                loop();
-            }
-        };
-
-        const loop = () => {
-            if (!running) return;
-            const now = performance.now();
-            
-            let dt = now - lastTime;
-            if (dt > 100) dt = 16;
-            
-            lastTime = now;
-            elapsed += dt;
-            
-            const time = elapsed * 0.001;
-
-            // Send completion event to App to fade into website
-            if (elapsed > T_FORM + 1500 && !hasCompleted) {
-                hasCompleted = true;
-                if (onComplete) onComplete();
-            }
-
-            let trail = 0.88;
-            if      (elapsed < T_EXPLODE) trail = 0.1;
-            else if (elapsed < T_SPIRAL)  trail = 0.13;
-            else if (elapsed < T_WAVE)    trail = 0.22;
-            else if (elapsed < T_FORM)    trail = 0.55;
-
-            ctx.fillStyle = `rgba(8, 8, 10, ${trail})`;
-            ctx.fillRect(0, 0, W, H);
-
-            ctx.font = '11px "Courier New", monospace';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-
-            const inExplode = elapsed < T_EXPLODE;
-            const inSpiral  = elapsed >= T_EXPLODE && elapsed < T_SPIRAL;
-            const inWave    = elapsed >= T_SPIRAL  && elapsed < T_WAVE;
-            const inForm    = elapsed >= T_WAVE    && elapsed < T_FORM;
-            const settled   = elapsed >= T_FORM;
-
-            if (settled && !logoVisible) setLogoVisible(true);
-
-            let spring = 0;
-            if (inWave) {
-                spring = ((elapsed - T_SPIRAL) / (T_WAVE - T_SPIRAL)) * 0.012;
-            } else if (inForm) {
-                spring = 0.012 + ((elapsed - T_WAVE) / (T_FORM - T_WAVE)) * 0.075;
-            } else if (settled) {
-                spring = 0.087;
-            }
-
-            const friction = settled ? 0.84 : 0.93;
-
-            for (const p of particles) {
-                if (inExplode) {
-                    p.vx += (Math.random() - 0.5) * 1.2;
-                    p.vy += (Math.random() - 0.5) * 1.2;
-                    if (Math.random() < 0.12) p.char = CHARS[Math.floor(Math.random() * CHARS.length)];
-                }
-
-                if (inSpiral) {
-                    const dx = p.x - cx;
-                    const dy = p.y - cy;
-                    const dist = Math.max(Math.sqrt(dx * dx + dy * dy), 1);
-                    const spiralFade = 1 - ((elapsed - T_EXPLODE) / (T_SPIRAL - T_EXPLODE)) * 0.4;
-                    const tangentForce = spiralFade * p.orbitSpeed * 65;
-                    p.vx += (-dy / dist) * tangentForce;
-                    p.vy += (dx / dist) * tangentForce;
-                    p.vx -= dx * 0.00018;
-                    p.vy -= dy * 0.00018;
-                    if (Math.random() < 0.04) p.char = CHARS[Math.floor(Math.random() * CHARS.length)];
-                }
-
-                if (inWave) {
-                    const waveFade = 1 - ((elapsed - T_SPIRAL) / (T_WAVE - T_SPIRAL));
-                    const force = waveFade * 3.5;
-                    p.vx += Math.sin(p.y * 0.012 + time * 3) * force;
-                    p.vy += Math.cos(p.x * 0.012 + time * 2.2) * force;
-                    if (Math.random() < 0.025) p.char = CHARS[Math.floor(Math.random() * CHARS.length)];
-                }
-
-                if (spring > 0) {
-                    p.vx += (p.tx - p.x) * spring;
-                    p.vy += (p.ty - p.y) * spring;
-                }
-
-                if (settled) {
-                    const mdx = p.x - mouse.x;
-                    const mdy = p.y - mouse.y;
-                    const md = Math.sqrt(mdx * mdx + mdy * mdy);
-                    if (md < 130 && md > 0) {
-                        const f = (130 - md) / 130 * 8;
-                        p.vx += (mdx / md) * f;
-                        p.vy += (mdy / md) * f;
-                        if (Math.random() > 0.4) p.char = CHARS[Math.floor(Math.random() * CHARS.length)];
-                    }
-                }
-
-                p.vx *= friction;
-                p.vy *= friction;
-                p.x += p.vx;
-                p.y += p.vy;
-
-                if (!settled) {
-                    if (p.x < 0)  { p.x = 0;  p.vx *= -0.6; }
-                    if (p.x > W)  { p.x = W;  p.vx *= -0.6; }
-                    if (p.y < 0)  { p.y = 0;  p.vy *= -0.6; }
-                    if (p.y > H)  { p.y = H;  p.vy *= -0.6; }
-                }
-
-                const dTarget = Math.sqrt((p.x - p.tx) ** 2 + (p.y - p.ty) ** 2);
-
-                if (settled && dTarget < 8) {
-                    ctx.fillStyle = p.color;
-                    ctx.globalAlpha = 0.01; 
-                } else {
-                    const a = settled ? Math.max(0.1, 1 - dTarget / 80) : 0.5 + Math.random() * 0.5;
-                    ctx.fillStyle = (settled && dTarget < 40) ? p.color : '#ff4655';
-                    ctx.globalAlpha = a;
-                }
-
-                ctx.fillText(p.char, p.x, p.y);
-            }
-
-            ctx.globalAlpha = 1;
-
-            if (elapsed < T_FORM + 1000) {
-                for (let i = sparks.length - 1; i >= 0; i--) {
-                    const s = sparks[i];
-                    s.life++;
-                    s.x += s.vx;
-                    s.y += s.vy;
-                    s.vx *= 0.97;
-                    s.vy *= 0.97;
-                    s.vy += 0.025;
-
-                    const lifeRatio = 1 - s.life / s.maxLife;
-                    if (lifeRatio <= 0) { sparks.splice(i, 1); continue; }
-
-                    ctx.fillStyle = `rgba(255, 70, 85, ${lifeRatio * 0.45})`;
-                    ctx.fillText(s.char, s.x, s.y);
-                }
-            }
-
-            if (settled) {
-                const sy = (elapsed * 0.07) % H;
-                ctx.fillStyle = 'rgba(255, 70, 85, 0.025)';
-                ctx.fillRect(0, sy - 1, W, 2);
-            }
-
-            animId = requestAnimationFrame(loop);
-        };
-
-        const onMM = (e: MouseEvent) => { mouse.x = e.clientX; mouse.y = e.clientY; };
-        const onTM = (e: TouchEvent) => { if (e.touches[0]) { mouse.x = e.touches[0].clientX; mouse.y = e.touches[0].clientY; } };
-        const onML = () => { mouse.x = -9999; mouse.y = -9999; };
-        let lastW = window.innerWidth;
-        let lastH = window.innerHeight;
-
-        const onResize = () => {
-            const newW = window.innerWidth;
-            const newH = window.innerHeight;
-
-            // Ignore tiny layout shifts (like standard 15px scrollbars appearing)
-            if (Math.abs(newW - lastW) < 50 && Math.abs(newH - lastH) < 50) {
-                return;
-            }
-
-            lastW = newW;
-            lastH = newH;
-            W = newW; 
-            H = newH;
-            canvas.width = W; 
-            canvas.height = H;
-            init(true);
-        };
-
-        canvas.addEventListener('mousemove', onMM);
-        canvas.addEventListener('touchmove', onTM, { passive: true });
-        canvas.addEventListener('mouseleave', onML);
-        window.addEventListener('resize', onResize);
-
-        init();
+        const t1 = setTimeout(() => setPhase(1), 1500);
+        const t2 = setTimeout(() => setPhase(2), 1900);
+        const t3 = setTimeout(() => {
+            if (onComplete) onComplete();
+        }, 3200);
 
         return () => {
-            running = false;
-            cancelAnimationFrame(animId);
-            window.removeEventListener('resize', onResize);
-            canvas.removeEventListener('mousemove', onMM);
-            canvas.removeEventListener('touchmove', onTM);
-            canvas.removeEventListener('mouseleave', onML);
+            clearTimeout(t1);
+            clearTimeout(t2);
+            clearTimeout(t3);
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    const { _logoW, _logoH, _logoY, _subSize, _subY, _mainSize, _mainY, _bottomY, _bottomW } = (() => {
-        const w = typeof window !== 'undefined' ? window.innerWidth : 1000;
-        const h = typeof window !== 'undefined' ? window.innerHeight : 800;
-        const isMobile = w < 768;
-        return {
-            _logoW: isMobile ? Math.min(w * 0.5, 300) : Math.min(w * 0.22, 350),
-            _logoH: isMobile ? Math.min(w * 0.5, 300) : Math.min(w * 0.22, 350),
-            _logoY: h * 0.05,
-            _subSize: Math.max(Math.min(w * 0.055, 55), 24),
-            _subY: h * 0.52,
-            _mainSize: Math.min(w * 0.18, 220),
-            _mainY: h * 0.70,
-            _bottomY: h * 0.88,
-            _bottomW: isMobile ? w * 0.25 : Math.min(w * 0.1, 150)
-        };
-    })();
+    }, [onComplete]);
 
     return (
         <motion.div 
-            className="fixed inset-0 z-[9999] bg-[#08080a] overflow-hidden font-teko"
+            className="fixed inset-0 z-[9999] bg-[#06080e] overflow-hidden flex flex-col items-center justify-center font-teko"
             initial={{ opacity: 1 }}
             exit={{
                 opacity: 0,
-                filter: "brightness(200%) blur(5px)",
-                transition: { duration: 1.2, ease: "easeInOut" }
+                filter: "brightness(250%) blur(12px)",
+                scale: 1.05,
+                transition: { duration: 0.9, ease: "circOut" }
             }}
         >
-            <canvas ref={canvasRef} className="absolute inset-0 w-full h-full cursor-crosshair z-0" />
+            {/* Background Architectural Blueprint Grid */}
+            <motion.div 
+                className="absolute inset-0 z-0 bg-[linear-gradient(rgba(100,200,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(100,200,255,0.05)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: phase >= 2 ? 0 : 1 }}
+                transition={{ duration: 0.5 }}
+            />
+            
+            {/* Center Grid Shadow Vignette */}
+            <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_center,transparent_0%,#06080e_70%)] pointer-events-none" />
 
-            <div 
-                className="absolute inset-0 pointer-events-none flex flex-col items-center z-10 transition-opacity duration-1000 ease-in mix-blend-screen"
-                style={{ opacity: logoVisible ? 1 : 0 }}
-            >
-                <img 
-                    src="img/crest.jpg" 
-                    alt="Ascent Crest" 
-                    className="absolute z-10"
-                    style={{
-                        top: `${_logoY}px`,
-                        width: `${_logoW}px`,
-                        height: `${_logoH}px`,
-                    }}
-                />
-
-                <div 
-                    className="absolute text-[#ff4655] font-rajdhani font-bold drop-shadow-md z-10"
-                    style={{ 
-                        top: `${_subY}px`, 
-                        transform: 'translate(-50%, -50%)',
-                        left: '50%',
-                        fontSize: `${_subSize}px`,
-                        letterSpacing: '0.4em'
-                    }}
-                >
-                    2026
-                </div>
-
-                <h1 
-                    className="absolute text-transparent bg-clip-text bg-gradient-to-br from-white via-gray-100 to-gray-500 font-teko font-black whitespace-nowrap z-10"
-                    style={{ 
-                        top: `${_mainY}px`, 
-                        transform: 'translate(-50%, -50%)',
-                        left: '50%',
-                        fontSize: `${_mainSize}px`,
-                        letterSpacing: '0.1em',
-                        lineHeight: 0.8,
-                        filter: 'drop-shadow(0 0 25px rgba(255, 255, 255, 0.15))' 
-                    }}
-                >
-                    ASCENT
-                </h1>
-
-
+            {/* Tactical Grid Origin Crosshairs */}
+            <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center opacity-20">
+                <div className="w-[1px] h-full bg-[#64c8ff]" />
+                <div className="absolute h-[1px] w-full bg-[#64c8ff]" />
             </div>
 
-            <div className="absolute inset-0 pointer-events-none opacity-[0.025] bg-[linear-gradient(to_bottom,transparent_50%,#fff_50%)] bg-[length:100%_4px] z-20 mix-blend-overlay" />
+            {/* Center content container — logo + hexagon + text all centered via flexbox */}
+            <div className="relative z-10 flex flex-col items-center justify-center">
+                
+                {/* Hexagon + Logo overlay container */}
+                <div className="relative w-[120px] h-[120px] md:w-[160px] md:h-[160px]">
+                    
+                    {/* SVG Hexagon Trace */}
+                    <motion.svg 
+                        viewBox="0 0 100 100" 
+                        className="absolute inset-0 w-full h-full overflow-visible"
+                        animate={{ 
+                            filter: phase >= 1 
+                                ? 'drop-shadow(0 0 15px rgba(255,70,85,0.8)) drop-shadow(0 0 30px rgba(100,200,255,0.4))' 
+                                : 'drop-shadow(0 0 0px rgba(0,0,0,0))' 
+                        }}
+                        transition={{ duration: 0.3 }}
+                    >
+                        {/* Hexagon Shield Base Line */}
+                        <motion.path
+                            d="M 50 5 L 90 25 L 90 75 L 50 95 L 10 75 L 10 25 Z"
+                            fill={phase >= 1 ? "rgba(255,70,85,0.05)" : "none"}
+                            stroke="rgba(255,70,85,0.2)"
+                            strokeWidth="1"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.5 }}
+                        />
+                        
+                        {/* Hexagon Shield Laser Tracer */}
+                        <motion.path
+                            d="M 50 5 L 90 25 L 90 75 L 50 95 L 10 75 L 10 25 Z"
+                            fill="none"
+                            stroke="#ff4655"
+                            strokeWidth="2.5"
+                            strokeLinecap="round"
+                            initial={{ pathLength: 0, pathOffset: 0 }}
+                            animate={
+                                phase >= 1 
+                                    ? { pathLength: 1, pathOffset: 0, opacity: 1 } 
+                                    : { pathLength: 0.25, pathOffset: 1, opacity: 1 }
+                            }
+                            transition={
+                                phase >= 1 
+                                    ? { duration: 0.2 } 
+                                    : { duration: 1.5, ease: "anticipate" }
+                            }
+                        />
+
+                        {/* Core Power Node flash */}
+                        <motion.circle
+                            cx="50" cy="50" r="3"
+                            fill="#ffffff"
+                            initial={{ scale: 0, opacity: 0 }}
+                            animate={phase >= 1 ? { scale: [0, 3, 0], opacity: [0, 1, 0] } : { scale: 0, opacity: 0 }}
+                            transition={{ duration: 0.6 }}
+                        />
+                    </motion.svg>
+
+                    {/* The ACTUAL LOGO — positioned as a normal HTML element, perfectly centered */}
+                    <motion.img 
+                        src="img/ASCENT2026.svg" 
+                        alt="Ascent Crest"
+                        className="absolute inset-0 m-auto w-[55%] h-[55%] object-contain"
+                        style={{ filter: 'drop-shadow(0 0 20px rgba(255,70,85,0.8))' }}
+                        initial={{ scale: 0.2, opacity: 0 }}
+                        animate={
+                            phase >= 1 
+                                ? { scale: [0.2, 1.4, 1], opacity: [0, 1, 0.8, 1] } 
+                                : { scale: 0.2, opacity: 0 }
+                        }
+                        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                    />
+                </div>
+
+                {/* Text Reveal Block */}
+                <div className="mt-8 flex flex-col items-center whitespace-nowrap">
+                    <AnimatePresence>
+                        {phase >= 2 && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 30, scale: 0.8 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                                className="flex flex-col items-center"
+                            >
+                                <span className="font-mono text-[#ff4655] tracking-[0.8em] text-[10px] md:text-sm font-bold mb-3 uppercase drop-shadow-[0_0_15px_rgba(255,70,85,0.8)]">
+                                    System Protocol 2026
+                                </span>
+                                <h1 className="text-white font-teko font-black text-7xl md:text-[10rem] leading-none drop-shadow-[0_0_40px_rgba(255,255,255,0.4)] tracking-wider">
+                                    ASCENT
+                                </h1>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
+            </div>
+
+            {/* Aggressive System Glitch Flash */}
+            <motion.div 
+                className="absolute inset-0 z-40 bg-white pointer-events-none mix-blend-overlay"
+                initial={{ opacity: 0 }}
+                animate={phase === 1 ? { opacity: [0, 0.8, 0, 0.4, 0] } : { opacity: 0 }}
+                transition={{ duration: 0.4 }}
+            />
+
+            {/* CRT TV Flicker Overlay */}
+            <div className="absolute inset-0 z-50 pointer-events-none opacity-[0.03] bg-[linear-gradient(to_bottom,transparent_50%,#fff_50%)] bg-[length:100%_4px] mix-blend-overlay" />
         </motion.div>
     );
 };

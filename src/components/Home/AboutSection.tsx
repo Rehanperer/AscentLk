@@ -1,19 +1,18 @@
 import React, { useRef } from 'react';
 import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 
-const UnblurWord: React.FC<{ children: string; progress: any; range: [number, number] }> = ({ children, progress, range }) => {
-    // Map the overall scroll progress to this specific word's range
-    const opacity = useTransform(progress, range, [0.1, 1]);
-    const blur = useTransform(progress, range, [10, 0]);
+/**
+ * ScrollText — MOBILE OPTIMIZED
+ * Instead of per-word blur (40+ simultaneous filter animations = GPU death),
+ * we use OPACITY ONLY which is fully GPU-composited and costs almost nothing.
+ */
+const ScrollWord: React.FC<{ children: string; progress: any; range: [number, number] }> = ({ children, progress, range }) => {
+    const opacity = useTransform(progress, range, [0.08, 1]);
+    const y = useTransform(progress, range, [8, 0]);
 
     return (
-        <span className="relative inline-block mr-[0.25em] mt-[0.1em]">
-            <motion.span
-                style={{ 
-                    opacity, 
-                    filter: useTransform(blur, (v) => `blur(${v}px)`),
-                }}
-            >
+        <span className="relative inline-block mx-[0.12em] mt-[0.1em]">
+            <motion.span style={{ opacity, y, display: 'inline-block' }}>
                 {children}
             </motion.span>
         </span>
@@ -32,15 +31,15 @@ const ScrollText: React.FC<{ text: string }> = ({ text }) => {
     return (
         <p 
             ref={containerRef} 
-            className="font-teko text-3xl md:text-5xl lg:text-6xl leading-[1.1] tracking-wide text-white uppercase flex flex-wrap"
+            className="font-teko text-3xl sm:text-4xl md:text-5xl lg:text-7xl leading-[1.1] tracking-wide text-white uppercase flex flex-wrap justify-center text-center drop-shadow-xl"
         >
             {words.map((word, i) => {
                 const start = i / words.length;
                 const end = start + (1 / words.length);
                 return (
-                    <UnblurWord key={i} progress={scrollYProgress} range={[start, end]}>
+                    <ScrollWord key={i} progress={scrollYProgress} range={[start, end]}>
                         {word}
-                    </UnblurWord>
+                    </ScrollWord>
                 );
             })}
         </p>
@@ -52,27 +51,24 @@ const StatCounter: React.FC<{ value: string; label: string; delay?: number }> = 
     const isInView = useInView(ref, { once: true, margin: "-50px" });
 
     return (
-        <div ref={ref} className="flex items-center gap-4 py-4 border-b border-white/5 last:border-0 relative overflow-hidden group">
-            {/* Hover highlight sweep */}
-            <div className="absolute top-0 left-[-100%] w-full h-full bg-gradient-to-r from-transparent via-white/5 to-transparent group-hover:translate-x-[200%] transition-transform duration-1000 ease-in-out pointer-events-none" />
-            
+        <div ref={ref} className="flex flex-col items-center text-center gap-2 relative overflow-hidden group px-2 sm:px-6">
             <motion.div 
-                className="w-1.5 h-1.5 bg-[#ff4655]" 
+                className="w-1.5 h-1.5 bg-[#ff4655] shadow-[0_0_10px_rgba(255,70,85,0.8)]" 
                 initial={{ scale: 0 }}
                 animate={isInView ? { scale: 1 } : { scale: 0 }}
                 transition={{ duration: 0.5, delay }}
             />
-            <div className="flex flex-col">
+            <div className="flex flex-col items-center">
                 <motion.span 
-                    className="font-mono text-[#ff4655] font-bold text-lg md:text-xl tracking-widest leading-none drop-shadow-[0_0_10px_rgba(255,70,85,0.4)]"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+                    className="font-mono text-[#ff4655] font-bold text-xl sm:text-2xl md:text-3xl tracking-widest leading-none drop-shadow-[0_0_15px_rgba(255,70,85,0.6)]"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
                     transition={{ duration: 0.6, delay: delay + 0.1 }}
                 >
                     {value}
                 </motion.span>
                 <motion.span 
-                    className="font-mono text-[9px] md:text-[10px] text-white/50 uppercase tracking-[0.3em] mt-1"
+                    className="font-mono text-[7px] sm:text-[8px] md:text-[10px] text-white/50 uppercase tracking-[0.2em] sm:tracking-[0.3em] mt-2 sm:whitespace-nowrap"
                     initial={{ opacity: 0 }}
                     animate={isInView ? { opacity: 1 } : { opacity: 0 }}
                     transition={{ duration: 0.6, delay: delay + 0.3 }}
@@ -85,80 +81,72 @@ const StatCounter: React.FC<{ value: string; label: string; delay?: number }> = 
 };
 
 const AboutSection: React.FC = () => {
+    const sectionRef = useRef<HTMLElement>(null);
+
     return (
-        <section id="about" className="relative py-32 md:py-48 px-6 bg-[#0d121f] overflow-hidden">
-            {/* Atmospheric Background Layer */}
-            <div className="absolute inset-0 opacity-30 bg-scanlines pointer-events-none" />
-            
-            {/* Subdued structural lines in background */}
-            <div className="absolute left-[10%] top-0 w-[1px] h-full bg-gradient-to-b from-transparent via-white/[0.03] to-transparent pointer-events-none hidden md:block" />
-            <div className="absolute right-[10%] top-0 w-[1px] h-full bg-gradient-to-b from-transparent via-white/[0.03] to-transparent pointer-events-none hidden md:block" />
-
-            <div className="max-w-7xl mx-auto relative z-10 grid grid-cols-1 md:grid-cols-12 gap-16 md:gap-8">
+        <section 
+            ref={sectionRef} 
+            id="about" 
+            className="relative py-32 md:py-56 px-4 sm:px-6 bg-[#080b13] overflow-hidden flex flex-col justify-center items-center"
+        >
+            {/* Static container — no 3D perspective on mobile, only subtle on desktop */}
+            <div className="max-w-6xl mx-auto w-full relative z-10 flex flex-col items-center text-center justify-center min-h-[50vh] sm:min-h-[70vh]">
                 
-                {/* Left Side Text - Higher vertically */}
-                <div className="col-span-1 md:col-span-5 md:mt-12">
-                    <div className="mb-6 inline-flex items-center gap-3">
-                        <div className="h-[1px] w-8 bg-[#ff4655]" />
-                        <span className="font-mono text-[10px] tracking-[0.4em] uppercase text-[#ff4655] font-bold">
-                            // Genesis Phase
+                {/* ── Deep Background ── */}
+                <div className="absolute inset-0 pointer-events-none opacity-40 flex flex-col items-center justify-center">
+                    {/* Glowing Core Orb */}
+                    <div className="absolute w-[80vw] h-[80vw] md:w-[600px] md:h-[600px] bg-[radial-gradient(ellipse_at_center,rgba(255,70,85,0.15)_0%,transparent_60%)]" />
+                    
+                    {/* Grid */}
+                    <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,#000_30%,transparent_100%)]" />
+
+                    {/* Ghost Watermark */}
+                    <div className="absolute font-teko text-[35vw] leading-none text-white/[0.02] tracking-tighter mix-blend-overlay font-bold select-none">
+                        //EVOLVE
+                    </div>
+                </div>
+
+                {/* ── Core Text ── */}
+                <div className="relative z-20 flex flex-col items-center w-full">
+                    <div className="mb-8 md:mb-12 inline-flex items-center gap-3">
+                        <div className="h-[1px] w-8 sm:w-16 bg-gradient-to-l from-[#ff4655] to-transparent" />
+                        <span className="font-mono text-[9px] sm:text-xs tracking-[0.4em] sm:tracking-[0.5em] uppercase text-[#ff4655] font-bold drop-shadow-[0_0_10px_rgba(255,70,85,0.6)]">
+                            Initiating Phase Alpha
                         </span>
+                        <div className="h-[1px] w-8 sm:w-16 bg-gradient-to-r from-[#ff4655] to-transparent" />
                     </div>
                     
-                    <ScrollText text="Ascent lk is set to be the first student-led hybrid production of its scale in Sri Lanka." />
-                </div>
-
-                {/* Center Stats Bar (Vertical) */}
-                <div className="col-span-1 md:col-span-2 flex justify-start md:justify-center hidden md:flex">
-                    <div className="flex flex-col justify-center h-full pt-20">
-                        <StatCounter value="50,000+" label="Student Reach" delay={0} />
-                        <StatCounter value="18" label="Elite Systems" delay={0.2} />
-                        <StatCounter value="300K" label="Prize Protocol" delay={0.4} />
-                    </div>
-                </div>
-
-                {/* Right Side Text - Lower vertically offset */}
-                <div className="col-span-1 md:col-span-5 md:mt-48">
-                    {/* Mobile only stats fallback */}
-                    <div className="flex justify-between md:hidden mb-12 border-y border-white/5 py-4">
-                        <div className="text-center">
-                            <div className="font-mono text-[#ff4655] font-bold text-sm">50K+</div>
-                            <div className="font-mono text-[8px] text-white/40 uppercase tracking-[0.2em]">Reach</div>
-                        </div>
-                        <div className="w-[1px] bg-white/10" />
-                        <div className="text-center">
-                            <div className="font-mono text-[#ff4655] font-bold text-sm">18</div>
-                            <div className="font-mono text-[8px] text-white/40 uppercase tracking-[0.2em]">Schools</div>
-                        </div>
-                        <div className="w-[1px] bg-white/10" />
-                        <div className="text-center">
-                            <div className="font-mono text-[#ff4655] font-bold text-sm">300K</div>
-                            <div className="font-mono text-[8px] text-white/40 uppercase tracking-[0.2em]">Pool</div>
-                        </div>
+                    <div className="max-w-4xl mx-auto w-full px-2">
+                        <ScrollText text="Ascent lk is set to be the first student-led hybrid production of its scale in Sri Lanka. Taking place this November at the Lumina Ballroom, Cinnamon Life, ASCENT 2026 is a fusion of a Tier-1 Valorant Championship and a high-production musical concert." />
                     </div>
 
-                    <ScrollText text="Taking place this November at the Lumina Ballroom, Cinnamon Life, ASCENT 2026 is a fusion of a Tier-1 Valorant Championship and a high-production musical concert." />
-                    
                     <motion.div 
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true, margin: "-100px" }}
                         transition={{ duration: 0.8, delay: 0.4 }}
-                        className="mt-12 group inline-block cursor-pointer relative"
+                        className="mt-12 md:mt-20 group inline-flex flex-col items-center cursor-pointer relative"
                     >
-                        <div className="flex items-center gap-4 text-white/60 group-hover:text-white transition-colors">
-                            <span className="font-mono text-xs tracking-[0.3em] uppercase">Initialize Protocol</span>
-                            <div className="w-12 h-[1px] bg-white/20 group-hover:bg-[#ff4655] group-hover:w-16 transition-all duration-300 relative">
-                                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-1 bg-[#ff4655] opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="flex items-center gap-4 text-white/50 group-hover:text-[#ff4655] transition-colors duration-500">
+                            <span className="font-mono text-[10px] tracking-[0.3em] uppercase">Deploy Protocol</span>
+                            <div className="w-12 h-[1px] bg-white/20 group-hover:bg-[#ff4655] group-hover:w-20 transition-all duration-500 relative">
+                                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-[#ff4655] opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-[0_0_10px_#ff4655]" />
                             </div>
                         </div>
                     </motion.div>
                 </div>
+                
             </div>
-            
-            {/* Watermark */}
-            <div className="absolute bottom-[-10%] right-[-5%] font-teko text-[25vw] leading-none text-white/[0.01] pointer-events-none select-none tracking-tighter mix-blend-overlay font-bold">
-                EVOLVE
+
+            {/* ── Foreground Stats (FLAT, OUTSIDE ANY 3D) ── */}
+            <div 
+                className="relative z-30 flex flex-row items-center justify-center gap-6 sm:gap-12 md:gap-24 mt-16 sm:mt-24 pt-8 sm:pt-12 w-full max-w-4xl border-t border-white/[0.05]"
+            >
+                 <StatCounter value="50,000+" label="Student Reach" delay={0} />
+                 <div className="h-10 w-[1px] bg-white/[0.05]" />
+                 <StatCounter value="18" label="Elite Systems" delay={0.2} />
+                 <div className="h-10 w-[1px] bg-white/[0.05]" />
+                 <StatCounter value="300K" label="Prize Protocol" delay={0.4} />
             </div>
         </section>
     );
