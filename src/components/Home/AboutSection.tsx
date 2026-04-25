@@ -89,7 +89,46 @@ const AboutSection: React.FC = () => {
             id="about" 
             className="relative py-32 md:py-56 px-4 sm:px-6 bg-[#080b13] overflow-hidden flex flex-col justify-center items-center"
         >
-            {/* Static container — no 3D perspective on mobile, only subtle on desktop */}
+            {/* ── VOLUMETRIC SIDE HAZE ── Pure CSS, zero perf cost */}
+            {/* Left Haze — Deep Red */}
+            <div 
+                className="absolute left-0 top-0 w-[60%] md:w-[45%] h-full pointer-events-none z-0"
+                style={{
+                    background: 'radial-gradient(ellipse 80% 60% at 0% 50%, rgba(255, 70, 85, 0.12) 0%, transparent 70%)',
+                }}
+            />
+            {/* Left Haze — Inner brighter core */}
+            <div 
+                className="absolute left-0 top-[20%] w-[35%] md:w-[25%] h-[60%] pointer-events-none z-0"
+                style={{
+                    background: 'radial-gradient(ellipse 100% 80% at 0% 50%, rgba(255, 70, 85, 0.08) 0%, transparent 60%)',
+                }}
+            />
+
+            {/* Right Haze — Cool Cyan */}
+            <div 
+                className="absolute right-0 top-0 w-[60%] md:w-[45%] h-full pointer-events-none z-0"
+                style={{
+                    background: 'radial-gradient(ellipse 80% 60% at 100% 50%, rgba(100, 200, 255, 0.08) 0%, transparent 70%)',
+                }}
+            />
+            {/* Right Haze — Inner brighter core */}
+            <div 
+                className="absolute right-0 top-[20%] w-[35%] md:w-[25%] h-[60%] pointer-events-none z-0"
+                style={{
+                    background: 'radial-gradient(ellipse 100% 80% at 100% 50%, rgba(100, 200, 255, 0.06) 0%, transparent 60%)',
+                }}
+            />
+
+            {/* Bottom Floor Fog — ties the two side hazes together */}
+            <div 
+                className="absolute bottom-0 left-0 w-full h-[40%] md:h-[35%] pointer-events-none z-0"
+                style={{
+                    background: 'linear-gradient(to top, rgba(255, 70, 85, 0.06) 0%, transparent 100%)',
+                }}
+            />
+
+            {/* Static container */}
             <div className="max-w-6xl mx-auto w-full relative z-10 flex flex-col items-center text-center justify-center min-h-[50vh] sm:min-h-[70vh]">
                 
                 {/* ── Deep Background ── */}
@@ -144,7 +183,7 @@ const AboutSection: React.FC = () => {
             >
                  <StatCounter value="50,000+" label="Student Reach" delay={0} />
                  <div className="h-10 w-[1px] bg-white/[0.05]" />
-                 <StatCounter value="18" label="Elite Systems" delay={0.2} />
+                 <StatCounter value="16" label="Elite Systems" delay={0.2} />
                  <div className="h-10 w-[1px] bg-white/[0.05]" />
                  <StatCounter value="300K" label="Prize Protocol" delay={0.4} />
             </div>
