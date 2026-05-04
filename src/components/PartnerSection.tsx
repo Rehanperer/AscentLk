@@ -1,222 +1,194 @@
 import React, { useRef } from 'react';
-import { motion, useScroll, useTransform, useInView, useMotionTemplate, useSpring } from 'framer-motion';
-import { Shield, Users, Globe, Trophy, Radio, Signal } from 'lucide-react';
+import { motion, useInView } from 'framer-motion';
+import { Trophy, Gamepad2, Music, Users, Shield, GraduationCap, ChevronRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import ScrambleText from './ScrambleText';
 import { useAudio } from '../hooks/useAudio';
 
-interface StrategicTierProps {
-    index: number;
-    title: string;
-    sub: string;
-    desc: string;
-    icon: React.ReactNode;
-}
-
-const StrategicTier: React.FC<StrategicTierProps> = ({ index, title, sub, desc, icon }) => {
-    const containerRef = useRef(null);
-    const { scrollYProgress } = useScroll({
-        target: containerRef,
-        offset: ["start end", "end start"]
-    });
-
-    const y = useTransform(scrollYProgress, [0, 1], [150, -150]);
-    const opacity = useTransform(scrollYProgress, [0.1, 0.3, 0.7, 0.9], [0, 1, 1, 0]);
-    const scale = useTransform(scrollYProgress, [0.1, 0.3, 0.7, 0.9], [0.85, 1, 1, 0.85]);
-    const blurPx = useTransform(scrollYProgress, [0.1, 0.3, 0.7, 0.9], [20, 0, 0, 20]);
-    
-    // Smooth the motion values for extra premium feel
-    const smoothOpacity = useSpring(opacity, { damping: 20, stiffness: 100 });
-    const smoothScale = useSpring(scale, { damping: 20, stiffness: 100 });
-    const smoothBlur = useSpring(blurPx, { damping: 20, stiffness: 100 });
-    const filter = useMotionTemplate`blur(${smoothBlur}px)`;
+const FeatureCard: React.FC<{ icon: React.ReactNode; title: string; desc: string; delay: number }> = ({ icon, title, desc, delay }) => {
+    const ref = useRef(null);
+    const isInView = useInView(ref, { once: true, margin: "-80px" });
 
     return (
-        <div ref={containerRef} className="relative min-h-[80vh] flex items-center justify-center py-20">
-            <motion.div 
-                style={{ y, opacity: smoothOpacity, scale: smoothScale, filter }}
-                className="relative z-10 w-full max-w-4xl grid grid-cols-1 md:grid-cols-12 gap-8 items-center px-6"
-            >
-                {/* Visual HUD Element */}
-                <div className="md:col-span-4 flex justify-center md:justify-end">
-                    <div className="relative w-32 h-32 md:w-48 md:h-48 flex items-center justify-center">
-                        <div className="absolute inset-0 border border-[#ff4655]/20 rounded-full animate-[spin_10s_linear_infinite]" />
-                        <div className="absolute inset-2 border border-white/5 rounded-full animate-[spin_15s_linear_infinite_reverse]" />
-                        <div className="absolute inset-6 border-2 border-t-[#ff4655] border-transparent rounded-full animate-spin" />
-                        <div className="text-[#ff4655] drop-shadow-[0_0_15px_rgba(255,70,85,0.5)]">
-                            {React.cloneElement(icon as React.ReactElement<any>, { size: 64, strokeWidth: 1 })}
+        <motion.div
+            ref={ref}
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+            transition={{ duration: 0.6, delay, ease: [0.25, 1, 0.5, 1] }}
+            className="relative group bg-white/[0.02] border border-white/5 p-6 md:p-8 hover:border-[#ff4655]/30 transition-colors duration-500"
+        >
+            {/* Corner accents */}
+            <div className="absolute top-0 left-0 w-4 h-4 border-t border-l border-white/10 group-hover:border-[#ff4655]/40 transition-colors" />
+            <div className="absolute bottom-0 right-0 w-4 h-4 border-b border-r border-white/10 group-hover:border-[#ff4655]/40 transition-colors" />
+
+            <div className="text-[#ff4655] mb-5 group-hover:drop-shadow-[0_0_10px_rgba(255,70,85,0.4)] transition-all">
+                {icon}
+            </div>
+            <h3 className="font-teko text-2xl md:text-3xl font-bold text-white uppercase tracking-wide mb-2">{title}</h3>
+            <p className="font-mono text-[10px] md:text-xs text-white/40 tracking-widest uppercase leading-relaxed">{desc}</p>
+        </motion.div>
+    );
+};
+
+const RequirementItem: React.FC<{ text: string; delay: number }> = ({ text, delay }) => {
+    const ref = useRef(null);
+    const isInView = useInView(ref, { once: true, margin: "-50px" });
+
+    return (
+        <motion.div
+            ref={ref}
+            initial={{ opacity: 0, x: -15 }}
+            animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -15 }}
+            transition={{ duration: 0.4, delay }}
+            className="flex items-center gap-4 py-3 border-b border-white/5 last:border-0"
+        >
+            <div className="w-1.5 h-1.5 bg-[#ff4655] flex-shrink-0 shadow-[0_0_8px_rgba(255,70,85,0.5)]" />
+            <span className="font-mono text-xs md:text-sm text-white/60 tracking-wide uppercase">{text}</span>
+        </motion.div>
+    );
+};
+
+const RegisterSection: React.FC = () => {
+    const { playHover, playClick } = useAudio();
+    const sectionRef = useRef(null);
+    const headerRef = useRef(null);
+    const isHeaderInView = useInView(headerRef, { once: true, margin: "-100px" });
+
+    return (
+        <section ref={sectionRef} id="register" className="relative bg-[#08080a] overflow-hidden py-24 md:py-40">
+            
+            {/* Background atmosphere */}
+            <div className="absolute inset-0 pointer-events-none">
+                {/* Subtle grid */}
+                <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:60px_60px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_20%,transparent_100%)]" />
+                {/* Central glow */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] max-w-[800px] max-h-[800px] bg-[radial-gradient(ellipse_at_center,rgba(255,70,85,0.06)_0%,transparent_60%)]" />
+            </div>
+
+            <div className="max-w-6xl mx-auto px-6 relative z-10">
+
+                {/* ── Header ── */}
+                <div ref={headerRef} className="text-center mb-20 md:mb-28">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={isHeaderInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+                        transition={{ duration: 0.6 }}
+                        className="inline-flex items-center gap-4 mb-6"
+                    >
+                        <div className="h-[1px] w-12 bg-gradient-to-l from-[#ff4655] to-transparent" />
+                        <ScrambleText text="REGISTRATION OPEN" className="text-[#ff4655] font-mono tracking-[0.5em] text-[10px] uppercase font-bold" />
+                        <div className="h-[1px] w-12 bg-gradient-to-r from-[#ff4655] to-transparent" />
+                    </motion.div>
+                    
+                    <motion.h2
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={isHeaderInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+                        transition={{ duration: 0.7, delay: 0.1 }}
+                        className="font-teko text-6xl md:text-[8rem] font-black text-white leading-none uppercase tracking-tight"
+                    >
+                        ENTER THE ARENA
+                    </motion.h2>
+
+                    <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={isHeaderInView ? { opacity: 1 } : { opacity: 0 }}
+                        transition={{ duration: 0.6, delay: 0.3 }}
+                        className="font-mono text-xs md:text-sm text-white/30 tracking-widest uppercase mt-6 max-w-xl mx-auto leading-relaxed"
+                    >
+                        Register your school's best 5v5 Valorant roster for Sri Lanka's premier student esports championship
+                    </motion.p>
+                </div>
+
+                {/* ── Feature Grid ── */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-20 md:mb-28">
+                    <FeatureCard
+                        icon={<Trophy size={32} strokeWidth={1.5} />}
+                        title="300K+ Prize Pool"
+                        desc="Sri Lanka's largest student esports purse. Glory and rewards for the worthy."
+                        delay={0}
+                    />
+                    <FeatureCard
+                        icon={<Gamepad2 size={32} strokeWidth={1.5} />}
+                        title="5v5 Valorant"
+                        desc="Tier-1 competitive format with live broadcast production across all stages."
+                        delay={0.15}
+                    />
+                    <FeatureCard
+                        icon={<Music size={32} strokeWidth={1.5} />}
+                        title="Hybrid Event"
+                        desc="Championship finals fused with a live concert at Cinnamon Life's Lumina Ballroom."
+                        delay={0.3}
+                    />
+                </div>
+
+                {/* ── Requirements + CTA ── */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center">
+                    
+                    {/* Requirements */}
+                    <div className="bg-white/[0.02] border border-white/5 p-6 md:p-10 relative">
+                        <div className="absolute top-0 left-0 w-6 h-6 border-t border-l border-[#ff4655]/30" />
+                        <div className="absolute bottom-0 right-0 w-6 h-6 border-b border-r border-[#ff4655]/30" />
+                        
+                        <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/10">
+                            <Shield size={16} className="text-[#ff4655]" />
+                            <span className="font-mono text-[10px] tracking-[0.4em] text-[#ff4655] uppercase font-bold">Entry Requirements</span>
+                        </div>
+                        
+                        <RequirementItem text="5 main players per team" delay={0} />
+                        <RequirementItem text="Up to 2 substitutes (optional)" delay={0.08} />
+                        <RequirementItem text="School / institution verification" delay={0.16} />
+                        <RequirementItem text="Teacher-in-charge approval" delay={0.24} />
+                        <RequirementItem text="Valid Riot IDs for all players" delay={0.32} />
+                        <RequirementItem text="One team per institution" delay={0.4} />
+                    </div>
+
+                    {/* CTA Block */}
+                    <div className="flex flex-col items-center md:items-start text-center md:text-left">
+                        <div className="flex items-center gap-3 mb-4">
+                            <Users size={18} className="text-white/30" />
+                            <span className="font-mono text-[10px] tracking-[0.3em] text-white/30 uppercase">16 Schools. Limited Slots.</span>
+                        </div>
+
+                        <h3 className="font-teko text-4xl md:text-6xl font-bold text-white uppercase leading-none mb-4">
+                            Lock In<br />Your Team
+                        </h3>
+                        
+                        <p className="text-white/40 font-mono text-[10px] md:text-xs tracking-widest uppercase leading-relaxed mb-10 max-w-sm">
+                            Slots are filling fast. Secure your institution's position before the roster deadline.
+                        </p>
+
+                        <Link
+                            to="/register"
+                            onMouseEnter={() => playHover()}
+                            onClick={() => playClick()}
+                        >
+                            <motion.div
+                                whileHover={{ scale: 1.03 }}
+                                whileTap={{ scale: 0.97 }}
+                                className="group relative px-10 md:px-14 py-5 md:py-6 bg-[#ff4655] text-white font-teko text-xl md:text-2xl font-bold tracking-[0.2em] uppercase overflow-hidden flex items-center gap-4 shadow-[0_0_30px_rgba(255,70,85,0.3)] hover:shadow-[0_0_50px_rgba(255,70,85,0.5)] transition-shadow"
+                            >
+                                <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-0 transition-transform duration-500" />
+                                <GraduationCap size={22} className="relative z-10" />
+                                <span className="relative z-10">Register Your Team</span>
+                                <ChevronRight size={20} className="relative z-10 group-hover:translate-x-1 transition-transform" />
+                            </motion.div>
+                        </Link>
+
+                        {/* Secondary link */}
+                        <div className="mt-6 font-mono text-[9px] md:text-[10px] text-white/20 tracking-[0.3em] uppercase">
+                            Registration closes before event day
                         </div>
                     </div>
                 </div>
 
-                {/* Text Content */}
-                <div className="md:col-span-8 space-y-4 text-center md:text-left">
-                    <div className="font-mono text-[10px] tracking-[0.6em] text-[#ff4655] uppercase opacity-70">
-                        Module_{String(index + 1).padStart(2, '0')} // {sub}
-                    </div>
-                    <h3 className="font-teko text-6xl md:text-8xl font-bold text-white leading-none tracking-tight uppercase">
-                        {title}
-                    </h3>
-                    <p className="text-white/40 font-mono text-xs md:text-sm tracking-widest leading-relaxed uppercase max-w-xl">
-                        {desc}
-                    </p>
-                    
-                    {/* Tactical Hud Line */}
-                    <div className="flex items-center gap-4 pt-4 justify-center md:justify-start">
-                        <div className="h-[1px] w-12 bg-[#ff4655]/40" />
-                        <div className="w-1 h-1 bg-[#ff4655] rounded-full animate-pulse" />
-                        <div className="font-mono text-[8px] text-white/20 tracking-[0.2em]">DECRYPTED_ACCESS_GRANTED</div>
-                    </div>
-                </div>
-            </motion.div>
-
-            {/* Background Perspective Index */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.02] select-none">
-                <span className="font-teko text-[40vh] md:text-[60vh] font-black text-white">{String(index + 1).padStart(2, '0')}</span>
-            </div>
-        </div>
-    );
-};
-
-const RadarGrid: React.FC = () => {
-    return (
-        <div className="absolute inset-0 pointer-events-none">
-            {/* Pulsing Radar Rings */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150vw] h-[150vw] border border-white/[0.03] rounded-full" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[100vw] h-[100vw] border border-white/[0.03] rounded-full" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[50vw] h-[50vw] border border-white/[0.03] rounded-full" />
-            
-            {/* Diagonal Crosshair Lines */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200vw] h-[1px] bg-white/[0.02] rotate-45" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200vw] h-[1px] bg-white/[0.02] -rotate-45" />
-            
-            {/* Moving Radar Line */}
-            <div className="absolute top-1/2 left-1/2 w-[100vw] h-[100vw] bg-gradient-to-tr from-[#ff4655]/10 to-transparent -translate-x-1/2 -translate-y-1/2 origin-center animate-[spin_8s_linear_infinite]" style={{ clipPath: 'polygon(50% 50%, 100% 0%, 100% 50%)' }} />
-        </div>
-    );
-};
-
-interface PartnerSectionProps {
-    onSponsorClick?: () => void;
-    onContactClick?: () => void;
-}
-
-const PartnerSection: React.FC<PartnerSectionProps> = ({ onSponsorClick, onContactClick }) => {
-    const { playHover, playClick } = useAudio();
-    const sectionRef = useRef(null);
-    const { scrollYProgress } = useScroll({
-        target: sectionRef,
-        offset: ["start end", "end start"]
-    });
-
-    const tiers = [
-        {
-            title: "CORPORATE",
-            sub: "ELITE TIER",
-            desc: "PREMIUM PLACEMENT ACROSS ALL DIGITAL AND PHYSICAL ASSETS WITH EXCLUSIVE BROADCAST INTEGRATION.",
-            icon: <Shield />
-        },
-        {
-            title: "YOUTH",
-            sub: "REACH MODULE",
-            desc: "DIRECT ACCESS TO 50,000+ STUDENTS ACROSS SRI LANKA'S LEADING EDUCATIONAL INSTITUTIONS.",
-            icon: <Users />
-        },
-        {
-            title: "GLOBAL",
-            sub: "SCALE ENGINE",
-            desc: "LEVERAGE HIGH-ENGAGEMENT DIGITAL BROADCASTS REACHING VIEWERS ACROSS REGIONAL BOUNDARIES.",
-            icon: <Globe />
-        },
-        {
-            title: "HERITAGE",
-            sub: "LEGACY CORE",
-            desc: "BECOME A CORNERSTONE OF SRI LANKAN ESPORTS HISTORY BY SUPPORTING THE PREMIER STUDENT PLATFORM.",
-            icon: <Trophy />
-        }
-    ];
-
-    return (
-        <section ref={sectionRef} id="partners" className="relative bg-[#08080a] overflow-hidden">
-            <RadarGrid />
-
-            {/* Static Header HUD */}
-            <div className="relative z-20 pt-32 pb-16 text-center">
-                <div className="inline-flex items-center gap-4 mb-4">
-                    <div className="w-2 h-2 bg-[#ff4655] animate-pulse" />
-                    <span className="font-mono text-[10px] tracking-[0.5em] uppercase text-white/40">Strategic_Alliances_Pending</span>
-                </div>
-                <h2 className="font-teko text-8xl md:text-[12rem] font-black text-white leading-none opacity-10 select-none">ALLIANCE</h2>
-            </div>
-
-            {/* Scrolling Tiers */}
-            <div className="relative">
-                {tiers.map((tier, i) => (
-                    <StrategicTier 
-                        key={i}
-                        index={i}
-                        {...tier}
-                    />
-                ))}
-            </div>
-
-            {/* Final CTA HUD */}
-            <div className="relative z-20 py-32 border-t border-white/5 flex flex-col items-center">
-                <div className="max-w-xl text-center px-6 mb-16">
-                    <div className="font-mono text-[10px] text-[#ff4655] tracking-[0.8em] mb-4 uppercase">Initialize_Uplink</div>
-                    <h2 className="font-teko text-5xl md:text-7xl font-bold text-white uppercase mb-6 leading-tight">Secure Your Tactical Presence</h2>
-                    <p className="font-mono text-[10px] md:text-xs text-white/30 tracking-widest uppercase leading-relaxed">
-                        The Gauntlet awaits those who lead. Connect with the operations team to secure the future of Sri Lankan esports.
-                    </p>
-                </div>
-
-                <div className="flex flex-col sm:flex-row gap-6 relative px-6">
-                    <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onMouseEnter={() => playHover()}
-                        className="group relative px-8 md:px-12 py-4 md:py-5 bg-[#ff4655] text-white font-teko text-xl md:text-2xl font-bold tracking-[0.2em] uppercase overflow-hidden"
-                        onClick={() => { playClick(); onSponsorClick?.(); }}
-                    >
-                        <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-0 transition-transform duration-500" />
-                        <span className="relative z-10 flex items-center gap-3">
-                            <Radio size={20} /> Corporate_Uplink
-                        </span>
-                    </motion.button>
-
-                    <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onMouseEnter={() => playHover()}
-                        className="group relative px-8 md:px-12 py-4 md:py-5 bg-transparent border border-white/10 text-white font-teko text-xl md:text-2xl font-bold tracking-[0.2em] uppercase overflow-hidden hover:border-white/40 transition-colors"
-                        onClick={() => { playClick(); onContactClick?.(); }}
-                    >
-                        <span className="relative z-10 flex items-center gap-3">
-                            <Signal size={20} /> General_Inquiry
-                        </span>
-                    </motion.button>
-                </div>
-
-                {/* Scroll to Reveal Signal */}
-                <div className="mt-32 mb-10 flex flex-col items-center gap-4 opacity-60">
+                {/* ── Bottom Divider ── */}
+                <div className="mt-24 md:mt-32 flex flex-col items-center gap-4 opacity-40">
                     <span className="font-mono text-[9px] tracking-[0.4em] uppercase text-white/50">Scroll for footer</span>
-                    <div className="h-24 w-[1px] bg-gradient-to-b from-[#ff4655] to-transparent animate-bounce shadow-[0_0_10px_rgba(255,70,85,0.3)]" />
+                    <div className="h-16 w-[1px] bg-gradient-to-b from-[#ff4655] to-transparent" />
                 </div>
-            </div>
-
-            {/* Side HUD coordinates */}
-            <div className="absolute left-6 top-1/2 -translate-y-1/2 space-y-8 hidden lg:block opacity-20">
-                {['001', '010', '011', '100'].map(bin => (
-                    <div key={bin} className="font-mono text-[10px] tracking-widest vertical-text text-white">LN_COORD_SEC_{bin}</div>
-                ))}
-            </div>
-            <div className="absolute right-6 top-1/2 -translate-y-1/2 space-y-8 hidden lg:block opacity-20">
-                {['AUTH', 'SYNC', 'LINK', 'OPER'].map(stat => (
-                    <div key={stat} className="font-mono text-[10px] tracking-widest vertical-text text-white text-right">STAT_{stat}_99%</div>
-                ))}
             </div>
         </section>
     );
 };
 
-export default PartnerSection;
-
+export default RegisterSection;

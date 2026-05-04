@@ -7,7 +7,7 @@ const NAV_LINKS = [
     { label: 'Schools', href: '#schools' },
     { label: 'Path', href: '#path' },
     { label: 'Seasons', href: '#seasons' },
-    { label: 'Partners', href: '#partners' },
+    { label: 'Register', href: '#register' },
 ];
 
 const ModernNavbar: React.FC = () => {
@@ -72,7 +72,7 @@ const ModernNavbar: React.FC = () => {
                     {/* Desktop CTA & Social */}
                     <div className="hidden md:flex items-center gap-4">
                         <a
-                            href="https://www.instagram.com/ascent.lk"
+                            href="https://www.instagram.com/ascent_2026/"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="p-2 text-white/50 hover:text-[#ff4655] hover:shadow-[0_0_15px_rgba(255,70,85,0.2)] transition-all duration-300"
@@ -149,7 +149,7 @@ const ModernNavbar: React.FC = () => {
                         </button>
 
                         <a
-                            href="https://www.instagram.com/ascent.lk"
+                            href="https://www.instagram.com/ascent_2026/"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex items-center gap-3 px-6 py-2 text-white/40 hover:text-white transition-all duration-300 group"

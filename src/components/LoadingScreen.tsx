@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 interface LoadingScreenProps {
     onComplete?: () => void;
@@ -124,26 +124,29 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete }) => {
                     />
                 </div>
 
-                {/* Text Reveal Block */}
-                <div className="mt-8 flex flex-col items-center whitespace-nowrap">
-                    <AnimatePresence>
-                        {phase >= 2 && (
-                            <motion.div
-                                initial={{ opacity: 0, y: 30, scale: 0.8 }}
-                                animate={{ opacity: 1, y: 0, scale: 1 }}
-                                transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-                                className="flex flex-col items-center"
-                            >
-                                <span className="font-mono text-[#ff4655] tracking-[0.8em] text-[10px] md:text-sm font-bold mb-3 uppercase drop-shadow-[0_0_15px_rgba(255,70,85,0.8)]">
-                                    System Protocol 2026
-                                </span>
-                                <h1 className="text-white font-teko font-black text-7xl md:text-[10rem] leading-none drop-shadow-[0_0_40px_rgba(255,255,255,0.4)] tracking-wider">
-                                    ASCENT
-                                </h1>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-                </div>
+                {/* Text Reveal Block — ALWAYS in DOM, avoids mount-jank */}
+                <motion.div 
+                    className="mt-8 flex flex-col items-center whitespace-nowrap will-change-transform"
+                    initial={false}
+                    animate={phase >= 2 
+                        ? { opacity: 1, y: 0 } 
+                        : { opacity: 0, y: 20 }
+                    }
+                    transition={{ duration: 0.5, ease: [0.25, 1, 0.5, 1] }}
+                >
+                    <span 
+                        className="font-mono text-[#ff4655] tracking-[0.8em] text-[10px] md:text-sm font-bold mb-3 uppercase"
+                        style={{ textShadow: "0 0 15px rgba(255,70,85,0.8)" }}
+                    >
+                        System Protocol 2026
+                    </span>
+                    <h1 
+                        className="text-white font-teko font-black text-7xl md:text-[10rem] leading-none tracking-wider"
+                        style={{ textShadow: "0 0 40px rgba(255,255,255,0.4)" }}
+                    >
+                        ASCENT
+                    </h1>
+                </motion.div>
             </div>
 
             {/* Aggressive System Glitch Flash */}

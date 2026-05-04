@@ -155,8 +155,10 @@ const AboutSection: React.FC = () => {
                         <div className="h-[1px] w-8 sm:w-16 bg-gradient-to-r from-[#ff4655] to-transparent" />
                     </div>
                     
-                    <div className="max-w-4xl mx-auto w-full px-2">
-                        <ScrollText text="Ascent lk is set to be the first student-led hybrid production of its scale in Sri Lanka. Taking place this November at the Lumina Ballroom, Cinnamon Life, ASCENT 2026 is a fusion of a Tier-1 Valorant Championship and a high-production musical concert." />
+                    <div className="max-w-4xl mx-auto w-full px-2 flex flex-col gap-12 md:gap-16">
+                        <ScrollText text="Cinnamon Life’s Lumina Ballroom will serve as the premier stage this November for ASCENT 2026, a landmark event marking Sri Lanka’s first student-led hybrid production of this magnitude. This ambitious showcase represents a sophisticated convergence of digital competition and live artistry—seamlessly fusing the high-stakes intensity of a Tier-1 Valorant Championship with the cinematic grandeur of a professional musical concert." />
+                        
+                        <ScrollText text="More than just a tournament or a performance, ASCENT 2026 is a definitive new benchmark for youth-led innovation and large-scale entertainment in the region." />
                     </div>
 
                     <motion.div 

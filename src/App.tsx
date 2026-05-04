@@ -22,7 +22,7 @@ const MaintenancePage = lazy(() => import('./components/MaintenancePage'));
 const TicketsPage = lazy(() => import('./components/Tickets/TicketsPage'));
 const PartnerSection = lazy(() => import('./components/PartnerSection'));
 const RegistrationModal = lazy(() => import('./components/RegistrationModal'));
-const SponsorModal = lazy(() => import('./components/SponsorModal'));
+
 const AdminPage = lazy(() => import('./components/Admin/AdminPage'));
 const AdminLoginPage = lazy(() => import('./components/Admin/AdminLoginPage'));
 const CheckoutPage = lazy(() => import('./components/Tickets/CheckoutPage'));
@@ -123,7 +123,7 @@ const App: React.FC = () => {
     const [isLoading, setIsLoading] = useState(showCinematicIntro || showTacticalReload);
     const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
     const [ticketModalTitle, setTicketModalTitle] = useState('');
-    const [isSponsorModalOpen, setIsSponsorModalOpen] = useState(false);
+
     const navigate = useNavigate();
 
     const [isMediaLoaded, setIsMediaLoaded] = useState(false);
@@ -287,11 +287,8 @@ const App: React.FC = () => {
                             {/* Phase 5: Toxic Season (ASCII Snake) */}
                             <SeasonsSection />
 
-                            {/* Phase 6: Partnerships */}
-                            <PartnerSection 
-                                onSponsorClick={() => setIsSponsorModalOpen(true)}
-                                onContactClick={() => setIsSponsorModalOpen(true)} 
-                            />
+                            {/* Phase 6: Registration CTA */}
+                            <PartnerSection />
 
                             {/* Footer */}
                             <Footer />
@@ -303,10 +300,7 @@ const App: React.FC = () => {
                                     onClose={() => setIsTicketModalOpen(false)}
                                     title={ticketModalTitle}
                                 />
-                                <SponsorModal
-                                    isOpen={isSponsorModalOpen}
-                                    onClose={() => setIsSponsorModalOpen(false)}
-                                />
+
                             </Suspense>
                         </div>
                     } />

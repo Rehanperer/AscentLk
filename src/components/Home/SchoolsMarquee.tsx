@@ -100,7 +100,7 @@ const SchoolsMarquee: React.FC = () => {
                         <ScrambleText text="ELIGIBLE INSTITUTIONS" className="text-[#ff4655] font-mono tracking-[0.4em] text-[10px] uppercase font-bold" />
                     </div>
                     <h2 className="font-teko text-5xl md:text-7xl font-bold leading-[0.85] text-white">
-                        PARTICIPATING SCHOOLS
+                        TEAMS LOCKED IN
                     </h2>
                 </div>
                 <div className="mt-4 md:mt-0 flex items-center gap-3">

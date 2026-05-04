@@ -39,11 +39,11 @@ const AnimatedCounter: React.FC<{ value: number; label: string; prefix?: string;
 };
 
 /**
- * SpotlightCanvas — Draws two volumetric cinematic spotlight beams
- * from the top-left and top-right corners converging on the center.
- * Includes dust motes floating in the beams for that stage-show feel.
+ * SpotlightBeams — Canvas-drawn volumetric spotlight beams.
+ * Draws ONCE on mount, no animation loop, no dust particles.
+ * Same visual as the original, zero ongoing CPU/GPU cost.
  */
-const SpotlightCanvas: React.FC = () => {
+const SpotlightBeams: React.FC = () => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
     useEffect(() => {
@@ -52,163 +52,85 @@ const SpotlightCanvas: React.FC = () => {
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
-        let w = 0, h = 0;
-        let animId = 0;
-        let running = true;
-
-        // Dust particles floating in the beams
-        const dustCount = 40;
-        const dust: { x: number; y: number; vx: number; vy: number; size: number; alpha: number }[] = [];
-
-        const resize = () => {
-            w = canvas.offsetWidth;
-            h = canvas.offsetHeight;
-            canvas.width = w * (window.devicePixelRatio > 1 ? 2 : 1);
-            canvas.height = h * (window.devicePixelRatio > 1 ? 2 : 1);
-            ctx.scale(window.devicePixelRatio > 1 ? 2 : 1, window.devicePixelRatio > 1 ? 2 : 1);
-        };
-
-        const initDust = () => {
-            dust.length = 0;
-            for (let i = 0; i < dustCount; i++) {
-                dust.push({
-                    x: Math.random() * w,
-                    y: Math.random() * h,
-                    vx: (Math.random() - 0.5) * 0.3,
-                    vy: -0.2 - Math.random() * 0.4,
-                    size: 0.5 + Math.random() * 1.5,
-                    alpha: Math.random() * 0.6,
-                });
-            }
-        };
-
-        const drawBeam = (
-            sx: number, sy: number,   // source point (top corner)
-            tx: number, ty: number,   // target point (center bottom)
-            beamWidth: number         // width of beam at the target
-        ) => {
-            // The beam is a trapezoid: narrow at source, wide at target
-            const sourceHalf = 8; // very narrow at source (the light fixture)
-
-            // Draw the volumetric cone with layered gradients for depth
-            // Core bright beam (narrow)
-            ctx.save();
-            ctx.beginPath();
-            ctx.moveTo(sx - sourceHalf, sy);
-            ctx.lineTo(sx + sourceHalf, sy);
-            ctx.lineTo(tx + beamWidth * 0.3, ty);
-            ctx.lineTo(tx - beamWidth * 0.3, ty);
-            ctx.closePath();
-
-            const coreGrad = ctx.createLinearGradient(sx, sy, tx, ty);
-            coreGrad.addColorStop(0, 'rgba(255, 90, 100, 0.25)');
-            coreGrad.addColorStop(0.3, 'rgba(255, 70, 85, 0.08)');
-            coreGrad.addColorStop(0.7, 'rgba(255, 70, 85, 0.03)');
-            coreGrad.addColorStop(1, 'rgba(255, 70, 85, 0.01)');
-            ctx.fillStyle = coreGrad;
-            ctx.fill();
-            ctx.restore();
-
-            // Outer haze (wider, more diffuse)
-            ctx.save();
-            ctx.beginPath();
-            ctx.moveTo(sx - sourceHalf * 3, sy);
-            ctx.lineTo(sx + sourceHalf * 3, sy);
-            ctx.lineTo(tx + beamWidth, ty);
-            ctx.lineTo(tx - beamWidth, ty);
-            ctx.closePath();
-
-            const outerGrad = ctx.createLinearGradient(sx, sy, tx, ty);
-            outerGrad.addColorStop(0, 'rgba(255, 70, 85, 0.08)');
-            outerGrad.addColorStop(0.4, 'rgba(255, 70, 85, 0.03)');
-            outerGrad.addColorStop(1, 'transparent');
-            ctx.fillStyle = outerGrad;
-            ctx.fill();
-            ctx.restore();
-
-            // Source glow (the light fixture itself)
-            ctx.save();
-            const sourceGlow = ctx.createRadialGradient(sx, sy, 0, sx, sy, 40);
-            sourceGlow.addColorStop(0, 'rgba(255, 120, 130, 0.5)');
-            sourceGlow.addColorStop(0.3, 'rgba(255, 70, 85, 0.15)');
-            sourceGlow.addColorStop(1, 'transparent');
-            ctx.fillStyle = sourceGlow;
-            ctx.fillRect(sx - 50, sy - 10, 100, 60);
-            ctx.restore();
-        };
-
-        const isInBeam = (px: number, py: number, sx: number, sy: number, tx: number, ty: number, beamWidth: number): boolean => {
-            // Check if a point is roughly within the beam cone
-            if (py < sy || py > ty) return false;
-            const t = (py - sy) / (ty - sy); // 0 at source, 1 at target
-            const halfW = 8 + t * beamWidth;
-            const cx = sx + t * (tx - sx);
-            return Math.abs(px - cx) < halfW;
-        };
-
-        let time = 0;
-        const loop = () => {
-            if (!running) return;
-            ctx.clearRect(0, 0, w, h);
+        const draw = () => {
+            const w = canvas.offsetWidth;
+            const h = canvas.offsetHeight;
+            const dpr = Math.min(window.devicePixelRatio, 2);
+            canvas.width = w * dpr;
+            canvas.height = h * dpr;
+            ctx.scale(dpr, dpr);
 
             const targetX = w / 2;
             const targetY = h * 0.65;
             const beamW = w * 0.18;
+            const sourceHalf = 8;
 
-            // Draw left spotlight
-            drawBeam(w * 0.05, 0, targetX, targetY, beamW);
-            // Draw right spotlight
-            drawBeam(w * 0.95, 0, targetX, targetY, beamW);
+            const drawBeam = (sx: number, sy: number) => {
+                // Outer haze
+                ctx.save();
+                ctx.beginPath();
+                ctx.moveTo(sx - sourceHalf * 3, sy);
+                ctx.lineTo(sx + sourceHalf * 3, sy);
+                ctx.lineTo(targetX + beamW, targetY);
+                ctx.lineTo(targetX - beamW, targetY);
+                ctx.closePath();
+                const outerGrad = ctx.createLinearGradient(sx, sy, targetX, targetY);
+                outerGrad.addColorStop(0, 'rgba(255, 70, 85, 0.1)');
+                outerGrad.addColorStop(0.4, 'rgba(255, 70, 85, 0.04)');
+                outerGrad.addColorStop(1, 'transparent');
+                ctx.fillStyle = outerGrad;
+                ctx.fill();
+                ctx.restore();
 
-            // Convergence pool glow where beams meet
+                // Core beam
+                ctx.save();
+                ctx.beginPath();
+                ctx.moveTo(sx - sourceHalf, sy);
+                ctx.lineTo(sx + sourceHalf, sy);
+                ctx.lineTo(targetX + beamW * 0.3, targetY);
+                ctx.lineTo(targetX - beamW * 0.3, targetY);
+                ctx.closePath();
+                const coreGrad = ctx.createLinearGradient(sx, sy, targetX, targetY);
+                coreGrad.addColorStop(0, 'rgba(255, 90, 100, 0.3)');
+                coreGrad.addColorStop(0.3, 'rgba(255, 70, 85, 0.1)');
+                coreGrad.addColorStop(0.7, 'rgba(255, 70, 85, 0.04)');
+                coreGrad.addColorStop(1, 'rgba(255, 70, 85, 0.01)');
+                ctx.fillStyle = coreGrad;
+                ctx.fill();
+                ctx.restore();
+
+                // Source glow
+                ctx.save();
+                const sourceGlow = ctx.createRadialGradient(sx, sy, 0, sx, sy, 50);
+                sourceGlow.addColorStop(0, 'rgba(255, 150, 155, 0.6)');
+                sourceGlow.addColorStop(0.3, 'rgba(255, 70, 85, 0.2)');
+                sourceGlow.addColorStop(1, 'transparent');
+                ctx.fillStyle = sourceGlow;
+                ctx.fillRect(sx - 60, sy - 10, 120, 70);
+                ctx.restore();
+            };
+
+            // Draw both beams
+            drawBeam(w * 0.05, 0);
+            drawBeam(w * 0.95, 0);
+
+            // Convergence glow
             ctx.save();
-            const poolGrad = ctx.createRadialGradient(targetX, targetY, 0, targetX, targetY, w * 0.2);
-            poolGrad.addColorStop(0, 'rgba(255, 70, 85, 0.12)');
-            poolGrad.addColorStop(0.5, 'rgba(255, 70, 85, 0.04)');
+            const poolGrad = ctx.createRadialGradient(targetX, targetY, 0, targetX, targetY, w * 0.22);
+            poolGrad.addColorStop(0, 'rgba(255, 70, 85, 0.15)');
+            poolGrad.addColorStop(0.5, 'rgba(255, 70, 85, 0.05)');
             poolGrad.addColorStop(1, 'transparent');
             ctx.fillStyle = poolGrad;
-            ctx.fillRect(0, targetY - w * 0.2, w, w * 0.4);
+            ctx.fillRect(0, targetY - w * 0.22, w, w * 0.44);
             ctx.restore();
-
-            // Animate dust particles
-            for (const d of dust) {
-                d.x += d.vx + Math.sin(time * 0.01 + d.y * 0.01) * 0.2;
-                d.y += d.vy;
-                
-                // Wrap
-                if (d.y < 0) { d.y = h; d.x = Math.random() * w; }
-                if (d.x < 0) d.x = w;
-                if (d.x > w) d.x = 0;
-
-                // Only draw dust that's inside one of the beams
-                const inLeft = isInBeam(d.x, d.y, w * 0.05, 0, targetX, targetY, beamW);
-                const inRight = isInBeam(d.x, d.y, w * 0.95, 0, targetX, targetY, beamW);
-                
-                if (inLeft || inRight) {
-                    const flicker = 0.5 + Math.sin(time * 0.05 + d.x) * 0.5;
-                    ctx.save();
-                    ctx.globalAlpha = d.alpha * flicker;
-                    ctx.fillStyle = 'rgba(255, 180, 180, 0.8)';
-                    ctx.beginPath();
-                    ctx.arc(d.x, d.y, d.size, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.restore();
-                }
-            }
-
-            time++;
-            animId = requestAnimationFrame(loop);
         };
 
-        resize();
-        initDust();
-        loop();
+        draw();
 
-        window.addEventListener('resize', () => { resize(); initDust(); });
-        return () => {
-            running = false;
-            cancelAnimationFrame(animId);
-        };
+        // Redraw on resize only
+        const onResize = () => draw();
+        window.addEventListener('resize', onResize);
+        return () => window.removeEventListener('resize', onResize);
     }, []);
 
     return (
@@ -318,7 +240,7 @@ const PathSection: React.FC = () => {
                     </div>
                     <ScrambleText text="PROTOCOL HIERARCHY" className="text-[#ff4655] font-mono tracking-[0.5em] text-[10px] uppercase font-bold mb-4 block" />
                     <h2 className="font-teko text-6xl md:text-8xl font-bold uppercase leading-none text-white">
-                        ROAD TO THE CROWN
+                        THE ASCENT TO GLORY
                     </h2>
                 </div>
 
@@ -369,9 +291,38 @@ const PathSection: React.FC = () => {
 
                 {/* THE 300K JACKPOT REVEAL — Cinematic Spotlights */}
                 <div className="mt-32 md:mt-48 mb-16 md:mb-24 relative w-full py-32 md:py-44">
-                    <SpotlightCanvas />
+                    <SpotlightBeams />
+                    
                     <div className="relative z-10">
                         <AnimatedCounter value={300000} label="LKR Total Prize Pool" suffix="+" duration={3} />
+                    </div>
+
+                    {/* ── Stage Floor Reflection Line ── */}
+                    <div className="absolute left-1/2 -translate-x-1/2 bottom-[22%] w-[70%] md:w-[50%] h-[1px] z-10">
+                        <div className="w-full h-full bg-gradient-to-r from-transparent via-[#ff4655]/30 to-transparent" />
+                        <div className="w-full h-[20px] bg-gradient-to-b from-[#ff4655]/8 to-transparent mt-[1px]" />
+                    </div>
+
+                    {/* ── HUD Corner Brackets ── */}
+                    {/* Top-left */}
+                    <div className="absolute top-[12%] left-[8%] md:left-[15%] w-8 h-8 border-l border-t border-white/10 z-10" />
+                    {/* Top-right */}
+                    <div className="absolute top-[12%] right-[8%] md:right-[15%] w-8 h-8 border-r border-t border-white/10 z-10" />
+                    {/* Bottom-left */}
+                    <div className="absolute bottom-[12%] left-[8%] md:left-[15%] w-8 h-8 border-l border-b border-white/10 z-10" />
+                    {/* Bottom-right */}
+                    <div className="absolute bottom-[12%] right-[8%] md:right-[15%] w-8 h-8 border-r border-b border-white/10 z-10" />
+
+                    {/* ── Side Labels ── */}
+                    <div className="hidden md:block absolute left-[6%] top-1/2 -translate-y-1/2 z-10">
+                        <span className="font-mono text-[8px] tracking-[0.4em] text-white/15 uppercase writing-mode-vertical" style={{ writingMode: 'vertical-rl' }}>
+                            PRIZE_PROTOCOL
+                        </span>
+                    </div>
+                    <div className="hidden md:block absolute right-[6%] top-1/2 -translate-y-1/2 z-10">
+                        <span className="font-mono text-[8px] tracking-[0.4em] text-white/15 uppercase" style={{ writingMode: 'vertical-rl' }}>
+                            SYS_JACKPOT
+                        </span>
                     </div>
                 </div>
                 

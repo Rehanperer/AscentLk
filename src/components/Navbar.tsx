@@ -39,7 +39,7 @@ const Navbar: React.FC<NavbarProps> = ({ onRegister, onNavigate }) => {
         { name: 'CHALLENGE', link: '#countdown' },
         { name: 'SCHOOLS', link: '#schools' },
         { name: 'TIMELINE', link: '#timeline' },
-        { name: 'PARTNERS', link: '#partners' }
+        { name: 'REGISTER', link: '#register' }
     ];
 
     return (
@@ -80,7 +80,7 @@ const Navbar: React.FC<NavbarProps> = ({ onRegister, onNavigate }) => {
                             {/* Desktop Social Icons */}
                             <div className="hidden md:flex gap-1">
                                 <a
-                                    href="https://www.instagram.com/ascent_2026/"
+                                    href="https://www.instagram.com/ascent2026/"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     onMouseEnter={() => playHover()}
@@ -229,7 +229,7 @@ const Navbar: React.FC<NavbarProps> = ({ onRegister, onNavigate }) => {
                                 </Link>
                                 <div className="mt-8 flex justify-center gap-6">
                                     <a
-                                        href="https://www.instagram.com/ascent_2026/"
+                                        href="https://www.instagram.com/ascent2026/"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="w-12 h-12 border border-white/5 flex items-center justify-center opacity-60 active:opacity-100"
