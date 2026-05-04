@@ -11,6 +11,7 @@ import SeasonsSection from './components/Home/SeasonsSection';
 import CinematicDoors from './components/Home/CinematicDoors';
 import CustomCursor from './components/CustomCursor';
 import Footer from './components/Footer';
+import RegisterSection from './components/PartnerSection';
 
 
 // Lazy Load Heavy Components
@@ -20,7 +21,7 @@ import TacticalLoader from './components/TacticalLoader';
 // Lazy Load Pages/Components
 const MaintenancePage = lazy(() => import('./components/MaintenancePage'));
 const TicketsPage = lazy(() => import('./components/Tickets/TicketsPage'));
-const PartnerSection = lazy(() => import('./components/PartnerSection'));
+
 const RegistrationModal = lazy(() => import('./components/RegistrationModal'));
 
 const AdminPage = lazy(() => import('./components/Admin/AdminPage'));
@@ -288,7 +289,7 @@ const App: React.FC = () => {
                             <SeasonsSection />
 
                             {/* Phase 6: Registration CTA */}
-                            <PartnerSection />
+                            <RegisterSection />
 
                             {/* Footer */}
                             <Footer />
