@@ -2,17 +2,26 @@ import React, { useRef } from 'react';
 import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 
 /**
- * ScrollText — MOBILE OPTIMIZED
- * Instead of per-word blur (40+ simultaneous filter animations = GPU death),
- * we use OPACITY ONLY which is fully GPU-composited and costs almost nothing.
+ * ScrollText — MOBILE OPTIMIZED + KEYWORD HIGHLIGHTING
+ * Key phrases glow red for cinematic emphasis.
  */
-const ScrollWord: React.FC<{ children: string; progress: any; range: [number, number] }> = ({ children, progress, range }) => {
+
+const HIGHLIGHT_PHRASES = [
+    "LUMINA", "BALLROOM", "ASCENT", "2026", "SRI", "LANKA'S", "FIRST",
+    "TIER-1", "VALORANT", "CHAMPIONSHIP", "CONCERT",
+    "BENCHMARK", "DEFINITIVE",
+];
+
+const ScrollWord: React.FC<{ children: string; progress: any; range: [number, number]; isHighlight?: boolean }> = ({ children, progress, range, isHighlight }) => {
     const opacity = useTransform(progress, range, [0.08, 1]);
     const y = useTransform(progress, range, [8, 0]);
 
     return (
         <span className="relative inline-block mx-[0.12em] mt-[0.1em]">
-            <motion.span style={{ opacity, y, display: 'inline-block' }}>
+            <motion.span 
+                style={{ opacity, y, display: 'inline-block' }}
+                className={isHighlight ? 'text-[#ff4655] drop-shadow-[0_0_12px_rgba(255,70,85,0.4)]' : ''}
+            >
                 {children}
             </motion.span>
         </span>
@@ -23,10 +32,11 @@ const ScrollText: React.FC<{ text: string }> = ({ text }) => {
     const containerRef = useRef<HTMLParagraphElement>(null);
     const { scrollYProgress } = useScroll({
         target: containerRef,
-        offset: ["start 85%", "end 50%"]
+        offset: ["start 90%", "end 25%"]
     });
 
     const words = text.split(" ");
+    const totalWords = words.length;
 
     return (
         <p 
@@ -34,10 +44,14 @@ const ScrollText: React.FC<{ text: string }> = ({ text }) => {
             className="font-teko text-3xl sm:text-4xl md:text-5xl lg:text-7xl leading-[1.1] tracking-wide text-white uppercase flex flex-wrap justify-center text-center drop-shadow-xl"
         >
             {words.map((word, i) => {
-                const start = i / words.length;
-                const end = start + (1 / words.length);
+                // Tighter per-word windows so each word pops sequentially L→R
+                const wordSpan = 0.15; // each word takes 15% of scroll to fully reveal
+                const start = (i / totalWords) * (1 - wordSpan);
+                const end = start + wordSpan;
+                const cleanWord = word.replace(/[^A-Za-z0-9']/g, '').toUpperCase();
+                const isHighlight = HIGHLIGHT_PHRASES.includes(cleanWord);
                 return (
-                    <ScrollWord key={i} progress={scrollYProgress} range={[start, end]}>
+                    <ScrollWord key={i} progress={scrollYProgress} range={[start, end]} isHighlight={isHighlight}>
                         {word}
                     </ScrollWord>
                 );
@@ -45,6 +59,7 @@ const ScrollText: React.FC<{ text: string }> = ({ text }) => {
         </p>
     );
 };
+
 
 const StatCounter: React.FC<{ value: string; label: string; delay?: number }> = ({ value, label, delay = 0 }) => {
     const ref = useRef(null);
@@ -75,6 +90,97 @@ const StatCounter: React.FC<{ value: string; label: string; delay?: number }> = 
                 >
                     {label}
                 </motion.span>
+            </div>
+        </div>
+    );
+};
+
+const highlightItems = [
+    {
+        tag: "VENUE",
+        title: "Lumina Ballroom",
+        desc: "Cinnamon Life's premier event space — a world-class arena for the grand final and live concert.",
+        icon: "◆",
+    },
+    {
+        tag: "FORMAT",
+        title: "5v5 Valorant",
+        desc: "Open qualifiers → Regional playoffs → Grand final. Single-elimination brackets, best-of-three stages.",
+        icon: "◈",
+    },
+    {
+        tag: "PRODUCTION",
+        title: "Broadcast Grade",
+        desc: "Full live broadcast with professional casters, instant replays, player cams, and cinematic overlays.",
+        icon: "◇",
+    },
+    {
+        tag: "CONCERT",
+        title: "Live Performance",
+        desc: "A high-production musical concert fused with the championship — entertainment beyond the game.",
+        icon: "♦",
+    },
+];
+
+const HighlightCard: React.FC<{ item: typeof highlightItems[0]; index: number }> = ({ item, index }) => {
+    const ref = useRef(null);
+    const isInView = useInView(ref, { once: true, margin: "-60px" });
+
+    return (
+        <motion.div
+            ref={ref}
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+            transition={{ duration: 0.5, delay: index * 0.12, ease: [0.25, 1, 0.5, 1] }}
+            className="relative group bg-white/[0.02] border border-white/5 p-6 md:p-8 hover:border-[#ff4655]/20 transition-all duration-500"
+        >
+            {/* Corner accents */}
+            <div className="absolute top-0 left-0 w-3 h-3 border-t border-l border-white/10 group-hover:border-[#ff4655]/40 transition-colors duration-500" />
+            <div className="absolute bottom-0 right-0 w-3 h-3 border-b border-r border-white/10 group-hover:border-[#ff4655]/40 transition-colors duration-500" />
+
+            {/* Tag */}
+            <div className="flex items-center gap-3 mb-4">
+                <span className="text-[#ff4655] text-lg group-hover:drop-shadow-[0_0_8px_rgba(255,70,85,0.5)] transition-all">{item.icon}</span>
+                <span className="font-mono text-[9px] tracking-[0.4em] text-[#ff4655] uppercase font-bold">{item.tag}</span>
+            </div>
+
+            {/* Content */}
+            <h3 className="font-teko text-2xl md:text-3xl font-bold text-white uppercase tracking-wide leading-none mb-3">
+                {item.title}
+            </h3>
+            <p className="font-mono text-[10px] md:text-xs text-white/35 tracking-wider uppercase leading-relaxed">
+                {item.desc}
+            </p>
+
+            {/* Subtle hover glow */}
+            <div className="absolute inset-0 bg-gradient-to-br from-[#ff4655]/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+        </motion.div>
+    );
+};
+
+const HighlightsGrid: React.FC = () => {
+    const ref = useRef(null);
+    const isInView = useInView(ref, { once: true, margin: "-80px" });
+
+    return (
+        <div ref={ref} className="relative z-30 w-full max-w-6xl mt-20 sm:mt-28 md:mt-36 px-4 sm:px-6">
+            {/* Section label */}
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+                transition={{ duration: 0.5 }}
+                className="flex items-center gap-4 mb-8 md:mb-12"
+            >
+                <div className="w-1.5 h-1.5 bg-[#ff4655] shadow-[0_0_8px_rgba(255,70,85,0.6)]" />
+                <span className="font-mono text-[9px] md:text-[10px] tracking-[0.4em] text-white/30 uppercase">Event Architecture</span>
+                <div className="flex-1 h-[1px] bg-white/[0.05]" />
+            </motion.div>
+
+            {/* Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+                {highlightItems.map((item, i) => (
+                    <HighlightCard key={item.tag} item={item} index={i} />
+                ))}
             </div>
         </div>
     );
@@ -155,10 +261,49 @@ const AboutSection: React.FC = () => {
                         <div className="h-[1px] w-8 sm:w-16 bg-gradient-to-r from-[#ff4655] to-transparent" />
                     </div>
                     
-                    <div className="max-w-4xl mx-auto w-full px-2 flex flex-col gap-12 md:gap-16">
-                        <ScrollText text="Cinnamon Life’s Lumina Ballroom will serve as the premier stage this November for ASCENT 2026, a landmark event marking Sri Lanka’s first student-led hybrid production of this magnitude. This ambitious showcase represents a sophisticated convergence of digital competition and live artistry—seamlessly fusing the high-stakes intensity of a Tier-1 Valorant Championship with the cinematic grandeur of a professional musical concert." />
-                        
-                        <ScrollText text="More than just a tournament or a performance, ASCENT 2026 is a definitive new benchmark for youth-led innovation and large-scale entertainment in the region." />
+                    <div className="max-w-5xl mx-auto w-full px-2 flex flex-col items-center">
+                        {/* ── Paragraph 1 ── */}
+                        <div className="max-w-4xl w-full">
+                            <ScrollText text="Cinnamon Life's Lumina Ballroom will serve as the premier stage this November for ASCENT 2026, a landmark event marking Sri Lanka's first student-led hybrid production of this magnitude. This ambitious showcase represents a sophisticated convergence of digital competition and live artistry—seamlessly fusing the high-stakes intensity of a Tier-1 Valorant Championship with the cinematic grandeur of a professional musical concert." />
+                        </div>
+
+                        {/* ── Cinematic Pull-Quote Divider ── */}
+                        <motion.div 
+                            initial={{ opacity: 0, scaleX: 0 }}
+                            whileInView={{ opacity: 1, scaleX: 1 }}
+                            viewport={{ once: true, margin: "-80px" }}
+                            transition={{ duration: 0.8, ease: [0.25, 1, 0.5, 1] }}
+                            className="my-16 md:my-24 flex flex-col items-center w-full max-w-3xl origin-center"
+                        >
+                            {/* Top accent line */}
+                            <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-[#ff4655]/40 to-transparent mb-8 md:mb-12" />
+                            
+                            {/* The pull-quote */}
+                            <motion.div
+                                initial={{ opacity: 0, y: 15 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true, margin: "-60px" }}
+                                transition={{ duration: 0.6, delay: 0.3 }}
+                                className="text-center relative px-4"
+                            >
+                                <span className="font-mono text-[8px] md:text-[10px] tracking-[0.6em] text-white/20 uppercase block mb-4">// Signal Intercept</span>
+                                <h3 className="font-teko text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black text-white/[0.07] uppercase leading-[0.9] tracking-tight select-none">
+                                    WHERE COMPETITION<br />MEETS SPECTACLE
+                                </h3>
+                                {/* Overlay glow text */}
+                                <h3 className="absolute inset-0 flex items-center justify-center font-teko text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black uppercase leading-[0.9] tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-[#ff4655] to-[#ff4655]/30 pointer-events-none px-4" style={{ textShadow: '0 0 60px rgba(255,70,85,0.15)' }}>
+                                    WHERE COMPETITION<br />MEETS SPECTACLE
+                                </h3>
+                            </motion.div>
+
+                            {/* Bottom accent line */}
+                            <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-[#ff4655]/40 to-transparent mt-8 md:mt-12" />
+                        </motion.div>
+
+                        {/* ── Paragraph 2 ── */}
+                        <div className="max-w-4xl w-full">
+                            <ScrollText text="More than just a tournament or a performance, ASCENT 2026 is a definitive new benchmark for youth-led innovation and large-scale entertainment in the region." />
+                        </div>
                     </div>
 
                     <motion.div 
@@ -189,6 +334,9 @@ const AboutSection: React.FC = () => {
                  <div className="h-10 w-[1px] bg-white/[0.05]" />
                  <StatCounter value="300K" label="Prize Protocol" delay={0.4} />
             </div>
+
+            {/* ── EVENT HIGHLIGHTS GRID ── */}
+            <HighlightsGrid />
         </section>
     );
 };

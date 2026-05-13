@@ -392,6 +392,35 @@ body.cursor-hover #cursor-ring {
     }
 }
 
+/* Partner Marquee */
+@keyframes marquee-left {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(-33.333%);
+    }
+}
+
+@keyframes marquee-right {
+    from {
+        transform: translateX(-33.333%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+.animate-marquee-left {
+    animation: marquee-left var(--marquee-speed, 30s) linear infinite;
+    will-change: transform;
+}
+
+.animate-marquee-right {
+    animation: marquee-right var(--marquee-speed, 30s) linear infinite;
+    will-change: transform;
+}
+
 /* ==========================================================================
    MOBILE PERFORMANCE OPTIMIZATIONS
    ========================================================================== */

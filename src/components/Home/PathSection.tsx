@@ -38,108 +38,7 @@ const AnimatedCounter: React.FC<{ value: number; label: string; prefix?: string;
     );
 };
 
-/**
- * SpotlightBeams — Canvas-drawn volumetric spotlight beams.
- * Draws ONCE on mount, no animation loop, no dust particles.
- * Same visual as the original, zero ongoing CPU/GPU cost.
- */
-const SpotlightBeams: React.FC = () => {
-    const canvasRef = useRef<HTMLCanvasElement>(null);
 
-    useEffect(() => {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return;
-
-        const draw = () => {
-            const w = canvas.offsetWidth;
-            const h = canvas.offsetHeight;
-            const dpr = Math.min(window.devicePixelRatio, 2);
-            canvas.width = w * dpr;
-            canvas.height = h * dpr;
-            ctx.scale(dpr, dpr);
-
-            const targetX = w / 2;
-            const targetY = h * 0.65;
-            const beamW = w * 0.18;
-            const sourceHalf = 8;
-
-            const drawBeam = (sx: number, sy: number) => {
-                // Outer haze
-                ctx.save();
-                ctx.beginPath();
-                ctx.moveTo(sx - sourceHalf * 3, sy);
-                ctx.lineTo(sx + sourceHalf * 3, sy);
-                ctx.lineTo(targetX + beamW, targetY);
-                ctx.lineTo(targetX - beamW, targetY);
-                ctx.closePath();
-                const outerGrad = ctx.createLinearGradient(sx, sy, targetX, targetY);
-                outerGrad.addColorStop(0, 'rgba(255, 70, 85, 0.1)');
-                outerGrad.addColorStop(0.4, 'rgba(255, 70, 85, 0.04)');
-                outerGrad.addColorStop(1, 'transparent');
-                ctx.fillStyle = outerGrad;
-                ctx.fill();
-                ctx.restore();
-
-                // Core beam
-                ctx.save();
-                ctx.beginPath();
-                ctx.moveTo(sx - sourceHalf, sy);
-                ctx.lineTo(sx + sourceHalf, sy);
-                ctx.lineTo(targetX + beamW * 0.3, targetY);
-                ctx.lineTo(targetX - beamW * 0.3, targetY);
-                ctx.closePath();
-                const coreGrad = ctx.createLinearGradient(sx, sy, targetX, targetY);
-                coreGrad.addColorStop(0, 'rgba(255, 90, 100, 0.3)');
-                coreGrad.addColorStop(0.3, 'rgba(255, 70, 85, 0.1)');
-                coreGrad.addColorStop(0.7, 'rgba(255, 70, 85, 0.04)');
-                coreGrad.addColorStop(1, 'rgba(255, 70, 85, 0.01)');
-                ctx.fillStyle = coreGrad;
-                ctx.fill();
-                ctx.restore();
-
-                // Source glow
-                ctx.save();
-                const sourceGlow = ctx.createRadialGradient(sx, sy, 0, sx, sy, 50);
-                sourceGlow.addColorStop(0, 'rgba(255, 150, 155, 0.6)');
-                sourceGlow.addColorStop(0.3, 'rgba(255, 70, 85, 0.2)');
-                sourceGlow.addColorStop(1, 'transparent');
-                ctx.fillStyle = sourceGlow;
-                ctx.fillRect(sx - 60, sy - 10, 120, 70);
-                ctx.restore();
-            };
-
-            // Draw both beams
-            drawBeam(w * 0.05, 0);
-            drawBeam(w * 0.95, 0);
-
-            // Convergence glow
-            ctx.save();
-            const poolGrad = ctx.createRadialGradient(targetX, targetY, 0, targetX, targetY, w * 0.22);
-            poolGrad.addColorStop(0, 'rgba(255, 70, 85, 0.15)');
-            poolGrad.addColorStop(0.5, 'rgba(255, 70, 85, 0.05)');
-            poolGrad.addColorStop(1, 'transparent');
-            ctx.fillStyle = poolGrad;
-            ctx.fillRect(0, targetY - w * 0.22, w, w * 0.44);
-            ctx.restore();
-        };
-
-        draw();
-
-        // Redraw on resize only
-        const onResize = () => draw();
-        window.addEventListener('resize', onResize);
-        return () => window.removeEventListener('resize', onResize);
-    }, []);
-
-    return (
-        <canvas
-            ref={canvasRef}
-            className="absolute inset-0 w-full h-full pointer-events-none z-0"
-        />
-    );
-};
 
 const PhaseBlock: React.FC<{ 
     phaseNum: string; 
@@ -289,40 +188,64 @@ const PathSection: React.FC = () => {
 
                 </div>
 
-                {/* THE 300K JACKPOT REVEAL — Cinematic Spotlights */}
-                <div className="mt-32 md:mt-48 mb-16 md:mb-24 relative w-full py-32 md:py-44">
-                    <SpotlightBeams />
+                {/* ═══════════════════════════════════════════════
+                    CONCEPT A — "THE ARENA FLOOR"
+                    Top-down spike site. Geometric grid. Planted prize.
+                ═══════════════════════════════════════════════ */}
+                <div className="mt-32 md:mt-48 mb-8 relative w-full min-h-[80vh] md:min-h-[90vh] flex items-center justify-center overflow-hidden">
                     
+                    {/* Arena floor grid pattern */}
+                    <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+                        {/* Outer diamond */}
+                        <div className="absolute w-[85vw] h-[85vw] max-w-[700px] max-h-[700px] border border-white/[0.03] rotate-45" />
+                        {/* Mid diamond */}
+                        <div className="absolute w-[60vw] h-[60vw] max-w-[500px] max-h-[500px] border border-[#ff4655]/[0.06] rotate-45" />
+                        {/* Inner diamond */}
+                        <div className="absolute w-[35vw] h-[35vw] max-w-[300px] max-h-[300px] border border-[#ff4655]/[0.12] rotate-45" />
+                        {/* Core diamond */}
+                        <div className="absolute w-[15vw] h-[15vw] max-w-[130px] max-h-[130px] border border-[#ff4655]/20 rotate-45" />
+                        
+                        {/* Cross lines through center */}
+                        <div className="absolute w-[90vw] max-w-[750px] h-[1px] bg-gradient-to-r from-transparent via-white/[0.04] to-transparent" />
+                        <div className="absolute h-[90vw] max-h-[750px] w-[1px] bg-gradient-to-b from-transparent via-white/[0.04] to-transparent" />
+                        
+                        {/* Diagonal cross lines */}
+                        <div className="absolute w-[120vw] max-w-[900px] h-[1px] bg-gradient-to-r from-transparent via-[#ff4655]/[0.03] to-transparent rotate-45" />
+                        <div className="absolute w-[120vw] max-w-[900px] h-[1px] bg-gradient-to-r from-transparent via-[#ff4655]/[0.03] to-transparent -rotate-45" />
+
+                        {/* Corner markers on mid diamond */}
+                        {/* Top */}
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 pointer-events-none" style={{ transform: 'translate(-50%, -50%)' }}>
+                            <div className="absolute -top-[30vw] md:-top-[250px] left-1/2 -translate-x-1/2 w-3 h-3 border border-[#ff4655]/30 rotate-45" />
+                            <div className="absolute -bottom-[30vw] md:-bottom-[250px] left-1/2 -translate-x-1/2 w-3 h-3 border border-[#ff4655]/30 rotate-45" />
+                            <div className="absolute top-1/2 -translate-y-1/2 -left-[30vw] md:-left-[250px] w-3 h-3 border border-[#ff4655]/30 rotate-45" />
+                            <div className="absolute top-1/2 -translate-y-1/2 -right-[30vw] md:-right-[250px] w-3 h-3 border border-[#ff4655]/30 rotate-45" />
+                        </div>
+
+                        {/* Radial glow from center — the "spike" energy */}
+                        <div className="absolute w-[50vw] h-[50vw] max-w-[400px] max-h-[400px] rounded-full pointer-events-none" style={{
+                            background: 'radial-gradient(circle at center, rgba(255,70,85,0.12) 0%, rgba(255,70,85,0.04) 40%, transparent 70%)'
+                        }} />
+                        
+                        {/* Floor glow wash */}
+                        <div className="absolute inset-0" style={{
+                            background: 'radial-gradient(ellipse 50% 50% at 50% 50%, rgba(255,70,85,0.06) 0%, transparent 60%)'
+                        }} />
+                    </div>
+
+                    {/* Spike site labels */}
+                    <div className="absolute top-[12%] left-1/2 -translate-x-1/2 font-mono text-[8px] md:text-[10px] tracking-[0.6em] text-[#ff4655]/20 uppercase">Site_Alpha</div>
+                    <div className="absolute bottom-[12%] left-1/2 -translate-x-1/2 font-mono text-[8px] md:text-[10px] tracking-[0.6em] text-white/10 uppercase">Payload_Active</div>
+
+                    {/* Corner tactical markers */}
+                    <div className="absolute top-[8%] left-[8%] w-8 h-8 border-t border-l border-[#ff4655]/15" />
+                    <div className="absolute top-[8%] right-[8%] w-8 h-8 border-t border-r border-[#ff4655]/15" />
+                    <div className="absolute bottom-[8%] left-[8%] w-8 h-8 border-b border-l border-[#ff4655]/15" />
+                    <div className="absolute bottom-[8%] right-[8%] w-8 h-8 border-b border-r border-[#ff4655]/15" />
+
+                    {/* ── THE NUMBER (planted spike) ── */}
                     <div className="relative z-10">
                         <AnimatedCounter value={300000} label="LKR Total Prize Pool" suffix="+" duration={3} />
-                    </div>
-
-                    {/* ── Stage Floor Reflection Line ── */}
-                    <div className="absolute left-1/2 -translate-x-1/2 bottom-[22%] w-[70%] md:w-[50%] h-[1px] z-10">
-                        <div className="w-full h-full bg-gradient-to-r from-transparent via-[#ff4655]/30 to-transparent" />
-                        <div className="w-full h-[20px] bg-gradient-to-b from-[#ff4655]/8 to-transparent mt-[1px]" />
-                    </div>
-
-                    {/* ── HUD Corner Brackets ── */}
-                    {/* Top-left */}
-                    <div className="absolute top-[12%] left-[8%] md:left-[15%] w-8 h-8 border-l border-t border-white/10 z-10" />
-                    {/* Top-right */}
-                    <div className="absolute top-[12%] right-[8%] md:right-[15%] w-8 h-8 border-r border-t border-white/10 z-10" />
-                    {/* Bottom-left */}
-                    <div className="absolute bottom-[12%] left-[8%] md:left-[15%] w-8 h-8 border-l border-b border-white/10 z-10" />
-                    {/* Bottom-right */}
-                    <div className="absolute bottom-[12%] right-[8%] md:right-[15%] w-8 h-8 border-r border-b border-white/10 z-10" />
-
-                    {/* ── Side Labels ── */}
-                    <div className="hidden md:block absolute left-[6%] top-1/2 -translate-y-1/2 z-10">
-                        <span className="font-mono text-[8px] tracking-[0.4em] text-white/15 uppercase writing-mode-vertical" style={{ writingMode: 'vertical-rl' }}>
-                            PRIZE_PROTOCOL
-                        </span>
-                    </div>
-                    <div className="hidden md:block absolute right-[6%] top-1/2 -translate-y-1/2 z-10">
-                        <span className="font-mono text-[8px] tracking-[0.4em] text-white/15 uppercase" style={{ writingMode: 'vertical-rl' }}>
-                            SYS_JACKPOT
-                        </span>
                     </div>
                 </div>
                 
