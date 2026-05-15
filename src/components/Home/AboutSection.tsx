@@ -13,7 +13,7 @@ const HIGHLIGHT_PHRASES = [
 ];
 
 const ScrollWord: React.FC<{ children: string; progress: any; range: [number, number]; isHighlight?: boolean }> = ({ children, progress, range, isHighlight }) => {
-    const opacity = useTransform(progress, range, [0.08, 1]);
+    const opacity = useTransform(progress, range, [0.08, 0.85]);
     const y = useTransform(progress, range, [8, 0]);
 
     return (
@@ -32,7 +32,7 @@ const ScrollText: React.FC<{ text: string }> = ({ text }) => {
     const containerRef = useRef<HTMLParagraphElement>(null);
     const { scrollYProgress } = useScroll({
         target: containerRef,
-        offset: ["start 90%", "end 25%"]
+        offset: ["start 85%", "end 50%"]
     });
 
     const words = text.split(" ");
