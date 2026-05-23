@@ -21,10 +21,10 @@ const partners: { name: string; logo: string; scale?: number }[] = [
 ];
 
 const LogoItem: React.FC<{ partner: typeof partners[0] }> = ({ partner }) => (
-    <div className="flex-shrink-0 flex items-center justify-center px-12 md:px-16 cursor-pointer relative group/item py-6">
+    <div className="flex-shrink-0 flex items-center justify-center px-8 md:px-16 cursor-pointer relative group/item py-6">
         
         {/* Tech Brackets - appear on hover */}
-        <div className="absolute inset-0 flex items-center justify-between px-6 opacity-0 group-hover/item:opacity-100 transition-all duration-300 pointer-events-none scale-75 group-hover/item:scale-100 z-0">
+        <div className="absolute inset-0 flex items-center justify-between px-4 md:px-6 opacity-0 group-hover/item:opacity-100 transition-all duration-300 pointer-events-none scale-75 group-hover/item:scale-100 z-0">
             <div className="w-3 h-8 border-l-2 border-t-2 border-b-2 border-[#ff4655] shadow-[0_0_10px_rgba(255,70,85,0.4)]" />
             <div className="w-3 h-8 border-r-2 border-t-2 border-b-2 border-[#ff4655] shadow-[0_0_10px_rgba(255,70,85,0.4)]" />
         </div>
@@ -71,8 +71,8 @@ const MarqueeRow: React.FC<{ items: typeof partners; direction?: 'left' | 'right
     return (
         <div className="relative w-full overflow-hidden group/track">
             {/* Fade edges */}
-            <div className="absolute left-0 top-0 bottom-0 w-24 md:w-40 bg-gradient-to-r from-[#08080a] to-transparent z-10 pointer-events-none" />
-            <div className="absolute right-0 top-0 bottom-0 w-24 md:w-40 bg-gradient-to-l from-[#08080a] to-transparent z-10 pointer-events-none" />
+            <div className="absolute left-0 top-0 bottom-0 w-16 md:w-40 bg-gradient-to-r from-[#08080a] to-transparent z-10 pointer-events-none" />
+            <div className="absolute right-0 top-0 bottom-0 w-16 md:w-40 bg-gradient-to-l from-[#08080a] to-transparent z-10 pointer-events-none" />
 
             {/* Subtle scanline overlay on hover */}
             <div className="absolute inset-0 pointer-events-none z-10 opacity-0 group-hover/track:opacity-30 transition-opacity duration-700 bg-[linear-gradient(transparent_50%,rgba(0,0,0,0.8)_50%)] bg-[length:100%_4px]" />

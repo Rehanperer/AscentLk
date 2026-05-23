@@ -7,9 +7,8 @@ import { motion, useScroll, useTransform, useInView } from 'framer-motion';
  */
 
 const HIGHLIGHT_PHRASES = [
-    "LUMINA", "BALLROOM", "ASCENT", "2026", "SRI", "LANKA'S", "FIRST",
-    "TIER-1", "VALORANT", "CHAMPIONSHIP", "CONCERT",
-    "BENCHMARK", "DEFINITIVE",
+    "LUMINA", "BALLROOM", "ASCENT", "2026", "SRI", "LANKA'S", "FIRSTEVER",
+    "HYBRID", "PRODUCTION", "STATEMENT", "GENERATION", "DEFINITIVE", "BLUEPRINT", "YOUTHLED", "STUDENTLED"
 ];
 
 const ScrollWord: React.FC<{ children: string; progress: any; range: [number, number]; isHighlight?: boolean }> = ({ children, progress, range, isHighlight }) => {
@@ -83,7 +82,7 @@ const StatCounter: React.FC<{ value: string; label: string; delay?: number }> = 
                     {value}
                 </motion.span>
                 <motion.span 
-                    className="font-mono text-[7px] sm:text-[8px] md:text-[10px] text-white/50 uppercase tracking-[0.2em] sm:tracking-[0.3em] mt-2 sm:whitespace-nowrap"
+                    className="font-mono text-[7px] sm:text-[8px] md:text-[10px] text-white/50 uppercase tracking-[0.15em] sm:tracking-[0.3em] mt-1.5 sm:mt-2 whitespace-nowrap"
                     initial={{ opacity: 0 }}
                     animate={isInView ? { opacity: 1 } : { opacity: 0 }}
                     transition={{ duration: 0.6, delay: delay + 0.3 }}
@@ -172,7 +171,7 @@ const HighlightsGrid: React.FC = () => {
                 className="flex items-center gap-4 mb-8 md:mb-12"
             >
                 <div className="w-1.5 h-1.5 bg-[#ff4655] shadow-[0_0_8px_rgba(255,70,85,0.6)]" />
-                <span className="font-mono text-[9px] md:text-[10px] tracking-[0.4em] text-white/30 uppercase">Event Architecture</span>
+                <span className="font-mono text-[9px] md:text-[10px] tracking-[0.2em] sm:tracking-[0.4em] text-white/30 uppercase">Event Architecture</span>
                 <div className="flex-1 h-[1px] bg-white/[0.05]" />
             </motion.div>
 
@@ -193,8 +192,33 @@ const AboutSection: React.FC = () => {
         <section 
             ref={sectionRef} 
             id="about" 
-            className="relative py-32 md:py-56 px-4 sm:px-6 bg-[#080b13] overflow-hidden flex flex-col justify-center items-center"
+            className="relative py-32 md:py-56 px-4 sm:px-6 bg-[#080b13] overflow-x-clip overflow-y-visible flex flex-col justify-center items-center"
         >
+            {/* ── HORIZON TEXT & SMUDGE (Bridging CinematicDoors and About) ── */}
+            <motion.div 
+                initial={{ opacity: 0, y: "-20%", scale: 0.95 }}
+                whileInView={{ opacity: 1, y: "-50%", scale: 1 }}
+                viewport={{ once: true, margin: "50px" }}
+                transition={{ duration: 1, ease: "easeOut" }}
+                className="absolute top-0 left-0 right-0 flex justify-center items-center z-50 pointer-events-none w-full h-32 md:h-48"
+            >
+                {/* 1. Volumetric Color Smudge (Blends Red & Blue) */}
+                <div className="absolute left-1/2 -translate-x-1/2 w-[120%] md:w-full max-w-6xl h-32 md:h-56 bg-gradient-to-r from-[#ff4655]/20 via-[#a855f7]/30 to-[#3b82f6]/20 blur-[50px] md:blur-[80px] rounded-[100%]" />
+                
+                {/* 2. Glassmorphism Visor */}
+                <div 
+                    className="absolute left-1/2 -translate-x-1/2 w-full max-w-7xl h-12 md:h-20 backdrop-blur-md bg-[#080b13]/20 border-y border-white/[0.05]"
+                    style={{ 
+                        WebkitMaskImage: 'linear-gradient(to right, transparent, black 15%, black 85%, transparent)' 
+                    }}
+                />
+
+                {/* 3. The Text */}
+                <h4 className="relative z-10 font-mono text-[11px] sm:text-sm md:text-lg lg:text-xl xl:text-2xl tracking-[0.3em] sm:tracking-[0.5em] md:tracking-[0.6em] uppercase text-transparent bg-clip-text bg-gradient-to-r from-[#ff4655] via-[#a855f7] to-[#64c8ff] font-bold text-center w-full max-w-7xl drop-shadow-[0_0_15px_rgba(255,255,255,0.2)] px-4">
+                    COMPETITION EVOLVED. ARTISTRY UNLEASHED.
+                </h4>
+            </motion.div>
+
             {/* ── VOLUMETRIC SIDE HAZE ── Pure CSS, zero perf cost */}
             {/* Left Haze — Deep Red */}
             <div 
@@ -264,7 +288,7 @@ const AboutSection: React.FC = () => {
                     <div className="max-w-5xl mx-auto w-full px-2 flex flex-col items-center">
                         {/* ── Paragraph 1 ── */}
                         <div className="max-w-4xl w-full">
-                            <ScrollText text="Cinnamon Life's Lumina Ballroom will serve as the premier stage this November for ASCENT 2026, a landmark event marking Sri Lanka's first student-led hybrid production of this magnitude. This ambitious showcase represents a sophisticated convergence of digital competition and live artistry—seamlessly fusing the high-stakes intensity of a Tier-1 Valorant Championship with the cinematic grandeur of a professional musical concert." />
+                            <ScrollText text="This November, the Lumina Ballroom at Cinnamon Life transforms into the epicenter of a new era. ASCENT 2026 is breaking the mold as Sri Lanka's first-ever student-led hybrid production of this scale." />
                         </div>
 
                         {/* ── Cinematic Pull-Quote Divider ── */}
@@ -284,16 +308,19 @@ const AboutSection: React.FC = () => {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true, margin: "-60px" }}
                                 transition={{ duration: 0.6, delay: 0.3 }}
-                                className="text-center relative px-4"
+                                className="text-center relative px-4 flex flex-col items-center"
                             >
                                 <span className="font-mono text-[8px] md:text-[10px] tracking-[0.6em] text-white/20 uppercase block mb-4">// Signal Intercept</span>
-                                <h3 className="font-teko text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black text-white/[0.07] uppercase leading-[0.9] tracking-tight select-none">
-                                    WHERE COMPETITION<br />MEETS SPECTACLE
-                                </h3>
-                                {/* Overlay glow text */}
-                                <h3 className="absolute inset-0 flex items-center justify-center font-teko text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black uppercase leading-[0.9] tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-[#ff4655] to-[#ff4655]/30 pointer-events-none px-4" style={{ textShadow: '0 0 60px rgba(255,70,85,0.15)' }}>
-                                    WHERE COMPETITION<br />MEETS SPECTACLE
-                                </h3>
+                                
+                                <div className="relative">
+                                    <h3 className="font-teko text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black text-white/[0.07] uppercase leading-[0.9] tracking-tight select-none">
+                                        WHERE THE BATTLEFIELD<br />BECOMES A STADIUM
+                                    </h3>
+                                    {/* Overlay glow text */}
+                                    <h3 className="absolute inset-0 flex items-center justify-center font-teko text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black uppercase leading-[0.9] tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-[#ff4655] to-[#ff4655]/30 pointer-events-none" style={{ textShadow: '0 0 60px rgba(255,70,85,0.15)' }}>
+                                        WHERE THE BATTLEFIELD<br />BECOMES A STADIUM
+                                    </h3>
+                                </div>
                             </motion.div>
 
                             {/* Bottom accent line */}
@@ -302,7 +329,7 @@ const AboutSection: React.FC = () => {
 
                         {/* ── Paragraph 2 ── */}
                         <div className="max-w-4xl w-full">
-                            <ScrollText text="More than just a tournament or a performance, ASCENT 2026 is a definitive new benchmark for youth-led innovation and large-scale entertainment in the region." />
+                            <ScrollText text="This isn't just a tournament or a performance — it's a statement. Born from sleepless nights and relentless ambition, ASCENT 2026 is living proof of what happens when you let our generation build the future instead of waiting for it. This is our heartbeat, our passion, and the definitive new blueprint for what youth-led entertainment can achieve when we refuse to think small." />
                         </div>
                     </div>
 
@@ -326,7 +353,7 @@ const AboutSection: React.FC = () => {
 
             {/* ── Foreground Stats (FLAT, OUTSIDE ANY 3D) ── */}
             <div 
-                className="relative z-30 flex flex-row items-center justify-center gap-6 sm:gap-12 md:gap-24 mt-16 sm:mt-24 pt-8 sm:pt-12 w-full max-w-4xl border-t border-white/[0.05]"
+                className="relative z-30 flex flex-row items-center justify-center gap-4 sm:gap-12 md:gap-24 mt-16 sm:mt-24 pt-8 sm:pt-12 w-full max-w-4xl border-t border-white/[0.05]"
             >
                  <StatCounter value="50,000+" label="Student Reach" delay={0} />
                  <div className="h-10 w-[1px] bg-white/[0.05]" />
