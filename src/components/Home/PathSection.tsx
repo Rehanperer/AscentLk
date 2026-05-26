@@ -42,6 +42,7 @@ const AnimatedCounter: React.FC<{ value: number; label: string; prefix?: string;
 
 const PhaseBlock: React.FC<{ 
     phaseNum: string; 
+    date: string;
     title: string; 
     desc: string; 
     imgSrc: string; 
@@ -49,7 +50,7 @@ const PhaseBlock: React.FC<{
     containerProgress: any;
     startRange: number;
     endRange: number;
-}> = ({ phaseNum, title, desc, imgSrc, isReversed = false, containerProgress, startRange, endRange }) => {
+}> = ({ phaseNum, date, title, desc, imgSrc, isReversed = false, containerProgress, startRange, endRange }) => {
     
     // Map the section's active state to this specific block's scrolling range
     const isActive = useTransform(containerProgress, [startRange - 0.1, startRange, endRange, endRange + 0.1], [0, 1, 1, 0]);
@@ -84,7 +85,11 @@ const PhaseBlock: React.FC<{
                 className={`w-full md:w-5/12 pl-12 md:pl-0 ${isReversed ? 'md:pl-16' : 'md:pr-16'} z-10`}
                 style={{ opacity: isActive, y: yOffset }}
             >
-                <div className="font-mono text-xs tracking-[0.4em] text-[#ff4655] uppercase mb-4">{phaseNum}</div>
+                <div className="font-mono text-xs tracking-[0.4em] text-[#ff4655] uppercase mb-4 flex items-center flex-wrap gap-2">
+                    {phaseNum}
+                    <span className="text-white/20">|</span>
+                    <span className="text-white/70">{date}</span>
+                </div>
                 <h3 className="font-teko text-5xl md:text-7xl font-bold uppercase text-white leading-[0.9] mb-6">{title}</h3>
                 <p className="text-white/50 text-sm md:text-base leading-relaxed uppercase tracking-wide font-medium">{desc}</p>
                 
@@ -123,7 +128,7 @@ const PathSection: React.FC = () => {
     });
 
     // Animate the central red line filling up
-    const lineFillHeight = useTransform(scrollYProgress, [0, 0.7], ["0%", "100%"]);
+    const lineFillHeight = useTransform(scrollYProgress, [0, 0.8], ["0%", "100%"]);
 
     return (
         <section id="path" className="relative pb-32 pt-24 bg-[#0d121f]">
@@ -157,32 +162,47 @@ const PathSection: React.FC = () => {
 
                     <PhaseBlock 
                         phaseNum="Phase 01"
-                        title="Open Qualifiers"
+                        date="Oct 2nd"
+                        title="Qualifiers"
                         desc="Hundreds of units battle in a ruthless single-elimination bracket. Only the most disciplined tacticians survive the initial purge. No margin for error."
                         imgSrc="/img/phase_01.png"
                         containerProgress={scrollYProgress}
-                        startRange={0.1}
-                        endRange={0.3}
+                        startRange={0.05}
+                        endRange={0.2}
                     />
 
                     <PhaseBlock 
                         phaseNum="Phase 02"
-                        title="Regional Playoffs"
+                        date="Oct 9th"
+                        title="Playoffs"
                         desc="The surviving elite clash in high-stakes, broadcasted best-of-threes. The pressure mounts as the nation watches. Every flash, every peek matters."
                         imgSrc="/img/phase_02.png"
                         isReversed
                         containerProgress={scrollYProgress}
-                        startRange={0.35}
-                        endRange={0.55}
+                        startRange={0.25}
+                        endRange={0.4}
+                    />
+                    
+                    <PhaseBlock 
+                        phaseNum="Phase 03"
+                        date="Nov 13th"
+                        title="Redemption"
+                        desc="A second chance for fallen squads. Fight through the brutal lower bracket crucible to earn a final spot in the ultimate showdown."
+                        imgSrc="/img/phase_01.png"
+                        containerProgress={scrollYProgress}
+                        startRange={0.45}
+                        endRange={0.6}
                     />
 
                     <PhaseBlock 
                         phaseNum="Terminal"
-                        title="The Grand Final"
+                        date="Nov 14th"
+                        title="Grand Finals"
                         desc="Live from the Lumina Ballroom. Two titans remain. A state-of-the-art arena, roaring crowds, and absolute immortality on the line. The Gauntlet ends here."
                         imgSrc="/img/phase_03.png"
+                        isReversed
                         containerProgress={scrollYProgress}
-                        startRange={0.6}
+                        startRange={0.65}
                         endRange={0.8}
                     />
 

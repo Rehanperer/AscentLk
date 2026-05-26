@@ -1,88 +1,105 @@
-import React from 'react';
-import { motion, useInView } from 'framer-motion';
-import { useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, useScroll, useTransform, useMotionTemplate } from 'framer-motion';
 
 /**
- * PartnerMarquee — Infinite scrolling partner/sponsor logos.
- * Pure CSS animation (no JS loops). Replace placeholder logos with real images.
- * Placed between HeroSection and CinematicDoors.
+ * PartnerDecryptionWall (ASCII Hacker Effect)
+ * Slowly decrypts random hacker code into partner logos via a sweeping laser as you scroll.
  */
 
 // ── PARTNER LOGOS ──
-// Images in /public/img/partners/
-const partners: { name: string; logo: string; scale?: number }[] = [
-    { name: "Cinnamon Life", logo: "/img/partners/Untitled%20design%20(1)/1.png", scale: 1.25 },
-    { name: "Red Bull", logo: "/img/partners/Untitled%20design%20(1)/2.png", scale: 1.25 },
-    { name: "Star Garments", logo: "/img/partners/Untitled%20design%20(1)/3.png", scale: 1.25 },
-    { name: "Scope Cinemas", logo: "/img/partners/Untitled%20design%20(1)/4.png", scale: 1.25 },
-    { name: "Leo Club EIC", logo: "/img/partners/Untitled%20design%20(1)/5.png", scale: 1.4 },
-    { name: "Aivance", logo: "/img/partners/Untitled%20design%20(1)/6.png", scale: 1.3 },
+const partners = [
+    { name: "Cinnamon Life", logo: "/Untitled%20design%20(3)/1.png" },
+    { name: "Red Bull", logo: "/Untitled%20design%20(3)/2.png" },
+    { name: "Star Garments", logo: "/Untitled%20design%20(3)/3.png" },
+    { name: "Scope Cinemas", logo: "/Untitled%20design%20(3)/4.png" },
+    { name: "Leo Club EIC", logo: "/Untitled%20design%20(3)/5.png" },
+    { name: "Aivance", logo: "/Untitled%20design%20(3)/6.png" },
     { name: "ASCENT", logo: "/img/SVG.svg" },
 ];
 
-const LogoItem: React.FC<{ partner: typeof partners[0] }> = ({ partner }) => (
-    <div className="flex-shrink-0 flex items-center justify-center px-8 md:px-16 cursor-pointer relative group/item py-6">
-        
-        {/* Tech Brackets - appear on hover */}
-        <div className="absolute inset-0 flex items-center justify-between px-4 md:px-6 opacity-0 group-hover/item:opacity-100 transition-all duration-300 pointer-events-none scale-75 group-hover/item:scale-100 z-0">
-            <div className="w-3 h-8 border-l-2 border-t-2 border-b-2 border-[#ff4655] shadow-[0_0_10px_rgba(255,70,85,0.4)]" />
-            <div className="w-3 h-8 border-r-2 border-t-2 border-b-2 border-[#ff4655] shadow-[0_0_10px_rgba(255,70,85,0.4)]" />
-        </div>
+const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?";
 
-        {/* Small hex code label that appears below */}
-        <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 opacity-0 group-hover/item:opacity-100 transition-all duration-300 font-mono text-[8px] text-[#ff4655] tracking-widest whitespace-nowrap z-0">
-            AUTH_{partner.name.replace(/\s+/g, '').toUpperCase().substring(0,6)}
-        </div>
+const RandomAscii: React.FC = () => {
+    const [text, setText] = useState("");
+    
+    useEffect(() => {
+        let initialText = "";
+        for (let i = 0; i < 8; i++) initialText += CHARS[Math.floor(Math.random() * CHARS.length)];
+        setText(initialText);
 
-        <div 
-            style={partner.scale ? { transform: `scale(${partner.scale})` } : undefined}
-            className="relative z-10 transition-transform duration-500 group-hover/item:scale-110"
-        >
-            {partner.logo ? (
-                <img 
-                    src={partner.logo} 
-                    alt={partner.name} 
-                    className="h-10 md:h-12 w-auto object-contain opacity-100"
-                    onError={(e) => {
-                        // Fallback to text if image not found
-                        const target = e.currentTarget;
-                        target.style.display = 'none';
-                        target.nextElementSibling?.classList.remove('hidden');
-                    }}
-                />
-            ) : null}
-            {/* Text fallback (shown if no logo or image fails) */}
-            <span className={`font-mono text-[10px] md:text-xs tracking-[0.4em] text-white/50 group-hover/item:text-white uppercase whitespace-nowrap transition-colors duration-500 select-none ${partner.logo ? 'hidden' : ''}`}>
-                {partner.name}
-            </span>
-        </div>
-    </div>
-);
+        const interval = setInterval(() => {
+            let newText = "";
+            for (let i = 0; i < 8; i++) {
+                newText += CHARS[Math.floor(Math.random() * CHARS.length)];
+            }
+            setText(newText);
+        }, 150); // Slower interval (150ms) to guarantee smooth scrolling on mobile
+        return () => clearInterval(interval);
+    }, []);
 
-const MarqueeRow: React.FC<{ items: typeof partners; direction?: 'left' | 'right'; speed?: number }> = ({ 
-    items, 
-    direction = 'left', 
-    speed = 35 
-}) => {
-    // Duplicate items for seamless loop
-    const allItems = [...items, ...items, ...items];
-    const animClass = direction === 'left' ? 'animate-marquee-left' : 'animate-marquee-right';
+    return <span className="font-mono text-[10px] sm:text-xs md:text-sm text-[#ff4655]/40 tracking-[0.2em] font-bold">{text}</span>;
+};
+
+const LogoCell: React.FC<{ partner: typeof partners[0], isDecrypted: boolean }> = ({ partner, isDecrypted }) => {
+    const isAscent = partner.name === "ASCENT";
+    
+    return (
+        <div className="h-16 md:h-24 flex items-center justify-center w-[40%] sm:w-[30%] md:w-1/4 relative group cursor-pointer shrink-0">
+            {isDecrypted ? (
+                <div className="relative flex flex-col items-center justify-center w-full h-full">
+                    <img 
+                        src={partner.logo} 
+                        alt={partner.name} 
+                        className={`object-contain opacity-80 md:group-hover:scale-110 group-hover:opacity-100 transition-all duration-300 z-10 ${
+                            isAscent 
+                                ? "max-h-[30px] sm:max-h-[45px] md:max-h-[55px] max-w-[90px] sm:max-w-[120px] md:max-w-[140px]" 
+                                : "max-h-[50px] sm:max-h-[70px] md:max-h-[85px] max-w-[140px] sm:max-w-[180px] md:max-w-[220px]"
+                        }`}
+                        onError={(e) => {
+                            const target = e.currentTarget;
+                            target.style.display = 'none';
+                            target.nextElementSibling?.classList.remove('hidden');
+                        }}
+                    />
+                    <span className={`hidden font-mono text-[9px] md:text-xs tracking-widest text-white/50 uppercase whitespace-nowrap z-10 md:group-hover:text-white transition-colors`}>
+                        {partner.name}
+                    </span>
+                    
+                    {/* Target lock on hover (Desktop only to save mobile perf) */}
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] md:w-[130%] h-[160%] opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-0 hidden md:block">
+                        <div className="absolute top-0 left-0 w-2 h-2 border-l border-t border-[#ff4655]" />
+                        <div className="absolute top-0 right-0 w-2 h-2 border-r border-t border-[#ff4655]" />
+                        <div className="absolute bottom-0 left-0 w-2 h-2 border-l border-b border-[#ff4655]" />
+                        <div className="absolute bottom-0 right-0 w-2 h-2 border-r border-b border-[#ff4655]" />
+                        <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 font-mono text-[7px] text-[#ff4655] tracking-widest whitespace-nowrap">
+                            AUTH_{partner.name.replace(/\s+/g, '').toUpperCase().substring(0,6)}
+                        </div>
+                    </div>
+                </div>
+            ) : (
+                <RandomAscii />
+            )}
+        </div>
+    );
+};
+
+const PartnerGrid: React.FC<{ isDecrypted: boolean }> = ({ isDecrypted }) => {
+    const topRow = partners.slice(0, 4);
+    const bottomRow = partners.slice(4);
 
     return (
-        <div className="relative w-full overflow-hidden group/track">
-            {/* Fade edges */}
-            <div className="absolute left-0 top-0 bottom-0 w-16 md:w-40 bg-gradient-to-r from-[#08080a] to-transparent z-10 pointer-events-none" />
-            <div className="absolute right-0 top-0 bottom-0 w-16 md:w-40 bg-gradient-to-l from-[#08080a] to-transparent z-10 pointer-events-none" />
-
-            {/* Subtle scanline overlay on hover */}
-            <div className="absolute inset-0 pointer-events-none z-10 opacity-0 group-hover/track:opacity-30 transition-opacity duration-700 bg-[linear-gradient(transparent_50%,rgba(0,0,0,0.8)_50%)] bg-[length:100%_4px]" />
-
-            <div 
-                className={`flex ${animClass} group-hover/track:[animation-play-state:paused] mix-blend-lighten`}
-                style={{ '--marquee-speed': `${speed}s` } as React.CSSProperties}
-            >
-                {allItems.map((partner, i) => (
-                    <LogoItem key={`${partner.name}-${i}`} partner={partner} />
+        <div className="relative w-full flex flex-col items-center gap-2 md:gap-6">
+            {/* Top Row (4 logos) */}
+            <div className="flex flex-wrap md:flex-nowrap justify-center gap-4 md:gap-0 w-full z-10">
+                {topRow.map((partner, i) => (
+                    <LogoCell key={i} partner={partner} isDecrypted={isDecrypted} />
+                ))}
+            </div>
+            
+            {/* Bottom Row (3 logos) */}
+            <div className="flex flex-wrap md:flex-nowrap justify-center gap-4 md:gap-0 w-full z-10">
+                {bottomRow.map((partner, i) => (
+                    <LogoCell key={i} partner={partner} isDecrypted={isDecrypted} />
                 ))}
             </div>
         </div>
@@ -90,56 +107,85 @@ const MarqueeRow: React.FC<{ items: typeof partners; direction?: 'left' | 'right
 };
 
 const PartnerMarquee: React.FC = () => {
-    const ref = useRef(null);
-    const isInView = useInView(ref, { once: true, margin: "-50px" });
+    const containerRef = useRef<HTMLElement>(null);
+    
+    // Track scroll over this specific section. 
+    // Laser starts sweeping when the top of the section reaches 75% of the viewport (just entered).
+    // Laser finishes sweeping when the bottom reaches 40% of the viewport.
+    const { scrollYProgress } = useScroll({
+        target: containerRef,
+        offset: ["start 90%", "end 40%"]
+    });
 
+    // We use motion templates to map scroll progress to CSS clip-path and top coordinates
+    const laserPercent = useTransform(scrollYProgress, [0, 1], [0, 100]);
+    
     return (
         <section 
-            ref={ref}
-            className="relative w-full py-12 md:py-16 overflow-hidden bg-[#08080a] flex flex-col items-center justify-center"
+            ref={containerRef}
+            className="relative w-full py-12 md:py-20 bg-[#08080a] flex flex-col items-center justify-center border-y border-white/[0.02] overflow-hidden"
         >
-            {/* Top border accent with laser */}
-            <div className="absolute top-0 left-0 right-0 h-[1px] bg-white/[0.05]">
-                <motion.div 
-                    animate={{ left: ['-20%', '120%'] }}
-                    transition={{ duration: 4, ease: 'linear', repeat: Infinity }}
-                    className="absolute top-0 w-[30%] h-[1px] bg-gradient-to-r from-transparent via-[#ff4655] to-transparent"
-                />
+            {/* Massive Header Text (Moved to absolute top to prevent obscuring logos) */}
+            <div className="absolute top-0 left-0 w-full flex justify-center pointer-events-none z-0">
+                <span className="font-teko text-[20vw] md:text-[15vw] font-bold text-white/[0.02] uppercase tracking-widest leading-none select-none whitespace-nowrap mt-4 md:mt-2">
+                    PARTNERS
+                </span>
             </div>
 
-            {/* Section label */}
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-                transition={{ duration: 0.6 }}
-                className="flex items-center justify-between px-6 md:px-12 mb-8 md:mb-12 w-full max-w-[1400px]"
-            >
-                <div className="flex items-center gap-4">
-                    <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-[#ff4655] animate-pulse shadow-[0_0_8px_rgba(255,70,85,0.8)]" />
-                    <span className="font-mono text-[9px] md:text-[11px] tracking-[0.4em] md:tracking-[0.5em] text-white/50 uppercase font-bold">
-                        Strategic Partners <span className="hidden sm:inline">// Network Active</span>
-                    </span>
-                </div>
-                <div className="hidden md:flex items-center gap-1.5">
-                    <span className="w-1 h-3 bg-white/20" />
-                    <span className="w-1 h-3 bg-white/20" />
-                    <span className="w-1 h-3 bg-[#ff4655] shadow-[0_0_8px_rgba(255,70,85,0.6)]" />
-                </div>
-            </motion.div>
+            {/* Header Badge */}
+            <div className="absolute top-6 md:top-8 left-4 md:left-12 flex items-center gap-3 z-50">
+                <div className="w-1.5 h-1.5 bg-[#ff4655] animate-pulse shadow-[0_0_8px_rgba(255,70,85,0.8)]" />
+                <span className="font-mono text-[8px] md:text-[10px] tracking-[0.4em] md:tracking-[0.5em] text-[#ff4655]/60 uppercase font-bold">
+                    Decryption Sequence <span className="hidden sm:inline">// Initiated</span>
+                </span>
+            </div>
 
-            {/* Marquee row */}
-            <MarqueeRow items={partners} direction="left" speed={40} />
-
-            {/* Bottom border accent with laser */}
-            <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-white/[0.05]">
+            {/* Grid Container */}
+            <div className="relative w-full max-w-6xl mx-auto px-4 mt-12 md:mt-16 z-10">
+                
+                {/* 0. Invisible Placeholder (Dictates the physical height of the container perfectly) */}
+                <div className="flex items-center justify-center w-full pointer-events-none opacity-0 py-6 md:py-8">
+                    <PartnerGrid isDecrypted={false} />
+                </div>
+                
+                {/* 1. Encrypted Background Layer (ASCII Chaos) - Clips the TOP as laser moves down */}
                 <motion.div 
-                    animate={{ right: ['-20%', '120%'] }}
-                    transition={{ duration: 5, ease: 'linear', repeat: Infinity }}
-                    className="absolute top-0 w-[20%] h-[1px] bg-gradient-to-l from-transparent via-[#ff4655] to-transparent"
-                />
+                    className="absolute inset-0 flex items-center justify-center w-full pointer-events-none opacity-50 py-6 md:py-8"
+                    style={{ clipPath: useMotionTemplate`polygon(0 ${laserPercent}%, 100% ${laserPercent}%, 100% 100%, 0 100%)` }}
+                >
+                    <PartnerGrid isDecrypted={false} />
+                </motion.div>
+
+                {/* 2. Decrypted Foreground Layer (Logos) - Clips the BOTTOM as laser moves down */}
+                <motion.div 
+                    className="absolute inset-0 flex items-center justify-center pointer-events-auto py-6 md:py-8"
+                    style={{ clipPath: useMotionTemplate`polygon(0 0, 100% 0, 100% ${laserPercent}%, 0 ${laserPercent}%)` }}
+                >
+                    <PartnerGrid isDecrypted={true} />
+                </motion.div>
+
+                {/* 3. The Sweeping Laser */}
+                <motion.div 
+                    className="absolute left-0 right-0 h-[2px] bg-[#ff4655] shadow-[0_0_20px_#ff4655,0_0_40px_#ff4655] z-30 pointer-events-none"
+                    style={{ top: useMotionTemplate`${laserPercent}%` }}
+                >
+                    {/* Glowing ends of the laser */}
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-4 h-1 bg-white rounded-full shadow-[0_0_10px_white]" />
+                    <div className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-1 bg-white rounded-full shadow-[0_0_10px_white]" />
+                </motion.div>
+                
+            </div>
+
+            {/* Background Details (Subtle grid lines) */}
+            <div className="absolute inset-0 opacity-[0.02] pointer-events-none z-0 flex justify-evenly">
+                <div className="w-px h-full bg-white" />
+                <div className="w-px h-full bg-white" />
+                <div className="w-px h-full bg-white" />
+                <div className="w-px h-full bg-white" />
             </div>
         </section>
     );
 };
 
 export default PartnerMarquee;
+
