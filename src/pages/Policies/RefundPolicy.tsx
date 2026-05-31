@@ -85,24 +85,30 @@ const RefundPolicy: React.FC = () => {
 
                             <section className="pt-8">
                                 <h2 className="font-teko text-3xl text-white mb-6 uppercase tracking-wider">Official Policy Document</h2>
-                                <div className="w-full h-[60vh] md:h-[800px] border border-white/10 rounded-lg overflow-hidden bg-[#08080a] relative group">
-                                    <iframe 
-                                        src={policyPdf} 
-                                        className="w-full h-full border-none relative z-10"
-                                        title="ASCENT 2026 - Ticketing and Refund Policy"
-                                    />
-                                    {/* Fallback overlay for unsupported browsers */}
-                                    <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center z-0">
-                                        <p className="text-white/50 mb-4 font-mono text-sm tracking-widest uppercase">Loading Document Viewer...</p>
-                                        <a 
-                                            href={policyPdf} 
-                                            target="_blank" 
-                                            rel="noopener noreferrer"
-                                            className="px-8 py-4 bg-[#ff4655]/20 hover:bg-[#ff4655]/40 border border-[#ff4655]/50 text-white font-teko text-xl tracking-widest rounded transition-all uppercase pointer-events-auto"
-                                        >
-                                            Download PDF directly
-                                        </a>
-                                    </div>
+                                
+                                <div className="w-full h-[60vh] md:h-[800px] border border-white/10 rounded-lg overflow-hidden bg-[#08080a] mb-6">
+                                    <object 
+                                        data={policyPdf} 
+                                        type="application/pdf" 
+                                        className="w-full h-full"
+                                    >
+                                        <div className="flex items-center justify-center h-full p-6 text-center">
+                                            <p className="text-white/50 font-mono text-sm tracking-widest uppercase">
+                                                Your browser cannot display the PDF inline.
+                                            </p>
+                                        </div>
+                                    </object>
+                                </div>
+
+                                <div className="flex justify-center md:justify-start">
+                                    <a 
+                                        href={policyPdf} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center justify-center px-8 py-4 bg-[#ff4655]/10 hover:bg-[#ff4655]/20 border border-[#ff4655]/30 text-[#ff4655] font-teko text-xl tracking-widest rounded transition-all uppercase pointer-events-auto"
+                                    >
+                                        Download Official PDF
+                                    </a>
                                 </div>
                             </section>
                         </div>
