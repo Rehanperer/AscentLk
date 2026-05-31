@@ -6,6 +6,9 @@ import Navbar from '../../components/Navbar';
 import SectionReveal from '../../components/Effects/SectionReveal';
 import Footer from '../../components/Footer';
 
+// @ts-ignore
+import policyPdf from '../../assets/ASCENT_2026_Ticketing_and_Refund_Policy.pdf';
+
 const RefundPolicy: React.FC = () => {
     return (
         <div className="min-h-screen bg-[#000000] text-white/80 font-inter selection:bg-[#ff4655] selection:text-white">
@@ -84,7 +87,7 @@ const RefundPolicy: React.FC = () => {
                                 <h2 className="font-teko text-3xl text-white mb-6 uppercase tracking-wider">Official Policy Document</h2>
                                 <div className="w-full h-[60vh] md:h-[800px] border border-white/10 rounded-lg overflow-hidden bg-[#08080a] relative group">
                                     <iframe 
-                                        src="/ASCENT_2026_Ticketing_and_Refund_Policy.pdf" 
+                                        src={policyPdf} 
                                         className="w-full h-full border-none relative z-10"
                                         title="ASCENT 2026 - Ticketing and Refund Policy"
                                     />
@@ -92,7 +95,7 @@ const RefundPolicy: React.FC = () => {
                                     <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center z-0">
                                         <p className="text-white/50 mb-4 font-mono text-sm tracking-widest uppercase">Loading Document Viewer...</p>
                                         <a 
-                                            href="/ASCENT_2026_Ticketing_and_Refund_Policy.pdf" 
+                                            href={policyPdf} 
                                             target="_blank" 
                                             rel="noopener noreferrer"
                                             className="px-8 py-4 bg-[#ff4655]/20 hover:bg-[#ff4655]/40 border border-[#ff4655]/50 text-white font-teko text-xl tracking-widest rounded transition-all uppercase pointer-events-auto"
