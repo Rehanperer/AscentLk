@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, ChevronLeft, Users, User, Phone, CheckCircle2, ChevronRight, AlertCircle, Gamepad2, GraduationCap, Mail } from 'lucide-react';
+import { Shield, ChevronLeft, Users, User, Phone, CheckCircle2, ChevronRight, AlertCircle, Gamepad2, GraduationCap, Mail, BookOpen } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import ScrambleText from '../ScrambleText';
 import { supabase } from '../../lib/supabase';
@@ -314,9 +314,17 @@ const RegistrationPage: React.FC = () => {
                     <h1 className="font-teko text-5xl md:text-8xl font-bold leading-none mb-4 uppercase drop-shadow-[0_0_30px_rgba(255,255,255,0.1)]">
                         Join The Gauntlet
                     </h1>
-                    <p className="text-white/50 max-w-xl mx-auto text-sm md:text-base leading-relaxed font-light">
+                    <p className="text-white/50 max-w-xl mx-auto text-sm md:text-base leading-relaxed font-light mb-8">
                         Register your school's best 5v5 Valorant team for the ultimate student-led esports tournament in Sri Lanka.
                     </p>
+                    <Link 
+                        to="/rulebook" 
+                        target="_blank"
+                        className="inline-flex items-center gap-3 px-8 py-4 bg-[#ff4655]/10 hover:bg-[#ff4655]/20 border border-[#ff4655]/30 text-[#ff4655] font-teko text-xl tracking-widest uppercase transition-all rounded-sm shadow-[0_0_15px_rgba(255,70,85,0.15)] hover:shadow-[0_0_25px_rgba(255,70,85,0.3)]"
+                    >
+                        <BookOpen size={20} />
+                        Read Official Rulebook
+                    </Link>
                 </motion.div>
 
                 <AnimatePresence mode="wait">

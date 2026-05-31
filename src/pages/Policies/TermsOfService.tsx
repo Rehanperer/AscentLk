@@ -32,73 +32,66 @@ const TermsOfService: React.FC = () => {
                         <div className="space-y-12 text-lg leading-relaxed">
                             <section>
                                 <p>
-                                    Welcome to ASCENT ESPORTS. These Terms and Conditions govern your use of our website and the purchase and sale of products from our platform. By accessing and using our website, you agree to comply with these terms. Please read them carefully before proceeding with any transactions.
+                                    Welcome to ASCENT 2026. These Terms and Conditions govern your use of our platform, tournament registration, ticket purchases, and attendance at the live event. By accessing our website, registering a team, or purchasing a ticket, you agree to comply with these terms.
                                 </p>
                             </section>
 
                             <section>
-                                <h2 className="font-teko text-3xl text-white mb-4 uppercase tracking-wider">1. Use of the Website</h2>
+                                <h2 className="font-teko text-3xl text-white mb-4 uppercase tracking-wider">1. Eligibility & Accounts</h2>
                                 <ol className="list-none space-y-4 ml-4">
-                                    <li>a. You must be at least 18 years old to use our website or make purchases.</li>
-                                    <li>b. You are responsible for maintaining the confidentiality of your account information, including your username and password.</li>
-                                    <li>c. You agree to provide accurate and current information during the registration and checkout process.</li>
-                                    <li>d. You may not use our website for any unlawful or unauthorized purposes.</li>
+                                    <li><strong className="text-white">Age Requirements:</strong> The live event and tournament are open to participants of all ages. However, if you are under 18 years old, you represent that you have obtained the consent of a parent or legal guardian to attend the event or participate in the tournament.</li>
+                                    <li><strong className="text-white">Account Security:</strong> You are responsible for maintaining the confidentiality of your account credentials used on the ASCENT portal.</li>
+                                    <li><strong className="text-white">Information Accuracy:</strong> You agree to provide accurate, current, and complete information during tournament registration and ticket checkout.</li>
                                 </ol>
                             </section>
 
                             <section>
-                                <h2 className="font-teko text-3xl text-white mb-4 uppercase tracking-wider">2. Product Information and Pricing</h2>
+                                <h2 className="font-teko text-3xl text-white mb-4 uppercase tracking-wider">2. Tournament Registration & Competitive Integrity</h2>
                                 <ol className="list-none space-y-4 ml-4">
-                                    <li>a. We strive to provide accurate product descriptions, images, and pricing information. However, we do not guarantee the accuracy or completeness of such information.</li>
-                                    <li>b. Prices are subject to change without notice. Any promotions or discounts are valid for a limited time and may be subject to additional terms and conditions.</li>
+                                    <li><strong className="text-white">Team Eligibility:</strong> All registered teams must meet the specific roster requirements outlined in the official ASCENT 2026 Rulebook.</li>
+                                    <li><strong className="text-white">Roster Deadlines:</strong> Roster locks and changes are subject to strict deadlines. Failure to field a valid roster will result in disqualification without a refund of any registration fees (if applicable).</li>
+                                    <li><strong className="text-white">Competitive Integrity:</strong> Any form of cheating, exploiting, match-fixing, or toxic behavior—both online and at the live finals—will result in immediate disqualification, forfeiture of prizing, and a potential ban from future events.</li>
                                 </ol>
                             </section>
 
                             <section>
-                                <h2 className="font-teko text-3xl text-white mb-4 uppercase tracking-wider">3. Orders and Payments</h2>
+                                <h2 className="font-teko text-3xl text-white mb-4 uppercase tracking-wider">3. Ticket Purchases, Payments & Cancellations</h2>
                                 <ol className="list-none space-y-4 ml-4">
-                                    <li>a. By placing an order on our website, you are making an offer to purchase the selected products.</li>
-                                    <li>b. We reserve the right to refuse or cancel any order for any reason, including but not limited to product availability, errors in pricing or product information, or suspected fraudulent activity.</li>
-                                    <li>c. You agree to provide valid and up-to-date payment information and authorize us to charge the total order amount, including applicable taxes and shipping fees, to your chosen payment method.</li>
-                                    <li>d. We use trusted third-party payment processors to handle your payment information securely. We do not store or have access to your full payment details.</li>
+                                    <li><strong className="text-white">Ticket Sales:</strong> All ticket purchases for the live finals at the Lumina Ballroom, Cinnamon Life, are final.</li>
+                                    <li><strong className="text-white">No Refunds or Exchanges:</strong> Tickets cannot be refunded, exchanged, or resold for commercial premium. If the event is postponed or rescheduled, your ticket will automatically be valid for the new date.</li>
+                                    <li><strong className="text-white">Payment Processing:</strong> We utilize secure, trusted third-party payment gateways. ASCENT does not store or have access to your full payment card details.</li>
                                 </ol>
                             </section>
 
                             <section>
-                                <h2 className="font-teko text-3xl text-white mb-4 uppercase tracking-wider">4. Shipping and Delivery</h2>
+                                <h2 className="font-teko text-3xl text-white mb-4 uppercase tracking-wider">4. Live Event Regulations (Lumina Ballroom)</h2>
                                 <ol className="list-none space-y-4 ml-4">
-                                    <li>a. We will make reasonable efforts to ensure timely shipping and delivery of your orders.</li>
-                                    <li>b. Shipping and delivery times provided are estimates and may vary based on your location and other factors.</li>
+                                    <li><strong className="text-white">Admission:</strong> A valid digital or physical ticket QR code must be presented at the venue for entry. The organizers reserve the right to refuse entry or eject any individual displaying disruptive, unsafe, or inappropriate behavior.</li>
+                                    <li><strong className="text-white">Prohibited Items:</strong> Weapons, illegal substances, outside food and beverages, and professional laser pointers are strictly prohibited inside the venue.</li>
+                                    <li><strong className="text-white">Schedule Adjustments:</strong> While we strive to stick to the planned schedule, match timings and orchestral performance blocks are subject to real-time adjustments due to broadcast dynamics or technical pacing.</li>
                                 </ol>
                             </section>
 
                             <section>
-                                <h2 className="font-teko text-3xl text-white mb-4 uppercase tracking-wider">5. Returns and Refunds</h2>
+                                <h2 className="font-teko text-3xl text-white mb-4 uppercase tracking-wider">5. Media, Broadcast & Intellectual Property License</h2>
+                                <ol className="list-none space-y-4 ml-4">
+                                    <li><strong className="text-white">Media Consent:</strong> By attending the live event or participating in the tournament, you acknowledge and agree that you may be photographed, filmed, or recorded. You grant ASCENT 2026 the absolute, global right to use your likeness, voice, and team branding in official livestreams, promotional videos, and post-event highlights.</li>
+                                    <li><strong className="text-white">Intellectual Property:</strong> All original visual assets, web code, music arrangements, and event branding are the exclusive property of ASCENT 2026 and its licensors. Riot Games, Valorant, and associated assets are the property of Riot Games, Inc.</li>
+                                </ol>
+                            </section>
+
+                            <section>
+                                <h2 className="font-teko text-3xl text-white mb-4 uppercase tracking-wider">6. Limitation of Liability</h2>
+                                <ol className="list-none space-y-4 ml-4">
+                                    <li><strong className="text-white">Event Disruption:</strong> ASCENT 2026, its executive team, partners, and the venue (Cinnamon Life) will not be held liable for personal injury, property damage, or unexpected logistical delays arising from technical faults, server outages, or force majeure events.</li>
+                                    <li><strong className="text-white">Technical Integrity:</strong> We do not guarantee uninterrupted access to the online tournament portal or ticket booking engine during high-traffic windows.</li>
+                                </ol>
+                            </section>
+
+                            <section>
+                                <h2 className="font-teko text-3xl text-white mb-4 uppercase tracking-wider">7. Amendments</h2>
                                 <p>
-                                    Our Returns and Refund Policy governs the process and conditions for returning products and seeking refunds. Please refer to the policy provided on our website for more information.
-                                </p>
-                            </section>
-
-                            <section>
-                                <h2 className="font-teko text-3xl text-white mb-4 uppercase tracking-wider">6. Intellectual Property</h2>
-                                <ol className="list-none space-y-4 ml-4">
-                                    <li>a. All content and materials on our website, including but not limited to text, images, logos, and graphics, are protected by intellectual property rights and are the property of ASCENT ESPORTS or its licensors.</li>
-                                    <li>b. You may not use, reproduce, distribute, or modify any content from our website without our prior written consent.</li>
-                                </ol>
-                            </section>
-
-                            <section>
-                                <h2 className="font-teko text-3xl text-white mb-4 uppercase tracking-wider">7. Limitation of Liability</h2>
-                                <ol className="list-none space-y-4 ml-4">
-                                    <li>a. In no event shall ASCENT ESPORTS, its directors, employees, or affiliates be liable for any direct, indirect, incidental, special, or consequential damages arising out of or in connection with your use of our website or the purchase and use of our products.</li>
-                                    <li>b. We make no warranties or representations, express or implied, regarding the quality, accuracy, or suitability of the products offered on our website.</li>
-                                </ol>
-                            </section>
-
-                            <section>
-                                <h2 className="font-teko text-3xl text-white mb-4 uppercase tracking-wider">8. Amendments and Termination</h2>
-                                <p>
-                                    We reserve the right to modify, update, or terminate these Terms and Conditions at any time without prior notice. It is your responsibility to review these terms periodically for any changes.
+                                    We reserve the right to modify or update these Terms and Conditions at any time to preserve competitive balance or adjust to venue policies.
                                 </p>
                             </section>
                         </div>

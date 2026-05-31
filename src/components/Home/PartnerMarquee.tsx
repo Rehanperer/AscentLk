@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, useScroll, useTransform, useMotionTemplate } from 'framer-motion';
+import { motion, useScroll, useTransform, useMotionTemplate, useInView } from 'framer-motion';
 
 /**
  * PartnerDecryptionWall (ASCII Hacker Effect)
@@ -21,11 +21,15 @@ const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?";
 
 const RandomAscii: React.FC = () => {
     const [text, setText] = useState("");
+    const ref = useRef(null);
+    const isInView = useInView(ref, { margin: "200px" }); // Trigger earlier so it looks seamless
     
     useEffect(() => {
         let initialText = "";
         for (let i = 0; i < 8; i++) initialText += CHARS[Math.floor(Math.random() * CHARS.length)];
         setText(initialText);
+
+        if (!isInView) return; // Pause calculation when out of view
 
         const interval = setInterval(() => {
             let newText = "";
@@ -35,9 +39,9 @@ const RandomAscii: React.FC = () => {
             setText(newText);
         }, 150); // Slower interval (150ms) to guarantee smooth scrolling on mobile
         return () => clearInterval(interval);
-    }, []);
+    }, [isInView]);
 
-    return <span className="font-mono text-[10px] sm:text-xs md:text-sm text-[#ff4655]/40 tracking-[0.2em] font-bold">{text}</span>;
+    return <span ref={ref} className="font-mono text-[10px] sm:text-xs md:text-sm text-[#ff4655]/40 tracking-[0.2em] font-bold">{text}</span>;
 };
 
 const LogoCell: React.FC<{ partner: typeof partners[0], isDecrypted: boolean }> = ({ partner, isDecrypted }) => {

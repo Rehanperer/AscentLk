@@ -32,72 +32,77 @@ const PrivacyPolicy: React.FC = () => {
                         <div className="space-y-12 text-lg leading-relaxed">
                             <section>
                                 <p>
-                                    At ASCENT ESPORTS, we are committed to protecting the privacy and security of our customers' personal information. This Privacy Policy outlines how we collect, use, and safeguard your information when you visit or make a purchase on our website. By using our website, you consent to the practices described in this policy.
+                                    At ASCENT, we are committed to protecting the privacy and security of our community, players, and attendees. This Privacy Policy outlines how we collect, use, and safeguard your information when you use our website portal, register for our tournament, purchase tickets, or attend our live event.
                                 </p>
                             </section>
 
                             <section>
-                                <h2 className="font-teko text-3xl text-white mb-4 uppercase tracking-wider">Information We Collect</h2>
-                                <p className="mb-4">When you visit our website, we may collect certain information about you, including:</p>
+                                <h2 className="font-teko text-3xl text-white mb-4 uppercase tracking-wider">1. Information We Collect</h2>
+                                <p className="mb-4">We collect information directly from you when you interact with our platform. This includes:</p>
                                 <ul className="list-disc list-inside space-y-4 ml-4">
-                                    <li><strong className="text-white">Personal identification information</strong> (such as your name, email address, and phone number) provided voluntarily by you during the registration or checkout process.</li>
-                                    <li><strong className="text-white">Payment and billing information</strong> necessary to process your orders, including credit card details, which are securely handled by trusted third-party payment processors.</li>
-                                    <li><strong className="text-white">Browsing information</strong>, such as your IP address, browser type, and device information, collected automatically using cookies and similar technologies.</li>
+                                    <li><strong className="text-white">Account & Registration Data:</strong> Full name, email address, contact number, and date of birth (to verify eligibility).</li>
+                                    <li><strong className="text-white">Esports & Team Data:</strong> In-Game Names (IGNs), Riot IDs, team rosters, and regional competitive history.</li>
+                                    <li><strong className="text-white">Ticketing & Transaction Data:</strong> Information required to secure your seat at the live finals. Payment processing is handled entirely by secure, trusted third-party payment gateways; ASCENT does not view or store your credit/debit card numbers.</li>
+                                    <li><strong className="text-white">Event Media:</strong> Photographs, audio, and video recordings captured during the live production at the Lumina Ballroom, Cinnamon Life.</li>
                                 </ul>
                             </section>
 
                             <section>
-                                <h2 className="font-teko text-3xl text-white mb-4 uppercase tracking-wider">Use of Information</h2>
-                                <p className="mb-4">We may use the collected information for the following purposes:</p>
-                                <ul className="list-disc list-inside space-y-2 ml-4">
-                                    <li>To process and fulfill your orders, including shipping and delivery.</li>
-                                    <li>To communicate with you regarding your purchases, provide customer support, and respond to inquiries or requests.</li>
-                                    <li>To personalize your shopping experience and present relevant product recommendations and promotions.</li>
-                                    <li>To improve our website, products, and services based on your feedback and browsing patterns.</li>
-                                    <li>To detect and prevent fraud, unauthorized activities, and abuse of our website.</li>
+                                <h2 className="font-teko text-3xl text-white mb-4 uppercase tracking-wider">2. How We Use Your Information</h2>
+                                <p className="mb-4">We use your data to power the ASCENT experience, specifically:</p>
+                                <ul className="list-disc list-inside space-y-4 ml-4">
+                                    <li><strong className="text-white">Tournament Operations:</strong> Managing tournament brackets, verifying player eligibility, displaying public leaderboards, and coordinating match schedules.</li>
+                                    <li><strong className="text-white">Ticketing & Access Control:</strong> Issuing digital tickets, verifying entry at the venue via QR codes, and providing event updates.</li>
+                                    <li><strong className="text-white">Broadcast & Promotion:</strong> Featuring player profiles, IGNs, and live-venue crowd footage on our official streams, VODs, and social media recaps.</li>
+                                    <li><strong className="text-white">Platform Optimization:</strong> Using basic, anonymized analytics (like device type and browser settings) to ensure our match dashboard and registration portal load seamlessly during peak traffic.</li>
                                 </ul>
                             </section>
 
                             <section>
-                                <h2 className="font-teko text-3xl text-white mb-4 uppercase tracking-wider">Information Sharing</h2>
-                                <p className="mb-4">We respect your privacy and do not sell, trade, or otherwise transfer your personal information to third parties without your consent, except in the following circumstances:</p>
-                                <ul className="space-y-4">
-                                    <li>
-                                        <strong className="text-white block mb-1">Trusted service providers</strong>
-                                        We may share your information with third-party service providers who assist us in operating our website, processing payments, and delivering products. These providers are contractually obligated to handle your data securely and confidentially.
-                                    </li>
-                                    <li>
-                                        <strong className="text-white block mb-1">Legal requirements</strong>
-                                        We may disclose your information if required to do so by law or in response to valid legal requests or orders.
-                                    </li>
+                                <h2 className="font-teko text-3xl text-white mb-4 uppercase tracking-wider">3. Information Sharing & Public Visibility</h2>
+                                <p className="mb-4">We respect your privacy and do not sell your personal data. However, by participating, certain elements are shared as a natural part of a major esports tournament:</p>
+                                <ul className="list-disc list-inside space-y-4 ml-4">
+                                    <li><strong className="text-white">Public Tournament Data:</strong> Your Riot ID, IGN, team name, and match statistics will be publicly visible on the tournament platform and broadcast.</li>
+                                    <li><strong className="text-white">Production Partners:</strong> We share necessary operational data with our direct event production partners, venue coordinators at Cinnamon Life, and authorized tournament administrators.</li>
+                                    <li><strong className="text-white">Legal Compliance:</strong> We may disclose information if required to do so by law or to protect the safety of our attendees and staff at the physical venue.</li>
                                 </ul>
                             </section>
 
                             <section>
-                                <h2 className="font-teko text-3xl text-white mb-4 uppercase tracking-wider">Data Security</h2>
+                                <h2 className="font-teko text-3xl text-white mb-4 uppercase tracking-wider">4. Minor's Privacy (Under 18)</h2>
+                                <p className="mb-4">Given that ASCENT 2026 serves a large student demographic, we are highly cautious about youth data.</p>
+                                <ul className="list-disc list-inside space-y-4 ml-4">
+                                    <li>Players under the age of 18 must have parental or legal guardian consent before submitting personal information or registering a team.</li>
+                                    <li>If we discover we have inadvertently collected data from a minor without verified guardian consent, we will take steps to delete that data immediately.</li>
+                                </ul>
+                            </section>
+
+                            <section>
+                                <h2 className="font-teko text-3xl text-white mb-4 uppercase tracking-wider">5. Data Security & Storage</h2>
                                 <p>
-                                    We implement industry-standard security measures to protect your personal information from unauthorized access, alteration, disclosure, or destruction. However, please be aware that no method of transmission over the internet or electronic storage is 100% secure, and we cannot guarantee absolute security.
+                                    We employ industry-standard encryption and security protocols to safeguard account and registration data against unauthorized access. While no system is entirely foolproof, we routinely monitor our database and registration portal to protect our database.
                                 </p>
                             </section>
 
                             <section>
-                                <h2 className="font-teko text-3xl text-white mb-4 uppercase tracking-wider">Cookies and Tracking Technologies</h2>
+                                <h2 className="font-teko text-3xl text-white mb-4 uppercase tracking-wider">6. Cookies and Community Links</h2>
+                                <ul className="list-disc list-inside space-y-4 ml-4">
+                                    <li><strong className="text-white">Cookies:</strong> We use basic cookies to keep you logged into the portal and to remember your ticketing preferences. You can disable these in your browser, though it may disrupt the checkout process.</li>
+                                    <li><strong className="text-white">Third-Party Links:</strong> Our website may link to external platforms like Discord (for tournament coordination) or third-party streaming sites. We are not responsible for the privacy practices of external platforms; please review their respective policies.</li>
+                                </ul>
+                            </section>
+
+                            <section>
+                                <h2 className="font-teko text-3xl text-white mb-4 uppercase tracking-wider">7. Changes to this Policy</h2>
                                 <p>
-                                    We use cookies and similar technologies to enhance your browsing experience, analyze website traffic, and gather information about your preferences and interactions with our website. You have the option to disable cookies through your browser settings, but this may limit certain features and functionality of our website.
+                                    We may update this Privacy Policy as we edge closer to the event to reflect production or venue adjustments. Any updates will be pushed directly to this page with an updated timestamp.
                                 </p>
                             </section>
 
                             <section>
-                                <h2 className="font-teko text-3xl text-white mb-4 uppercase tracking-wider">Changes to the Privacy Policy</h2>
+                                <h2 className="font-teko text-3xl text-white mb-4 uppercase tracking-wider">8. Contact Us</h2>
                                 <p>
-                                    We reserve the right to update or modify this Privacy Policy at any time. Any changes will be posted on this page with a revised "last updated" date. We encourage you to review this Privacy Policy periodically to stay informed about how we collect, use, and protect your information.
-                                </p>
-                            </section>
-
-                            <section>
-                                <h2 className="font-teko text-3xl text-white mb-4 uppercase tracking-wider">Contact Us</h2>
-                                <p>
-                                    If you have any questions, concerns, or requests regarding our Privacy Policy or the handling of your personal information, please contact us using the information provided on our website.
+                                    For any questions regarding your data, team removal requests, or privacy inquiries, please contact the ASCENT Event Operations team through our official communication channels or our designated community server.
                                 </p>
                             </section>
                         </div>

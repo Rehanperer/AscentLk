@@ -34,6 +34,7 @@ const RegistrationPage = lazy(() => import('./components/Registration/Registrati
 const RefundPolicy = lazy(() => import('./pages/Policies/RefundPolicy'));
 const PrivacyPolicy = lazy(() => import('./pages/Policies/PrivacyPolicy'));
 const TermsOfService = lazy(() => import('./pages/Policies/TermsOfService'));
+const Rulebook = lazy(() => import('./pages/Rulebook'));
 
 // Demos
 const AsciiDemoPage = lazy(() => import('./pages/AsciiDemoPage'));
@@ -110,6 +111,11 @@ const MaintenanceGuard: React.FC<{ children: React.ReactNode }> = ({ children })
 const App: React.FC = () => {
     const location = useLocation();
     const isHomePage = location.pathname === '/';
+
+    // Scroll to top on route change
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [location.pathname]);
 
     // Track page views for analytics
     usePageView();
@@ -261,6 +267,11 @@ const App: React.FC = () => {
                     <Route path="/terms-of-service" element={
                         <Suspense fallback={<TacticalLoader />}>
                             <TermsOfService />
+                        </Suspense>
+                    } />
+                    <Route path="/rulebook" element={
+                        <Suspense fallback={<TacticalLoader />}>
+                            <Rulebook />
                         </Suspense>
                     } />
                     <Route path="/" element={

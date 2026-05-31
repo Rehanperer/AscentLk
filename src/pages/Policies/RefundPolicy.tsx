@@ -79,6 +79,29 @@ const RefundPolicy: React.FC = () => {
                                     For all refund inquiries or issues regarding your seating reservation, please reach out to our operations unit through the support link provided in the footer of our website.
                                 </p>
                             </section>
+
+                            <section className="pt-8">
+                                <h2 className="font-teko text-3xl text-white mb-6 uppercase tracking-wider">Official Policy Document</h2>
+                                <div className="w-full h-[60vh] md:h-[800px] border border-white/10 rounded-lg overflow-hidden bg-[#08080a] relative group">
+                                    <iframe 
+                                        src="/ASCENT_2026_Ticketing_and_Refund_Policy.pdf" 
+                                        className="w-full h-full border-none relative z-10"
+                                        title="ASCENT 2026 - Ticketing and Refund Policy"
+                                    />
+                                    {/* Fallback overlay for unsupported browsers */}
+                                    <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center z-0">
+                                        <p className="text-white/50 mb-4 font-mono text-sm tracking-widest uppercase">Loading Document Viewer...</p>
+                                        <a 
+                                            href="/ASCENT_2026_Ticketing_and_Refund_Policy.pdf" 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            className="px-8 py-4 bg-[#ff4655]/20 hover:bg-[#ff4655]/40 border border-[#ff4655]/50 text-white font-teko text-xl tracking-widest rounded transition-all uppercase pointer-events-auto"
+                                        >
+                                            Download PDF directly
+                                        </a>
+                                    </div>
+                                </div>
+                            </section>
                         </div>
                     </SectionReveal>
                 </div>

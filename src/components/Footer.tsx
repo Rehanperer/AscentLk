@@ -337,7 +337,7 @@ const Footer: React.FC = () => {
             {/* Interactive Magnetic Pills */}
             <div ref={linksRef} className="flex flex-col items-center gap-6 w-full">
               <div className="flex flex-wrap justify-center gap-3 md:gap-4 w-full">
-                <MagneticButton as="a" href="https://www.instagram.com/ascent2026/" target="_blank" onMouseEnter={playHover} onClick={playClick} className="footer-glass-pill px-8 md:px-10 py-4 md:py-5 rounded-full text-white font-bold text-xs md:text-base flex items-center gap-3 group uppercase tracking-widest font-teko">
+                <MagneticButton as="a" href="https://www.instagram.com/ascent_2026/" target="_blank" onMouseEnter={playHover} onClick={playClick} className="footer-glass-pill px-8 md:px-10 py-4 md:py-5 rounded-full text-white font-bold text-xs md:text-base flex items-center gap-3 group uppercase tracking-widest font-teko">
                   Instagram
                 </MagneticButton>
                 
