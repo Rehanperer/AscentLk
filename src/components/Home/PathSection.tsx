@@ -349,6 +349,10 @@ const PathSection: React.FC = () => {
 
                     {/* ── THE NUMBER (planted spike) ── */}
                     <div className="relative z-10">
+                        {/* Dark scrim so text reads clearly over the diamond lines */}
+                        <div className="absolute inset-0 -inset-x-16 -inset-y-8 rounded-2xl pointer-events-none" style={{
+                            background: 'radial-gradient(ellipse 70% 60% at 50% 45%, rgba(8,8,10,0.85) 0%, rgba(8,8,10,0.5) 50%, transparent 80%)'
+                        }} />
                         <AnimatedCounter value={300000} label="LKR Total Prize Pool" suffix="+" duration={3} />
                     </div>
                 </div>
