@@ -26,10 +26,10 @@ const AnimatedCounter: React.FC<{ value: number; label: string; prefix?: string;
 
     return (
         <div ref={containerRef} className="flex flex-col items-center justify-center text-center group px-4">
-            <h3 className="font-teko text-[15vw] md:text-[11rem] leading-[0.85] font-bold text-white drop-shadow-[0_0_50px_rgba(255,70,85,1)] whitespace-nowrap transform-gpu">
-                <span className="text-[10vw] md:text-[7rem] text-white">{prefix}</span>
+            <h3 className="font-teko text-[12vw] sm:text-[15vw] md:text-[11rem] leading-[0.85] font-bold text-white drop-shadow-[0_0_50px_rgba(255,70,85,1)] whitespace-nowrap transform-gpu">
+                <span className="text-[8vw] sm:text-[10vw] md:text-[7rem] text-white">{prefix}</span>
                 <span ref={ref}>0</span>
-                <span className="text-[10vw] md:text-[7rem] text-[#ff4655]">{suffix}</span>
+                <span className="text-[8vw] sm:text-[10vw] md:text-[7rem] text-[#ff4655]">{suffix}</span>
             </h3>
             <div className="font-mono text-xs md:text-xl tracking-[0.3em] md:tracking-[0.5em] text-[#ff4655] uppercase mt-4" style={{ opacity: isInView ? 1 : 0, transition: 'opacity 1s ease' }}>
                 <ScrambleText text={label} duration={60} />
@@ -262,26 +262,26 @@ const PathSection: React.FC = () => {
                     </div>
 
                     {/* Mobile: Drop down left margin */}
-                    <div className="md:hidden absolute -top-[8rem] left-[20px] h-[8rem] w-[2px] bg-white/5 -translate-x-1/2 pointer-events-none z-0">
+                    <div className="md:hidden absolute -top-[8rem] left-[20px] h-[4rem] w-[2px] bg-white/5 -translate-x-1/2 pointer-events-none z-0">
                         <motion.div 
                             className="absolute top-0 left-0 w-full h-full bg-[#ff4655] shadow-[0_0_15px_#ff4655] origin-top"
-                            style={{ scaleY: useTransform(scrollYProgress, [0.7, 0.73], [0, 1]) }}
+                            style={{ scaleY: useTransform(scrollYProgress, [0.7, 0.72], [0, 1]) }}
                         />
                     </div>
                     
                     {/* Mobile: Horizontal bridge to center */}
-                    <div className="md:hidden absolute top-0 left-[20px] w-[calc(50%-20px)] h-[2px] bg-white/5 pointer-events-none z-0">
+                    <div className="md:hidden absolute -top-[4rem] left-[20px] w-[calc(50%-20px)] h-[2px] bg-white/5 pointer-events-none z-0">
                         <motion.div 
                             className="absolute top-0 left-0 w-full h-full bg-[#ff4655] shadow-[0_0_15px_#ff4655] origin-left"
-                            style={{ scaleX: useTransform(scrollYProgress, [0.73, 0.75], [0, 1]) }}
+                            style={{ scaleX: useTransform(scrollYProgress, [0.72, 0.74], [0, 1]) }}
                         />
                     </div>
 
                     {/* Mobile: Drop into diamond center */}
-                    <div className="md:hidden absolute top-0 left-1/2 bottom-1/2 w-[2px] bg-white/5 -translate-x-1/2 pointer-events-none z-0">
+                    <div className="md:hidden absolute -top-[4rem] left-1/2 bottom-1/2 w-[2px] bg-white/5 -translate-x-1/2 pointer-events-none z-0">
                         <motion.div 
                             className="absolute top-0 left-0 w-full h-full bg-[#ff4655] shadow-[0_0_15px_#ff4655] origin-top"
-                            style={{ scaleY: useTransform(scrollYProgress, [0.75, 0.85], [0, 1]) }}
+                            style={{ scaleY: useTransform(scrollYProgress, [0.74, 0.85], [0, 1]) }}
                         />
                     </div>
 
