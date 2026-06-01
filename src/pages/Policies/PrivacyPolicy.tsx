@@ -2,14 +2,14 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import Navbar from '../../components/Navbar';
+import ModernNavbar from '../../components/Home/ModernNavbar';
 import SectionReveal from '../../components/Effects/SectionReveal';
 import Footer from '../../components/Footer';
 
 const PrivacyPolicy: React.FC = () => {
     return (
         <div className="min-h-screen bg-[#08080a] text-slate-200 font-inter selection:bg-[#ff4655] selection:text-white">
-            <Navbar onRegister={() => { }} onNavigate={() => { }} />
+            <ModernNavbar />
 
             <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden"
                  style={{ background: `
