@@ -31,7 +31,7 @@ const AnimatedCounter: React.FC<{ value: number; label: string; prefix?: string;
                 <span ref={ref}>0</span>
                 <span className="text-[8vw] sm:text-[10vw] md:text-[7rem] text-[#ff4655]">{suffix}</span>
             </h3>
-            <div className="font-mono text-xs md:text-xl tracking-[0.3em] md:tracking-[0.5em] text-[#ff4655] uppercase mt-4" style={{ opacity: isInView ? 1 : 0, transition: 'opacity 1s ease' }}>
+            <div className="font-mono text-sm md:text-2xl tracking-[0.3em] md:tracking-[0.5em] text-white uppercase mt-6 drop-shadow-[0_0_20px_rgba(255,70,85,0.8)]" style={{ opacity: isInView ? 1 : 0, transition: 'opacity 1s ease' }}>
                 <ScrambleText text={label} duration={60} />
             </div>
         </div>
