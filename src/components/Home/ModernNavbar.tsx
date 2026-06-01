@@ -52,16 +52,20 @@ const ModernNavbar: React.FC = () => {
             >
                 <div className="relative max-w-[1400px] mx-auto px-4 py-3 md:px-8 md:py-4 flex justify-between items-center pointer-events-none">
                     
-                    {/* Logo Area (Left Island) */}
-                    <div className="relative pointer-events-auto flex items-center">
+                    {/* Logo Area (Left Island - Perfect Circle) */}
+                    <div className="relative pointer-events-auto flex items-center justify-center w-[3rem] h-[3rem] md:w-[3.5rem] md:h-[3.5rem] -ml-2 md:-ml-4">
+                        
+                        {/* Glass Island Backdrop */}
+                        <div className={`absolute inset-0 bg-[#040814]/60 backdrop-blur-md border border-white/10 rounded-full transition-all duration-500 ${scrolled ? 'opacity-100 shadow-[0_4px_30px_rgba(0,0,0,0.5)]' : 'opacity-0 scale-95 pointer-events-none'}`} />
+
                         <button
                             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                            className="relative group cursor-pointer flex items-center z-10"
+                            className="relative group cursor-pointer flex items-center justify-center z-10 w-full h-full"
                         >
                             <img
                                 src="img/ASCENT2026.svg"
                                 alt="Ascent 2026"
-                                className={`w-auto mix-blend-screen transition-all duration-500 ease-out ${scrolled ? 'h-5 md:h-6 opacity-100 drop-shadow-[0_0_15px_rgba(255,70,85,0.6)]' : 'h-6 md:h-8 opacity-90 drop-shadow-[0_0_10px_rgba(255,255,255,0.2)] group-hover:opacity-100 group-hover:drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]'}`}
+                                className="h-6 md:h-8 w-auto mix-blend-screen opacity-90 group-hover:opacity-100 transition-opacity drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]"
                             />
                         </button>
                     </div>
