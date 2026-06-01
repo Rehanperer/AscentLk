@@ -127,12 +127,11 @@ const PathSection: React.FC = () => {
         offset: ["start center", "end 80%"]
     });
 
-    // Animate the central red line filling up
-    const lineFillHeight = useTransform(scrollYProgress, [0, 0.8], ["0%", "100%"]);
+    // Animate the central red line filling up the Timeline
+    const lineFillHeight = useTransform(scrollYProgress, [0, 0.7], ["0%", "100%"]);
     
     // Animate the diamond lighting up as the scroll reaches the bottom
     const diamondGlowOpacity = useTransform(scrollYProgress, [0.85, 0.95], [0, 1]);
-    const connectionLineHeight = useTransform(scrollYProgress, [0.75, 0.85], ["0%", "50%"]);
 
     return (
         <section id="path" className="relative pb-32 pt-24 bg-[#0d121f]">
@@ -218,12 +217,39 @@ const PathSection: React.FC = () => {
                 ═══════════════════════════════════════════════ */}
                 <div className="mt-32 md:mt-48 mb-8 relative w-full min-h-[80vh] md:min-h-[90vh] flex items-center justify-center overflow-hidden">
                     
-                    {/* Connection Line from Top to Diamond Center */}
-                    <div className="absolute top-0 left-1/2 bottom-1/2 w-[1px] bg-gradient-to-b from-transparent to-white/10 -translate-x-1/2 pointer-events-none" />
-                    <motion.div 
-                        className="absolute top-0 left-1/2 w-[2px] bg-[#ff4655] -translate-x-1/2 shadow-[0_0_15px_#ff4655] pointer-events-none z-0"
-                        style={{ height: connectionLineHeight }}
-                    />
+                    {/* --- ROUTING & CONNECTION LINES --- */}
+                    
+                    {/* Desktop: Straight line down from timeline to diamond center */}
+                    <div className="hidden md:block absolute -top-[12rem] left-1/2 bottom-1/2 w-[2px] bg-white/5 -translate-x-1/2 pointer-events-none z-0">
+                        <motion.div 
+                            className="absolute top-0 left-0 w-full h-full bg-[#ff4655] shadow-[0_0_15px_#ff4655] origin-top"
+                            style={{ scaleY: useTransform(scrollYProgress, [0.7, 0.85], [0, 1]) }}
+                        />
+                    </div>
+
+                    {/* Mobile: Drop down left margin */}
+                    <div className="md:hidden absolute -top-[8rem] left-[20px] h-[8rem] w-[2px] bg-white/5 -translate-x-1/2 pointer-events-none z-0">
+                        <motion.div 
+                            className="absolute top-0 left-0 w-full h-full bg-[#ff4655] shadow-[0_0_15px_#ff4655] origin-top"
+                            style={{ scaleY: useTransform(scrollYProgress, [0.7, 0.73], [0, 1]) }}
+                        />
+                    </div>
+                    
+                    {/* Mobile: Horizontal bridge to center */}
+                    <div className="md:hidden absolute top-0 left-[20px] w-[calc(50%-20px)] h-[2px] bg-white/5 pointer-events-none z-0">
+                        <motion.div 
+                            className="absolute top-0 left-0 w-full h-full bg-[#ff4655] shadow-[0_0_15px_#ff4655] origin-left"
+                            style={{ scaleX: useTransform(scrollYProgress, [0.73, 0.75], [0, 1]) }}
+                        />
+                    </div>
+
+                    {/* Mobile: Drop into diamond center */}
+                    <div className="md:hidden absolute top-0 left-1/2 bottom-1/2 w-[2px] bg-white/5 -translate-x-1/2 pointer-events-none z-0">
+                        <motion.div 
+                            className="absolute top-0 left-0 w-full h-full bg-[#ff4655] shadow-[0_0_15px_#ff4655] origin-top"
+                            style={{ scaleY: useTransform(scrollYProgress, [0.75, 0.85], [0, 1]) }}
+                        />
+                    </div>
 
                     {/* Arena floor grid pattern */}
                     <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
@@ -252,12 +278,24 @@ const PathSection: React.FC = () => {
                         />
                         
                         {/* Cross lines through center */}
-                        <div className="absolute w-[90vw] max-w-[750px] h-[1px] bg-gradient-to-r from-transparent via-white/[0.04] to-transparent" />
-                        <div className="absolute h-[90vw] max-h-[750px] w-[1px] bg-gradient-to-b from-transparent via-white/[0.04] to-transparent" />
+                        <motion.div 
+                            className="absolute w-[90vw] max-w-[750px] h-[1px]" 
+                            style={{ background: useTransform(diamondGlowOpacity, v => `linear-gradient(90deg, transparent, rgba(255,70,85,${0.04 + v * 0.4}), transparent)`) }} 
+                        />
+                        <motion.div 
+                            className="absolute h-[90vw] max-h-[750px] w-[1px]" 
+                            style={{ background: useTransform(diamondGlowOpacity, v => `linear-gradient(180deg, transparent, rgba(255,70,85,${0.04 + v * 0.4}), transparent)`) }} 
+                        />
                         
                         {/* Diagonal cross lines */}
-                        <div className="absolute w-[120vw] max-w-[900px] h-[1px] bg-gradient-to-r from-transparent via-[#ff4655]/[0.03] to-transparent rotate-45" />
-                        <div className="absolute w-[120vw] max-w-[900px] h-[1px] bg-gradient-to-r from-transparent via-[#ff4655]/[0.03] to-transparent -rotate-45" />
+                        <motion.div 
+                            className="absolute w-[120vw] max-w-[900px] h-[1px] rotate-45" 
+                            style={{ background: useTransform(diamondGlowOpacity, v => `linear-gradient(90deg, transparent, rgba(255,70,85,${0.03 + v * 0.3}), transparent)`) }} 
+                        />
+                        <motion.div 
+                            className="absolute w-[120vw] max-w-[900px] h-[1px] -rotate-45" 
+                            style={{ background: useTransform(diamondGlowOpacity, v => `linear-gradient(90deg, transparent, rgba(255,70,85,${0.03 + v * 0.3}), transparent)`) }} 
+                        />
 
                         {/* Corner markers on mid diamond */}
                         {/* Top */}
