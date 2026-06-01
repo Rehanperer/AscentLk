@@ -53,7 +53,7 @@ const ModernNavbar: React.FC = () => {
                 <div className="relative max-w-[1400px] mx-auto px-4 py-3 md:px-8 md:py-4 flex justify-between items-center pointer-events-none">
                     
                     {/* Logo Area (Left Island - Perfect Circle) */}
-                    <div className="relative pointer-events-auto flex items-center justify-center w-[3rem] h-[3rem] md:w-[3.5rem] md:h-[3.5rem] -ml-2 md:-ml-4">
+                    <div className="relative pointer-events-auto flex items-center justify-center w-[3rem] h-[3rem] md:w-[3.5rem] md:h-[3.5rem] -ml-2 md:-ml-4 overflow-hidden rounded-full">
                         
                         {/* Glass Island Backdrop */}
                         <div className={`absolute inset-0 bg-[#040814]/60 backdrop-blur-md border border-white/10 rounded-full transition-all duration-500 ${scrolled ? 'opacity-100 shadow-[0_4px_30px_rgba(0,0,0,0.5)]' : 'opacity-0 scale-95 pointer-events-none'}`} />
