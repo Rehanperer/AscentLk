@@ -18,7 +18,10 @@ const ModernNavbar: React.FC = () => {
     useEffect(() => {
         const onScroll = () => setScrolled(window.scrollY > 50);
         window.addEventListener('scroll', onScroll, { passive: true });
-        return () => window.removeEventListener('scroll', onScroll);
+        
+        return () => {
+            window.removeEventListener('scroll', onScroll);
+        };
     }, []);
 
     // Lock body scroll when mobile menu is open
@@ -29,6 +32,10 @@ const ModernNavbar: React.FC = () => {
 
     const scrollTo = useCallback((href: string) => {
         setMobileOpen(false);
+        if (href.startsWith('http')) {
+            window.open(href, '_blank');
+            return;
+        }
         const el = document.querySelector(href);
         if (el) {
             el.scrollIntoView({ behavior: 'smooth' });
@@ -39,56 +46,48 @@ const ModernNavbar: React.FC = () => {
 
     return (
         <>
-            {/* Premium HUD Navigation - Completely Floating */}
+            {/* Premium HUD Navigation - Completely Floating Islands */}
             <nav
-                className="fixed top-0 left-0 w-full z-[900] pointer-events-none pt-2 md:pt-4"
+                className={`fixed top-0 left-0 w-full z-[900] pointer-events-none transition-all duration-500 pt-2 md:pt-4`}
             >
-                <div className="max-w-[1400px] mx-auto px-4 py-3 md:px-8 md:py-4 flex justify-between items-center pointer-events-auto">
+                <div className="relative max-w-[1400px] mx-auto px-4 py-3 md:px-8 md:py-4 flex justify-between items-center pointer-events-none">
                     
-                    {/* Logo Area */}
-                    <button
-                        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                        className="relative group cursor-pointer flex items-center"
-                    >
-                        <img
-                            src="img/ASCENT2026.svg"
-                            alt="Ascent 2026"
-                            className="h-6 md:h-8 w-auto mix-blend-screen opacity-90 group-hover:opacity-100 transition-opacity drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]"
-                        />
-                    </button>
-
-                    {/* Right Actions: Register Button + Hamburger Menu */}
-                    <div className="flex items-center gap-4 md:gap-8">
-                        {/* Expanding Crosshair Register Button */}
+                    {/* Logo Area (Left Island) */}
+                    <div className="relative pointer-events-auto flex items-center px-5 py-3 -ml-5 md:px-6 md:py-3 md:-ml-6">
+                        {/* Glass Island Backdrop */}
+                        <div className={`absolute inset-0 bg-[#040814]/60 backdrop-blur-md border border-white/10 rounded-full transition-all duration-500 ${scrolled ? 'opacity-100 shadow-[0_4px_30px_rgba(0,0,0,0.5)]' : 'opacity-0 scale-95 pointer-events-none'}`} />
+                        
                         <button
-                            onClick={() => navigate('/register')}
-                            className={`group relative transition-opacity duration-300 cursor-pointer hidden md:flex items-center justify-center ${mobileOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+                            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                            className="relative group cursor-pointer flex items-center z-10"
                         >
-                            <div className="relative flex items-center h-10 w-10 group-hover:w-[160px] border border-white/30 group-hover:border-[#ff4655] rounded-full transition-all duration-[600ms] ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden group-hover:bg-[#ff4655]/10 group-hover:shadow-[0_0_25px_rgba(255,70,85,0.3)]">
-                                
-                                {/* Subtle pulse ring */}
-                                <div className="absolute inset-0 rounded-full border border-white/20 animate-ping group-hover:opacity-0 transition-opacity duration-300 pointer-events-none" style={{ animationDuration: '2.5s' }} />
-
-                                {/* Crosshair Icon (always centered in left 40px) */}
-                                <div className="absolute left-0 w-10 h-10 flex items-center justify-center shrink-0 transition-transform duration-[600ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:rotate-[90deg]">
-                                    <div className="relative w-3.5 h-3.5 flex items-center justify-center">
-                                        <div className="absolute w-full h-[1.5px] bg-white/80 group-hover:bg-[#ff4655] transition-colors duration-300" />
-                                        <div className="absolute h-full w-[1.5px] bg-white/80 group-hover:bg-[#ff4655] transition-colors duration-300" />
-                                        <div className="absolute w-1 h-1 bg-[#ff4655] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-[0_0_6px_#ff4655]" />
-                                    </div>
-                                </div>
-
-                                {/* Hidden REGISTER text */}
-                                <span className="absolute left-10 font-teko font-bold text-[1.15rem] tracking-[0.25em] text-white whitespace-nowrap opacity-0 -translate-x-3 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 delay-100 pointer-events-none leading-none pt-0.5">
-                                    REGISTER
-                                </span>
-                            </div>
+                            <img
+                                src="img/ASCENT2026.svg"
+                                alt="Ascent 2026"
+                                className="h-6 md:h-8 w-auto mix-blend-screen opacity-90 group-hover:opacity-100 transition-opacity drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]"
+                            />
                         </button>
+                    </div>
+
+                    {/* Right Actions (Right Island without blur) */}
+                    <div className="relative pointer-events-auto flex items-center gap-4 md:gap-6 px-4 py-2 -mr-4 md:px-5 md:py-2 md:-mr-5">
+
+                        {/* Instagram Button */}
+                        <a
+                            href="https://www.instagram.com/ascent_2026/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={`group relative z-10 transition-opacity duration-300 cursor-pointer flex items-center justify-center pointer-events-auto ${mobileOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+                        >
+                            <div className="relative flex items-center justify-center w-10 h-10 border border-white/30 rounded-full transition-all duration-300 group-hover:border-[#ff4655] group-hover:bg-[#ff4655]/10 group-hover:shadow-[0_0_15px_rgba(255,70,85,0.3)]">
+                                <Instagram className="w-4 h-4 text-white/80 group-hover:text-[#ff4655] transition-colors duration-300" />
+                            </div>
+                        </a>
 
                         {/* Open Button (Only visible when sidebar is closed) */}
                         <button
                             onClick={() => setMobileOpen(true)}
-                            className={`group w-12 h-12 flex flex-col items-end justify-center gap-2.5 focus:outline-none relative transition-opacity duration-300 ${mobileOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+                            className={`group z-10 w-12 h-12 flex flex-col items-end justify-center gap-2.5 focus:outline-none relative transition-opacity duration-300 ${mobileOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
                         >
                             <span className="w-8 h-[2px] bg-white transition-all duration-300 shadow-[0_0_10px_rgba(255,255,255,0.5)] group-hover:bg-[#ff4655] group-hover:shadow-[0_0_10px_rgba(255,70,85,0.8)]" />
                             <span className="w-5 h-[2px] bg-white transition-all duration-300 shadow-[0_0_10px_rgba(255,255,255,0.5)] group-hover:bg-[#ff4655] group-hover:w-8 group-hover:shadow-[0_0_10px_rgba(255,70,85,0.8)]" />
@@ -145,25 +144,12 @@ const ModernNavbar: React.FC = () => {
                     {/* Content Container (Scrollable for smaller screens) */}
                     <div className="relative z-10 w-full h-full flex flex-col pt-24 md:pt-32 pb-12 overflow-y-auto overflow-x-hidden scrollbar-hide">
                         
-                        {/* Status Header & Instagram (Moved to Top) */}
+                        {/* Status Header (Top Left) */}
                         <div className="flex justify-between items-start pl-[28%] sm:pl-[20%] pr-6 md:pl-[20%] md:pr-12 mb-8 md:mb-12">
                             <div className="flex flex-col">
                                 <span className="font-mono text-[9px] md:text-xs text-[#ff4655] tracking-[0.2em] md:tracking-[0.4em] uppercase font-bold animate-pulse">Live // Sys Online</span>
                                 <span className="font-mono text-[7px] md:text-[9px] text-white/30 tracking-[0.1em] md:tracking-[0.2em] uppercase mt-1">Auth Level: Alpha</span>
                             </div>
-
-                            {/* Instagram Link at Top */}
-                            <a
-                                href="https://www.instagram.com/ascent_2026/"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex flex-col items-center gap-1 group mr-4 md:mr-0 z-50 relative mt-2 md:mt-0"
-                            >
-                                <div className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center border border-white/10 rounded-sm hover:border-[#ff4655] hover:bg-[#ff4655]/10 hover:text-[#ff4655] transition-all duration-300">
-                                    <Instagram className="w-3 h-3 md:w-4 md:h-4 text-white/60 group-hover:text-[#ff4655]" />
-                                </div>
-                                <span className="font-mono text-[6px] md:text-[8px] text-white/30 tracking-[0.2em] uppercase group-hover:text-[#ff4655] transition-colors">Connect</span>
-                            </a>
                         </div>
 
                         {/* Massive Typography Navigation Links */}
