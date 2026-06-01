@@ -30,8 +30,12 @@ const ModernNavbar: React.FC = () => {
     const scrollTo = useCallback((href: string) => {
         setMobileOpen(false);
         const el = document.querySelector(href);
-        if (el) el.scrollIntoView({ behavior: 'smooth' });
-    }, []);
+        if (el) {
+            el.scrollIntoView({ behavior: 'smooth' });
+        } else {
+            navigate(`/${href}`);
+        }
+    }, [navigate]);
 
     return (
         <>

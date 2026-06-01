@@ -112,10 +112,17 @@ const App: React.FC = () => {
     const location = useLocation();
     const isHomePage = location.pathname === '/';
 
-    // Scroll to top on route change
+    // Scroll to top or specific hash on route change
     useEffect(() => {
-        window.scrollTo(0, 0);
-    }, [location.pathname]);
+        if (location.hash) {
+            setTimeout(() => {
+                const el = document.querySelector(location.hash);
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }, 100);
+        } else {
+            window.scrollTo(0, 0);
+        }
+    }, [location.pathname, location.hash]);
 
     // Track page views for analytics
     usePageView();

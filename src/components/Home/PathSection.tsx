@@ -129,6 +129,10 @@ const PathSection: React.FC = () => {
 
     // Animate the central red line filling up
     const lineFillHeight = useTransform(scrollYProgress, [0, 0.8], ["0%", "100%"]);
+    
+    // Animate the diamond lighting up as the scroll reaches the bottom
+    const diamondGlowOpacity = useTransform(scrollYProgress, [0.85, 0.95], [0, 1]);
+    const connectionLineHeight = useTransform(scrollYProgress, [0.75, 0.85], ["0%", "50%"]);
 
     return (
         <section id="path" className="relative pb-32 pt-24 bg-[#0d121f]">
@@ -214,16 +218,38 @@ const PathSection: React.FC = () => {
                 ═══════════════════════════════════════════════ */}
                 <div className="mt-32 md:mt-48 mb-8 relative w-full min-h-[80vh] md:min-h-[90vh] flex items-center justify-center overflow-hidden">
                     
+                    {/* Connection Line from Top to Diamond Center */}
+                    <div className="absolute top-0 left-1/2 bottom-1/2 w-[1px] bg-gradient-to-b from-transparent to-white/10 -translate-x-1/2 pointer-events-none" />
+                    <motion.div 
+                        className="absolute top-0 left-1/2 w-[2px] bg-[#ff4655] -translate-x-1/2 shadow-[0_0_15px_#ff4655] pointer-events-none z-0"
+                        style={{ height: connectionLineHeight }}
+                    />
+
                     {/* Arena floor grid pattern */}
                     <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
                         {/* Outer diamond */}
-                        <div className="absolute w-[85vw] h-[85vw] max-w-[700px] max-h-[700px] border border-white/[0.03] rotate-45" />
+                        <motion.div 
+                            className="absolute w-[85vw] h-[85vw] max-w-[700px] max-h-[700px] border rotate-45 transition-colors"
+                            style={{ borderColor: useTransform(diamondGlowOpacity, v => `rgba(255,255,255,${0.03 + v * 0.1})`) }}
+                        />
                         {/* Mid diamond */}
-                        <div className="absolute w-[60vw] h-[60vw] max-w-[500px] max-h-[500px] border border-[#ff4655]/[0.06] rotate-45" />
+                        <motion.div 
+                            className="absolute w-[60vw] h-[60vw] max-w-[500px] max-h-[500px] border rotate-45"
+                            style={{ borderColor: useTransform(diamondGlowOpacity, v => `rgba(255,70,85,${0.06 + v * 0.2})`) }}
+                        />
                         {/* Inner diamond */}
-                        <div className="absolute w-[35vw] h-[35vw] max-w-[300px] max-h-[300px] border border-[#ff4655]/[0.12] rotate-45" />
+                        <motion.div 
+                            className="absolute w-[35vw] h-[35vw] max-w-[300px] max-h-[300px] border rotate-45"
+                            style={{ borderColor: useTransform(diamondGlowOpacity, v => `rgba(255,70,85,${0.12 + v * 0.4})`), boxShadow: useTransform(diamondGlowOpacity, v => `0 0 ${20 * v}px rgba(255,70,85,${0.2 * v})`) }}
+                        />
                         {/* Core diamond */}
-                        <div className="absolute w-[15vw] h-[15vw] max-w-[130px] max-h-[130px] border border-[#ff4655]/20 rotate-45" />
+                        <motion.div 
+                            className="absolute w-[15vw] h-[15vw] max-w-[130px] max-h-[130px] border rotate-45 bg-[#ff4655]/5"
+                            style={{ 
+                                borderColor: useTransform(diamondGlowOpacity, v => `rgba(255,70,85,${0.2 + v * 0.8})`),
+                                boxShadow: useTransform(diamondGlowOpacity, v => `0 0 ${40 * v}px rgba(255,70,85,${0.4 * v}) inset, 0 0 ${40 * v}px rgba(255,70,85,${0.4 * v})`)
+                            }}
+                        />
                         
                         {/* Cross lines through center */}
                         <div className="absolute w-[90vw] max-w-[750px] h-[1px] bg-gradient-to-r from-transparent via-white/[0.04] to-transparent" />
@@ -243,8 +269,9 @@ const PathSection: React.FC = () => {
                         </div>
 
                         {/* Radial glow from center — the "spike" energy */}
-                        <div className="absolute w-[50vw] h-[50vw] max-w-[400px] max-h-[400px] rounded-full pointer-events-none" style={{
-                            background: 'radial-gradient(circle at center, rgba(255,70,85,0.12) 0%, rgba(255,70,85,0.04) 40%, transparent 70%)'
+                        <motion.div className="absolute w-[50vw] h-[50vw] max-w-[400px] max-h-[400px] rounded-full pointer-events-none" style={{
+                            background: 'radial-gradient(circle at center, rgba(255,70,85,1) 0%, rgba(255,70,85,0.4) 40%, transparent 70%)',
+                            opacity: useTransform(diamondGlowOpacity, v => v * 0.25)
                         }} />
                         
                         {/* Floor glow wash */}
