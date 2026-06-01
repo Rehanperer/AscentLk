@@ -53,7 +53,7 @@ const ModernNavbar: React.FC = () => {
                 <div className="relative max-w-[1400px] mx-auto px-4 py-3 md:px-8 md:py-4 flex justify-between items-center pointer-events-none">
                     
                     {/* Logo Area (Left Island) */}
-                    <div className="relative pointer-events-auto flex items-center px-5 py-2.5 -ml-5 md:px-6 md:py-3 md:-ml-6">
+                    <div className="relative pointer-events-auto flex items-center">
                         <button
                             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                             className="relative group cursor-pointer flex items-center z-10"
@@ -61,7 +61,7 @@ const ModernNavbar: React.FC = () => {
                             <img
                                 src="img/ASCENT2026.svg"
                                 alt="Ascent 2026"
-                                className="h-6 md:h-8 w-auto mix-blend-screen opacity-90 group-hover:opacity-100 transition-opacity drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]"
+                                className={`w-auto mix-blend-screen transition-all duration-500 ease-out ${scrolled ? 'h-5 md:h-6 opacity-100 drop-shadow-[0_0_15px_rgba(255,70,85,0.6)]' : 'h-6 md:h-8 opacity-90 drop-shadow-[0_0_10px_rgba(255,255,255,0.2)] group-hover:opacity-100 group-hover:drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]'}`}
                             />
                         </button>
                     </div>
