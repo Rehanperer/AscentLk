@@ -142,7 +142,7 @@ const ModernNavbar: React.FC = () => {
                     <div className="relative z-10 w-full h-full flex flex-col pt-24 md:pt-32 pb-12 overflow-y-auto overflow-x-hidden scrollbar-hide">
                         
                         {/* Status Header & Instagram (Moved to Top) */}
-                        <div className="flex justify-between items-start pl-[20%] pr-6 md:pl-[20%] md:pr-12 mb-8 md:mb-12">
+                        <div className="flex justify-between items-start pl-[28%] sm:pl-[20%] pr-6 md:pl-[20%] md:pr-12 mb-8 md:mb-12">
                             <div className="flex flex-col">
                                 <span className="font-mono text-[9px] md:text-xs text-[#ff4655] tracking-[0.2em] md:tracking-[0.4em] uppercase font-bold animate-pulse">Live // Sys Online</span>
                                 <span className="font-mono text-[7px] md:text-[9px] text-white/30 tracking-[0.1em] md:tracking-[0.2em] uppercase mt-1">Auth Level: Alpha</span>
@@ -163,7 +163,7 @@ const ModernNavbar: React.FC = () => {
                         </div>
 
                         {/* Massive Typography Navigation Links */}
-                        <div className="flex-1 flex flex-col justify-center pl-[20%] pr-4 md:pl-[20%] md:pr-12 gap-1 md:gap-2 my-auto">
+                        <div className="flex-1 flex flex-col justify-center pl-[32%] sm:pl-[24%] md:pl-[20%] pr-4 md:pl-[20%] md:pr-12 gap-1 md:gap-2 my-auto">
                             {NAV_LINKS.map((link, i) => (
                                 <button
                                     key={link.label}

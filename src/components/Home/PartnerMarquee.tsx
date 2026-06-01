@@ -51,11 +51,11 @@ const BootLogo: React.FC<{
 
     const isAscent = partner.name === "ASCENT";
     const imgClasses = isAscent
-        ? 'max-h-[22px] md:max-h-[30px] max-w-[55px] md:max-w-[75px]'
-        : 'max-h-[34px] md:max-h-[46px] max-w-[85px] md:max-w-[130px]';
+        ? 'max-h-[16px] md:max-h-[30px] max-w-[40px] md:max-w-[75px]'
+        : 'max-h-[24px] md:max-h-[46px] max-w-[52px] md:max-w-[130px]';
 
     return (
-        <div className="flex items-center justify-center shrink-0 h-full relative flex-1 min-w-0">
+        <div className="flex items-center justify-center shrink-0 relative flex-1 p-0 h-[45px] md:h-full min-w-0">
             {phase === 'glitch' && (
                 <span className="font-mono text-[8px] md:text-[11px] text-[#ff4655]/40 tracking-[0.3em] font-bold select-none">
                     {glitchText}
@@ -95,9 +95,9 @@ const BootLogo: React.FC<{
                 </div>
             )}
 
-            {/* Clean separator line */}
+            {/* Clean separator line (Desktop only) */}
             {index < partners.length - 1 && (
-                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-px h-5 bg-white/[0.06]" />
+                <div className="hidden md:block absolute right-0 top-1/2 -translate-y-1/2 w-px h-5 bg-white/[0.06]" />
             )}
         </div>
     );
@@ -138,20 +138,20 @@ const PartnerMarquee: React.FC = () => {
             ref={sectionRef}
             className="relative w-full py-6 md:py-7 bg-[#08080a] border-y border-white/[0.04] overflow-hidden"
         >
-            <div className="relative flex items-center w-full max-w-[1400px] mx-auto z-10">
+            <div className="relative flex flex-col md:flex-row items-center w-full max-w-[1400px] mx-auto z-10 gap-4 md:gap-0">
 
                 {/* Left Label */}
-                <div className="shrink-0 pl-4 md:pl-10 pr-3 md:pr-8 flex items-center gap-2 md:gap-3">
+                <div className="shrink-0 flex items-center gap-2 md:gap-3 w-full md:w-auto justify-center md:justify-start md:pl-10 md:pr-8">
                     <div className="w-1 h-1 bg-[#ff4655] rounded-full shadow-[0_0_4px_#ff4655]" />
-                    <span className="font-mono text-[7px] md:text-[10px] tracking-[0.2em] md:tracking-[0.4em] text-white/30 uppercase whitespace-nowrap font-semibold">
+                    <span className="font-mono text-[9px] md:text-[10px] tracking-[0.3em] md:tracking-[0.4em] text-white/30 uppercase whitespace-nowrap font-semibold">
                         Partners
                     </span>
                     <div className="hidden md:block w-10 h-px bg-gradient-to-r from-white/10 to-transparent" />
                 </div>
 
-                {/* Logo Row */}
-                <div className="relative flex-1 overflow-hidden h-[56px] md:h-[70px]">
-                    <div className="flex items-center h-full w-full">
+                {/* Logo Row/Grid */}
+                <div className="relative flex-1 w-full md:h-[70px]">
+                    <div className="flex flex-nowrap items-center justify-between h-full w-full px-1 md:px-0 gap-0">
                         {partners.map((p, i) => (
                             <BootLogo
                                 key={i}
