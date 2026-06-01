@@ -26,10 +26,10 @@ const AnimatedCounter: React.FC<{ value: number; label: string; prefix?: string;
 
     return (
         <div ref={containerRef} className="flex flex-col items-center justify-center text-center group px-4">
-            <h3 className="font-teko text-[15vw] md:text-[10rem] leading-[0.85] font-bold text-transparent bg-clip-text bg-gradient-to-b from-white to-[#ff4655]/20 drop-shadow-[0_0_40px_rgba(255,70,85,0.3)] whitespace-nowrap">
-                <span className="text-[10vw] md:text-[6rem] text-white/50">{prefix}</span>
+            <h3 className="font-teko text-[15vw] md:text-[11rem] leading-[0.85] font-bold text-white drop-shadow-[0_0_50px_rgba(255,70,85,1)] whitespace-nowrap transform-gpu">
+                <span className="text-[10vw] md:text-[7rem] text-white">{prefix}</span>
                 <span ref={ref}>0</span>
-                <span className="text-[10vw] md:text-[6rem]">{suffix}</span>
+                <span className="text-[10vw] md:text-[7rem] text-[#ff4655]">{suffix}</span>
             </h3>
             <div className="font-mono text-xs md:text-xl tracking-[0.3em] md:tracking-[0.5em] text-[#ff4655] uppercase mt-4" style={{ opacity: isInView ? 1 : 0, transition: 'opacity 1s ease' }}>
                 <ScrambleText text={label} duration={60} />
