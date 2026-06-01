@@ -11,11 +11,19 @@ import policyPdf from '../../assets/ASCENT_2026_Ticketing_and_Refund_Policy.pdf'
 
 const RefundPolicy: React.FC = () => {
     return (
-        <div className="min-h-screen bg-[#000000] text-white/80 font-inter selection:bg-[#ff4655] selection:text-white">
+        <div className="min-h-screen bg-[#08080a] text-slate-200 font-inter selection:bg-[#ff4655] selection:text-white">
             <Navbar onRegister={() => { }} onNavigate={() => { }} />
 
-            <div className="fixed inset-0 z-0 pointer-events-none">
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#ff4655]/5 rounded-full blur-[150px]" />
+            <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden"
+                 style={{ background: `
+                    radial-gradient(ellipse 80% 50% at 15% 10%, rgba(100,200,255,0.12) 0%, transparent 60%),
+                    radial-gradient(ellipse 60% 40% at 85% 85%, rgba(255,70,85,0.10) 0%, transparent 50%),
+                    radial-gradient(ellipse 50% 50% at 50% 0%, rgba(100,200,255,0.06) 0%, transparent 50%),
+                    radial-gradient(ellipse 70% 50% at 20% 100%, rgba(100,200,255,0.06) 0%, transparent 50%),
+                    radial-gradient(ellipse 60% 60% at 80% 10%, rgba(255,70,85,0.06) 0%, transparent 50%),
+                    linear-gradient(180deg, #040814 0%, #08080f 100%)
+                 `}}
+            >
                 <div className="absolute inset-0 bg-grid opacity-5" />
             </div>
 
