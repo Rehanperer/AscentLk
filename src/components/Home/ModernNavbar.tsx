@@ -52,11 +52,8 @@ const ModernNavbar: React.FC = () => {
             >
                 <div className="relative max-w-[1400px] mx-auto px-4 py-3 md:px-8 md:py-4 flex justify-between items-center pointer-events-none">
                     
-                    {/* Logo Area (Left Island with soft glass) */}
+                    {/* Logo Area (Left Island) */}
                     <div className="relative pointer-events-auto flex items-center px-5 py-2.5 -ml-5 md:px-6 md:py-3 md:-ml-6">
-                        {/* Soft Glass Island Backdrop */}
-                        <div className={`absolute inset-0 bg-gradient-to-r from-[#040814]/60 to-[#040814]/30 backdrop-blur-md border border-white/10 rounded-full transition-all duration-500 ${scrolled ? 'opacity-100 shadow-[0_4px_25px_rgba(0,0,0,0.4)]' : 'opacity-0 scale-95 pointer-events-none'}`} />
-                        
                         <button
                             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                             className="relative group cursor-pointer flex items-center z-10"
