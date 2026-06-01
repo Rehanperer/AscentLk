@@ -52,10 +52,8 @@ const ModernNavbar: React.FC = () => {
             >
                 <div className="relative max-w-[1400px] mx-auto px-4 py-3 md:px-8 md:py-4 flex justify-between items-center pointer-events-none">
                     
-                    {/* Logo Area (Left Island) */}
+                    {/* Logo Area (Left Island without blur) */}
                     <div className="relative pointer-events-auto flex items-center px-5 py-3 -ml-5 md:px-6 md:py-3 md:-ml-6">
-                        {/* Glass Island Backdrop */}
-                        <div className={`absolute inset-0 bg-[#040814]/60 backdrop-blur-md border border-white/10 rounded-full transition-all duration-500 ${scrolled ? 'opacity-100 shadow-[0_4px_30px_rgba(0,0,0,0.5)]' : 'opacity-0 scale-95 pointer-events-none'}`} />
                         
                         <button
                             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
@@ -69,8 +67,10 @@ const ModernNavbar: React.FC = () => {
                         </button>
                     </div>
 
-                    {/* Right Actions (Right Island without blur) */}
+                    {/* Right Actions (Right Island) */}
                     <div className="relative pointer-events-auto flex items-center gap-4 md:gap-6 px-4 py-2 -mr-4 md:px-5 md:py-2 md:-mr-5">
+                        {/* Glass Island Backdrop */}
+                        <div className={`absolute inset-0 bg-[#040814]/60 backdrop-blur-md border border-white/10 rounded-full transition-all duration-500 ${scrolled ? 'opacity-100 shadow-[0_4px_30px_rgba(0,0,0,0.5)]' : 'opacity-0 scale-95 pointer-events-none'}`} />
 
                         {/* Instagram Button */}
                         <a
