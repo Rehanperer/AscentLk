@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, useScroll, useTransform, useMotionTemplate, useInView } from 'framer-motion';
 
 /**
- * PartnerDecryptionWall (ASCII Hacker Effect)
- * Slowly decrypts random hacker code into partner logos via a sweeping laser as you scroll.
+ * PartnerStrip — Clean, premium single-row partner display.
+ * 1. Sequential boot decrypt reveal on scroll
+ * 2. After reveal: stationary logos with a slow-moving light shimmer across the strip
  */
 
-// ── PARTNER LOGOS ──
 const partners = [
     { name: "Cinnamon Life", logo: "/Untitled%20design%20(3)/1.png" },
     { name: "Red Bull", logo: "/Untitled%20design%20(3)/2.png" },
@@ -17,179 +16,180 @@ const partners = [
     { name: "ASCENT", logo: "/img/SVG.svg" },
 ];
 
-const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?";
+const GLITCH_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
 
-const RandomAscii: React.FC = () => {
-    const [text, setText] = useState("");
-    const ref = useRef(null);
-    const isInView = useInView(ref, { margin: "200px" }); // Trigger earlier so it looks seamless
-    
+const BootLogo: React.FC<{
+    partner: typeof partners[0];
+    shouldDecrypt: boolean;
+    index: number;
+    allRevealed: boolean;
+}> = React.memo(({ partner, shouldDecrypt, index, allRevealed }) => {
+    const [phase, setPhase] = useState<'glitch' | 'flash' | 'revealed'>('glitch');
+    const [glitchText, setGlitchText] = useState('');
+    const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
     useEffect(() => {
-        let initialText = "";
-        for (let i = 0; i < 8; i++) initialText += CHARS[Math.floor(Math.random() * CHARS.length)];
-        setText(initialText);
+        let t = '';
+        for (let i = 0; i < 5; i++) t += GLITCH_CHARS[Math.floor(Math.random() * GLITCH_CHARS.length)];
+        setGlitchText(t);
+        if (phase !== 'glitch') return;
+        intervalRef.current = setInterval(() => {
+            let newT = '';
+            for (let i = 0; i < 5; i++) newT += GLITCH_CHARS[Math.floor(Math.random() * GLITCH_CHARS.length)];
+            setGlitchText(newT);
+        }, 80);
+        return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
+    }, [phase]);
 
-        if (!isInView) return; // Pause calculation when out of view
+    useEffect(() => {
+        if (!shouldDecrypt || phase !== 'glitch') return;
+        if (intervalRef.current) clearInterval(intervalRef.current);
+        setPhase('flash');
+        const t = setTimeout(() => setPhase('revealed'), 200);
+        return () => clearTimeout(t);
+    }, [shouldDecrypt]);
 
-        const interval = setInterval(() => {
-            let newText = "";
-            for (let i = 0; i < 8; i++) {
-                newText += CHARS[Math.floor(Math.random() * CHARS.length)];
-            }
-            setText(newText);
-        }, 150); // Slower interval (150ms) to guarantee smooth scrolling on mobile
-        return () => clearInterval(interval);
-    }, [isInView]);
-
-    return <span ref={ref} className="font-mono text-[10px] sm:text-xs md:text-sm text-[#ff4655]/40 tracking-[0.2em] font-bold">{text}</span>;
-};
-
-const LogoCell: React.FC<{ partner: typeof partners[0], isDecrypted: boolean }> = ({ partner, isDecrypted }) => {
     const isAscent = partner.name === "ASCENT";
-    
+    const imgClasses = isAscent
+        ? 'max-h-[22px] md:max-h-[30px] max-w-[55px] md:max-w-[75px]'
+        : 'max-h-[34px] md:max-h-[46px] max-w-[85px] md:max-w-[130px]';
+
     return (
-        <div className="h-16 md:h-24 flex items-center justify-center w-[40%] sm:w-[30%] md:w-1/4 relative group cursor-pointer shrink-0">
-            {isDecrypted ? (
-                <div className="relative flex flex-col items-center justify-center w-full h-full">
-                    <img 
-                        src={partner.logo} 
-                        alt={partner.name} 
-                        className={`object-contain opacity-80 md:group-hover:scale-110 group-hover:opacity-100 transition-all duration-300 z-10 ${
-                            isAscent 
-                                ? "max-h-[30px] sm:max-h-[45px] md:max-h-[55px] max-w-[90px] sm:max-w-[120px] md:max-w-[140px]" 
-                                : "max-h-[50px] sm:max-h-[70px] md:max-h-[85px] max-w-[140px] sm:max-w-[180px] md:max-w-[220px]"
-                        }`}
+        <div className="flex items-center justify-center shrink-0 h-full relative flex-1 min-w-0">
+            {phase === 'glitch' && (
+                <span className="font-mono text-[8px] md:text-[11px] text-[#ff4655]/40 tracking-[0.3em] font-bold select-none">
+                    {glitchText}
+                </span>
+            )}
+
+            {phase === 'flash' && (
+                <div className="flex items-center justify-center w-full h-full relative">
+                    <div className="absolute inset-0 bg-white/[0.06] rounded-sm"
+                        style={{ animation: 'partner-flash 0.2s ease-out forwards' }}
+                    />
+                    <img src={partner.logo} alt={partner.name}
+                        className={`object-contain relative z-10 brightness-200 ${imgClasses}`}
+                    />
+                </div>
+            )}
+
+            {phase === 'revealed' && (
+                <div
+                    className="flex items-center justify-center w-full h-full"
+                    style={{ animation: 'partner-pop 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards' }}
+                >
+                    <img
+                        src={partner.logo}
+                        alt={partner.name}
+                        className={`object-contain opacity-[0.85] brightness-[1.15] ${imgClasses}`}
+                        loading="lazy"
                         onError={(e) => {
-                            const target = e.currentTarget;
-                            target.style.display = 'none';
-                            target.nextElementSibling?.classList.remove('hidden');
+                            e.currentTarget.style.display = 'none';
+                            if (e.currentTarget.nextElementSibling)
+                                (e.currentTarget.nextElementSibling as HTMLElement).classList.remove('hidden');
                         }}
                     />
-                    <span className={`hidden font-mono text-[9px] md:text-xs tracking-widest text-white/50 uppercase whitespace-nowrap z-10 md:group-hover:text-white transition-colors`}>
+                    <span className="hidden font-mono text-[9px] tracking-widest text-white/50 uppercase whitespace-nowrap">
                         {partner.name}
                     </span>
-                    
-                    {/* Target lock on hover (Desktop only to save mobile perf) */}
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] md:w-[130%] h-[160%] opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-0 hidden md:block">
-                        <div className="absolute top-0 left-0 w-2 h-2 border-l border-t border-[#ff4655]" />
-                        <div className="absolute top-0 right-0 w-2 h-2 border-r border-t border-[#ff4655]" />
-                        <div className="absolute bottom-0 left-0 w-2 h-2 border-l border-b border-[#ff4655]" />
-                        <div className="absolute bottom-0 right-0 w-2 h-2 border-r border-b border-[#ff4655]" />
-                        <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 font-mono text-[7px] text-[#ff4655] tracking-widest whitespace-nowrap">
-                            AUTH_{partner.name.replace(/\s+/g, '').toUpperCase().substring(0,6)}
-                        </div>
-                    </div>
                 </div>
-            ) : (
-                <RandomAscii />
+            )}
+
+            {/* Clean separator line */}
+            {index < partners.length - 1 && (
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-px h-5 bg-white/[0.06]" />
             )}
         </div>
     );
-};
-
-const PartnerGrid: React.FC<{ isDecrypted: boolean }> = ({ isDecrypted }) => {
-    const topRow = partners.slice(0, 4);
-    const bottomRow = partners.slice(4);
-
-    return (
-        <div className="relative w-full flex flex-col items-center gap-2 md:gap-6">
-            {/* Top Row (4 logos) */}
-            <div className="flex flex-wrap md:flex-nowrap justify-center gap-4 md:gap-0 w-full z-10">
-                {topRow.map((partner, i) => (
-                    <LogoCell key={i} partner={partner} isDecrypted={isDecrypted} />
-                ))}
-            </div>
-            
-            {/* Bottom Row (3 logos) */}
-            <div className="flex flex-wrap md:flex-nowrap justify-center gap-4 md:gap-0 w-full z-10">
-                {bottomRow.map((partner, i) => (
-                    <LogoCell key={i} partner={partner} isDecrypted={isDecrypted} />
-                ))}
-            </div>
-        </div>
-    );
-};
+});
 
 const PartnerMarquee: React.FC = () => {
-    const containerRef = useRef<HTMLElement>(null);
-    
-    // Track scroll over this specific section. 
-    // Laser starts sweeping when the top of the section reaches 75% of the viewport (just entered).
-    // Laser finishes sweeping when the bottom reaches 40% of the viewport.
-    const { scrollYProgress } = useScroll({
-        target: containerRef,
-        offset: ["start 90%", "end 40%"]
-    });
+    const sectionRef = useRef<HTMLElement>(null);
+    const [isVisible, setIsVisible] = useState(false);
+    const [decryptedIndices, setDecryptedIndices] = useState<Set<number>>(new Set());
+    const [allRevealed, setAllRevealed] = useState(false);
 
-    // We use motion templates to map scroll progress to CSS clip-path and top coordinates
-    const laserPercent = useTransform(scrollYProgress, [0, 1], [0, 100]);
-    
+    useEffect(() => {
+        const el = sectionRef.current;
+        if (!el) return;
+        const observer = new IntersectionObserver(
+            ([entry]) => { if (entry.isIntersecting && !isVisible) setIsVisible(true); },
+            { threshold: 0.4 }
+        );
+        observer.observe(el);
+        return () => observer.disconnect();
+    }, [isVisible]);
+
+    useEffect(() => {
+        if (!isVisible) return;
+        const timers: ReturnType<typeof setTimeout>[] = [];
+        partners.forEach((_, i) => {
+            const timer = setTimeout(() => {
+                setDecryptedIndices(prev => { const next = new Set(prev); next.add(i); return next; });
+                if (i === partners.length - 1) setTimeout(() => setAllRevealed(true), 600);
+            }, 500 + i * 350);
+            timers.push(timer);
+        });
+        return () => timers.forEach(t => clearTimeout(t));
+    }, [isVisible]);
+
     return (
-        <section 
-            ref={containerRef}
-            className="relative w-full py-12 md:py-20 bg-[#08080a] flex flex-col items-center justify-center border-y border-white/[0.02] overflow-hidden"
+        <section
+            ref={sectionRef}
+            className="relative w-full py-6 md:py-7 bg-[#08080a] border-y border-white/[0.04] overflow-hidden"
         >
-            {/* Massive Header Text (Moved to absolute top to prevent obscuring logos) */}
-            <div className="absolute top-0 left-0 w-full flex justify-center pointer-events-none z-0">
-                <span className="font-teko text-[20vw] md:text-[15vw] font-bold text-white/[0.02] uppercase tracking-widest leading-none select-none whitespace-nowrap mt-4 md:mt-2">
-                    PARTNERS
-                </span>
-            </div>
+            <div className="relative flex items-center w-full max-w-[1400px] mx-auto z-10">
 
-            {/* Header Badge */}
-            <div className="absolute top-6 md:top-8 left-4 md:left-12 flex items-center gap-3 z-50">
-                <div className="w-1.5 h-1.5 bg-[#ff4655] animate-pulse shadow-[0_0_8px_rgba(255,70,85,0.8)]" />
-                <span className="font-mono text-[8px] md:text-[10px] tracking-[0.4em] md:tracking-[0.5em] text-[#ff4655]/60 uppercase font-bold">
-                    Decryption Sequence <span className="hidden sm:inline">// Initiated</span>
-                </span>
-            </div>
-
-            {/* Grid Container */}
-            <div className="relative w-full max-w-6xl mx-auto px-4 mt-12 md:mt-16 z-10">
-                
-                {/* 0. Invisible Placeholder (Dictates the physical height of the container perfectly) */}
-                <div className="flex items-center justify-center w-full pointer-events-none opacity-0 py-6 md:py-8">
-                    <PartnerGrid isDecrypted={false} />
+                {/* Left Label */}
+                <div className="shrink-0 pl-4 md:pl-10 pr-3 md:pr-8 flex items-center gap-2 md:gap-3">
+                    <div className="w-1 h-1 bg-[#ff4655] rounded-full shadow-[0_0_4px_#ff4655]" />
+                    <span className="font-mono text-[7px] md:text-[10px] tracking-[0.2em] md:tracking-[0.4em] text-white/30 uppercase whitespace-nowrap font-semibold">
+                        Partners
+                    </span>
+                    <div className="hidden md:block w-10 h-px bg-gradient-to-r from-white/10 to-transparent" />
                 </div>
-                
-                {/* 1. Encrypted Background Layer (ASCII Chaos) - Clips the TOP as laser moves down */}
-                <motion.div 
-                    className="absolute inset-0 flex items-center justify-center w-full pointer-events-none opacity-50 py-6 md:py-8"
-                    style={{ clipPath: useMotionTemplate`polygon(0 ${laserPercent}%, 100% ${laserPercent}%, 100% 100%, 0 100%)` }}
-                >
-                    <PartnerGrid isDecrypted={false} />
-                </motion.div>
 
-                {/* 2. Decrypted Foreground Layer (Logos) - Clips the BOTTOM as laser moves down */}
-                <motion.div 
-                    className="absolute inset-0 flex items-center justify-center pointer-events-auto py-6 md:py-8"
-                    style={{ clipPath: useMotionTemplate`polygon(0 0, 100% 0, 100% ${laserPercent}%, 0 ${laserPercent}%)` }}
-                >
-                    <PartnerGrid isDecrypted={true} />
-                </motion.div>
+                {/* Logo Row */}
+                <div className="relative flex-1 overflow-hidden h-[56px] md:h-[70px]">
+                    <div className="flex items-center h-full w-full">
+                        {partners.map((p, i) => (
+                            <BootLogo
+                                key={i}
+                                partner={p}
+                                shouldDecrypt={decryptedIndices.has(i)}
+                                index={i}
+                                allRevealed={allRevealed}
+                            />
+                        ))}
+                    </div>
 
-                {/* 3. The Sweeping Laser */}
-                <motion.div 
-                    className="absolute left-0 right-0 h-[2px] bg-[#ff4655] shadow-[0_0_20px_#ff4655,0_0_40px_#ff4655] z-30 pointer-events-none"
-                    style={{ top: useMotionTemplate`${laserPercent}%` }}
-                >
-                    {/* Glowing ends of the laser */}
-                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-4 h-1 bg-white rounded-full shadow-[0_0_10px_white]" />
-                    <div className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-1 bg-white rounded-full shadow-[0_0_10px_white]" />
-                </motion.div>
-                
+                    {/* Slow shimmer light that glides across the logos */}
+                    {allRevealed && (
+                        <div className="absolute inset-0 pointer-events-none partner-shimmer overflow-hidden">
+                            <div
+                                className="absolute top-0 bottom-0 w-[250px] md:w-[400px]"
+                                style={{
+                                    background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.04) 40%, rgba(255,255,255,0.07) 50%, rgba(255,255,255,0.04) 60%, transparent 100%)',
+                                    animation: 'partner-shimmer-move 8s ease-in-out infinite',
+                                }}
+                            />
+                        </div>
+                    )}
+
+                    {/* Boot progress bar */}
+                    {!allRevealed && isVisible && (
+                        <div className="absolute bottom-0 left-0 h-[1px] bg-[#ff4655]/50 transition-all duration-300 ease-out shadow-[0_0_3px_#ff4655]"
+                            style={{ width: `${(decryptedIndices.size / partners.length) * 100}%` }}
+                        />
+                    )}
+                </div>
             </div>
 
-            {/* Background Details (Subtle grid lines) */}
-            <div className="absolute inset-0 opacity-[0.02] pointer-events-none z-0 flex justify-evenly">
-                <div className="w-px h-full bg-white" />
-                <div className="w-px h-full bg-white" />
-                <div className="w-px h-full bg-white" />
-                <div className="w-px h-full bg-white" />
-            </div>
+            {/* Edge accents */}
+            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/[0.03] to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/[0.03] to-transparent" />
         </section>
     );
 };
 
 export default PartnerMarquee;
-
