@@ -120,6 +120,40 @@ const PhaseBlock: React.FC<{
     );
 };
 
+const AnimatedDiamond: React.FC<{ 
+    sizeClasses: string; 
+    baseColor: string; 
+    progress: any; 
+    glowMultiplier: number;
+    thickness?: string;
+    hasCoreGlow?: boolean;
+}> = ({ sizeClasses, baseColor, progress, glowMultiplier, thickness = "1px", hasCoreGlow = false }) => {
+    return (
+        <div className={`absolute ${sizeClasses} rotate-45`}>
+            {/* Base faint border and optional core glow */}
+            <motion.div 
+                className={`absolute inset-0 border ${hasCoreGlow ? 'bg-[#ff4655]/5' : ''}`} 
+                style={{ 
+                    borderColor: baseColor,
+                    ...(hasCoreGlow && {
+                        boxShadow: useTransform(progress, (v: any) => `0 0 ${40 * v}px rgba(255,70,85,${0.4 * v}) inset, 0 0 ${40 * v}px rgba(255,70,85,${0.4 * v})`)
+                    })
+                }} 
+            />
+            
+            {/* Animated glowing borders drawing from the center of each edge */}
+            <motion.div className="absolute top-0 left-0 w-full bg-[#ff4655] origin-center z-10" 
+                style={{ height: thickness, scaleX: progress, opacity: progress, boxShadow: useTransform(progress, (v: any) => `0 0 ${15 * glowMultiplier * v}px rgba(255,70,85,${0.8 * v})`) }} />
+            <motion.div className="absolute top-0 right-0 h-full bg-[#ff4655] origin-center z-10" 
+                style={{ width: thickness, scaleY: progress, opacity: progress, boxShadow: useTransform(progress, (v: any) => `0 0 ${15 * glowMultiplier * v}px rgba(255,70,85,${0.8 * v})`) }} />
+            <motion.div className="absolute bottom-0 left-0 w-full bg-[#ff4655] origin-center z-10" 
+                style={{ height: thickness, scaleX: progress, opacity: progress, boxShadow: useTransform(progress, (v: any) => `0 0 ${15 * glowMultiplier * v}px rgba(255,70,85,${0.8 * v})`) }} />
+            <motion.div className="absolute top-0 left-0 h-full bg-[#ff4655] origin-center z-10" 
+                style={{ width: thickness, scaleY: progress, opacity: progress, boxShadow: useTransform(progress, (v: any) => `0 0 ${15 * glowMultiplier * v}px rgba(255,70,85,${0.8 * v})`) }} />
+        </div>
+    );
+};
+
 const PathSection: React.FC = () => {
     const containerRef = useRef<HTMLDivElement>(null);
     const { scrollYProgress } = useScroll({
@@ -254,28 +288,13 @@ const PathSection: React.FC = () => {
                     {/* Arena floor grid pattern */}
                     <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
                         {/* Outer diamond */}
-                        <motion.div 
-                            className="absolute w-[85vw] h-[85vw] max-w-[700px] max-h-[700px] border rotate-45 transition-colors"
-                            style={{ borderColor: useTransform(diamondGlowOpacity, v => `rgba(255,255,255,${0.03 + v * 0.1})`) }}
-                        />
+                        <AnimatedDiamond sizeClasses="w-[85vw] h-[85vw] max-w-[700px] max-h-[700px]" baseColor="rgba(255,255,255,0.03)" progress={diamondGlowOpacity} glowMultiplier={0.2} thickness="1px" />
                         {/* Mid diamond */}
-                        <motion.div 
-                            className="absolute w-[60vw] h-[60vw] max-w-[500px] max-h-[500px] border rotate-45"
-                            style={{ borderColor: useTransform(diamondGlowOpacity, v => `rgba(255,70,85,${0.06 + v * 0.2})`) }}
-                        />
+                        <AnimatedDiamond sizeClasses="w-[60vw] h-[60vw] max-w-[500px] max-h-[500px]" baseColor="rgba(255,70,85,0.06)" progress={diamondGlowOpacity} glowMultiplier={0.5} thickness="2px" />
                         {/* Inner diamond */}
-                        <motion.div 
-                            className="absolute w-[35vw] h-[35vw] max-w-[300px] max-h-[300px] border rotate-45"
-                            style={{ borderColor: useTransform(diamondGlowOpacity, v => `rgba(255,70,85,${0.12 + v * 0.4})`), boxShadow: useTransform(diamondGlowOpacity, v => `0 0 ${20 * v}px rgba(255,70,85,${0.2 * v})`) }}
-                        />
+                        <AnimatedDiamond sizeClasses="w-[35vw] h-[35vw] max-w-[300px] max-h-[300px]" baseColor="rgba(255,70,85,0.12)" progress={diamondGlowOpacity} glowMultiplier={1} thickness="2px" />
                         {/* Core diamond */}
-                        <motion.div 
-                            className="absolute w-[15vw] h-[15vw] max-w-[130px] max-h-[130px] border rotate-45 bg-[#ff4655]/5"
-                            style={{ 
-                                borderColor: useTransform(diamondGlowOpacity, v => `rgba(255,70,85,${0.2 + v * 0.8})`),
-                                boxShadow: useTransform(diamondGlowOpacity, v => `0 0 ${40 * v}px rgba(255,70,85,${0.4 * v}) inset, 0 0 ${40 * v}px rgba(255,70,85,${0.4 * v})`)
-                            }}
-                        />
+                        <AnimatedDiamond sizeClasses="w-[15vw] h-[15vw] max-w-[130px] max-h-[130px]" baseColor="rgba(255,70,85,0.2)" progress={diamondGlowOpacity} glowMultiplier={2} thickness="3px" hasCoreGlow />
                         
                         {/* Cross lines through center */}
                         <motion.div 
