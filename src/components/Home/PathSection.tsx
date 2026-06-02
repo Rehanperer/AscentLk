@@ -246,42 +246,55 @@ const PathSection: React.FC = () => {
                 </div>
 
                 {/* ═══════════════════════════════════════════════
+                    CONNECTION GAP (Replaces mt-32 md:mt-48 on Arena)
+                ═══════════════════════════════════════════════ */}
+                <div className="relative w-full h-[8rem] md:h-[12rem] pointer-events-none z-0">
+                    {/* Desktop: Continue center line through gap */}
+                    <div className="hidden md:block absolute top-0 bottom-0 left-1/2 w-[2px] bg-white/5 -translate-x-1/2">
+                        <motion.div 
+                            className="absolute top-0 left-0 w-full h-full bg-[#ff4655] shadow-[0_0_15px_#ff4655] origin-top"
+                            style={{ scaleY: useTransform(scrollYProgress, [0.7, 0.75], [0, 1]) }}
+                        />
+                    </div>
+                    
+                    {/* Mobile: Continue left line through gap */}
+                    <div className="md:hidden absolute top-0 bottom-0 left-[20px] w-[2px] bg-white/5 -translate-x-1/2">
+                        <motion.div 
+                            className="absolute top-0 left-0 w-full h-full bg-[#ff4655] shadow-[0_0_15px_#ff4655] origin-top"
+                            style={{ scaleY: useTransform(scrollYProgress, [0.7, 0.74], [0, 1]) }}
+                        />
+                    </div>
+                </div>
+
+                {/* ═══════════════════════════════════════════════
                     CONCEPT A — "THE ARENA FLOOR"
                     Top-down spike site. Geometric grid. Planted prize.
                 ═══════════════════════════════════════════════ */}
-                <div className="mt-32 md:mt-48 mb-8 relative w-full min-h-[80vh] md:min-h-[90vh] flex items-center justify-center overflow-hidden">
+                <div className="mb-8 relative w-full min-h-[80vh] md:min-h-[90vh] flex items-center justify-center overflow-hidden">
                     
-                    {/* --- ROUTING & CONNECTION LINES --- */}
+                    {/* --- ROUTING & CONNECTION LINES (INSIDE ARENA) --- */}
                     
-                    {/* Desktop: Straight line down from timeline to diamond center */}
-                    <div className="hidden md:block absolute -top-[12rem] left-1/2 bottom-1/2 w-[2px] bg-white/5 -translate-x-1/2 pointer-events-none z-0">
+                    {/* Desktop: Continue center line down to diamond */}
+                    <div className="hidden md:block absolute top-0 left-1/2 bottom-1/2 w-[2px] bg-white/5 -translate-x-1/2 pointer-events-none z-0">
                         <motion.div 
                             className="absolute top-0 left-0 w-full h-full bg-[#ff4655] shadow-[0_0_15px_#ff4655] origin-top"
-                            style={{ scaleY: useTransform(scrollYProgress, [0.7, 0.85], [0, 1]) }}
+                            style={{ scaleY: useTransform(scrollYProgress, [0.75, 0.85], [0, 1]) }}
                         />
                     </div>
 
-                    {/* Mobile: Drop down left margin */}
-                    <div className="md:hidden absolute -top-[8rem] left-[20px] h-[4rem] w-[2px] bg-white/5 -translate-x-1/2 pointer-events-none z-0">
-                        <motion.div 
-                            className="absolute top-0 left-0 w-full h-full bg-[#ff4655] shadow-[0_0_15px_#ff4655] origin-top"
-                            style={{ scaleY: useTransform(scrollYProgress, [0.7, 0.72], [0, 1]) }}
-                        />
-                    </div>
-                    
-                    {/* Mobile: Horizontal bridge to center */}
-                    <div className="md:hidden absolute -top-[4rem] left-[20px] w-[calc(50%-20px)] h-[2px] bg-white/5 pointer-events-none z-0">
+                    {/* Mobile: Horizontal bridge from left to center */}
+                    <div className="md:hidden absolute top-0 left-[20px] w-[calc(50%-20px)] h-[2px] bg-white/5 pointer-events-none z-0">
                         <motion.div 
                             className="absolute top-0 left-0 w-full h-full bg-[#ff4655] shadow-[0_0_15px_#ff4655] origin-left"
-                            style={{ scaleX: useTransform(scrollYProgress, [0.72, 0.74], [0, 1]) }}
+                            style={{ scaleX: useTransform(scrollYProgress, [0.74, 0.77], [0, 1]) }}
                         />
                     </div>
 
-                    {/* Mobile: Drop into diamond center */}
-                    <div className="md:hidden absolute -top-[4rem] left-1/2 bottom-1/2 w-[2px] bg-white/5 -translate-x-1/2 pointer-events-none z-0">
+                    {/* Mobile: Drop from bridge into diamond center */}
+                    <div className="md:hidden absolute top-0 left-1/2 bottom-1/2 w-[2px] bg-white/5 -translate-x-1/2 pointer-events-none z-0">
                         <motion.div 
                             className="absolute top-0 left-0 w-full h-full bg-[#ff4655] shadow-[0_0_15px_#ff4655] origin-top"
-                            style={{ scaleY: useTransform(scrollYProgress, [0.74, 0.85], [0, 1]) }}
+                            style={{ scaleY: useTransform(scrollYProgress, [0.77, 0.85], [0, 1]) }}
                         />
                     </div>
 
