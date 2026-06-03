@@ -5,10 +5,16 @@ import { Link } from 'react-router-dom';
 import ModernNavbar from '../../components/Home/ModernNavbar';
 import SectionReveal from '../../components/Effects/SectionReveal';
 import Footer from '../../components/Footer';
+import SEO from '../../components/SEO';
 
 const PrivacyPolicy: React.FC = () => {
     return (
         <div className="min-h-screen bg-[#08080a] text-slate-200 font-inter selection:bg-[#ff4655] selection:text-white">
+            <SEO 
+                title="Privacy Policy | ASCENT 2026" 
+                description="Our commitment to protecting the privacy and security of our community, players, and attendees at ASCENT 2026." 
+                path="/privacy-policy"
+            />
             <ModernNavbar />
 
             <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden"

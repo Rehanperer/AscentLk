@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import ModernNavbar from '../../components/Home/ModernNavbar';
 import SectionReveal from '../../components/Effects/SectionReveal';
 import Footer from '../../components/Footer';
+import SEO from '../../components/SEO';
 
 // @ts-ignore
 import policyPdf from '../../assets/ASCENT_2026_Ticketing_and_Refund_Policy.pdf';
@@ -12,6 +13,11 @@ import policyPdf from '../../assets/ASCENT_2026_Ticketing_and_Refund_Policy.pdf'
 const RefundPolicy: React.FC = () => {
     return (
         <div className="min-h-screen bg-[#08080a] text-slate-200 font-inter selection:bg-[#ff4655] selection:text-white">
+            <SEO 
+                title="Refund Policy | ASCENT 2026" 
+                description="Read our ticketing cancellation and refund policy for the ASCENT 2026 esports tournament." 
+                path="/refund-policy"
+            />
             <ModernNavbar />
 
             <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden"

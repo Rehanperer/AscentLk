@@ -4,6 +4,7 @@ import { Shield, ChevronLeft, Users, User, Phone, CheckCircle2, ChevronRight, Al
 import { Link, useNavigate } from 'react-router-dom';
 import ScrambleText from '../ScrambleText';
 import { supabase } from '../../lib/supabase';
+import SEO from '../SEO';
 
 const InputField = ({ label, name, value, onChange, placeholder, icon: Icon, type = "text", required = false, error = "" }: any) => (
     <div className="relative group mb-6">
@@ -250,6 +251,11 @@ const RegistrationPage: React.FC = () => {
             transition={{ duration: 0.8 }}
             className="min-h-screen relative overflow-hidden font-inter selection:bg-[#ff4655] selection:text-white pb-24 bg-[#08080a]"
         >
+            <SEO 
+                title="Register Your Team | ASCENT 2026" 
+                description="Register your 5v5 Valorant team for the ASCENT 2026 esports tournament. Join the gauntlet now." 
+                path="/register"
+            />
             {/* Cinematic Background — all pure CSS, zero JS animation */}
             <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden"
                  style={{ background: `

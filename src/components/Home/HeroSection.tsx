@@ -56,6 +56,7 @@ const HeroSection: React.FC = () => {
             ref={containerRef}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
+            aria-label="ASCENT 2026 Hero — Sri Lanka's biggest student-led esports tournament"
             className="relative w-full min-h-[85vh] md:min-h-screen flex items-center justify-center overflow-hidden bg-[#08080a]"
             style={{ perspective: 1500 }}
         >
@@ -70,6 +71,8 @@ const HeroSection: React.FC = () => {
                     loop
                     muted
                     playsInline
+                    poster="/img/ASCENT2026-banner.jpg"
+                    aria-hidden="true"
                     className="w-full h-full object-cover opacity-80"
                 >
                     <source src="/ascent_vid.mp4" type="video/mp4" />

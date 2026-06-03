@@ -3,6 +3,7 @@ import { Mail, User, Phone, Terminal, ChevronRight, HelpCircle } from 'lucide-re
 import { motion } from 'framer-motion';
 import ModernNavbar from '../components/Home/ModernNavbar';
 import Footer from '../components/Footer';
+import SEO from '../components/SEO';
 
 const SupportPage: React.FC = () => {
     useEffect(() => {
@@ -32,6 +33,11 @@ const SupportPage: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-[#040814] text-white flex flex-col relative overflow-hidden">
+            <SEO 
+                title="Support | ASCENT 2026" 
+                description="Contact the ASCENT 2026 command center for support, registration issues, or general inquiries." 
+                path="/support"
+            />
             {/* Background Effects */}
             <div className="absolute inset-0 bg-[url('/img/grid.svg')] opacity-[0.05] pointer-events-none mix-blend-overlay" />
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-[#ff4655]/10 rounded-full blur-[120px] pointer-events-none z-0" />

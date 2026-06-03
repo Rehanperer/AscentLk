@@ -2,6 +2,9 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
 import tailwindcss from '@tailwindcss/vite';
 import { VitePWA } from 'vite-plugin-pwa';
+import prerender from '@prerenderer/rollup-plugin';
+import PuppeteerRenderer from '@prerenderer/renderer-puppeteer';
+import path from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -9,6 +12,29 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
+    prerender({
+      routes: [
+        '/',
+        '/register',
+        '/tickets',
+        '/rulebook',
+        '/support',
+        '/refund-policy',
+        '/privacy-policy',
+        '/terms-of-service'
+      ],
+      renderer: new PuppeteerRenderer({
+        maxConcurrentRoutes: 1,
+        renderAfterTime: 500,
+        executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+      }),
+      postProcess (renderedRoute) {
+        renderedRoute.html = renderedRoute.html.replace(
+          /(<script[^>]*id="__VITE_PRELOAD__"[^>]*>)[^<]*(<\/script>)/,
+          ''
+        );
+      }
+    }),
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],

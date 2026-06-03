@@ -5,10 +5,16 @@ import { Link } from 'react-router-dom';
 import ModernNavbar from '../../components/Home/ModernNavbar';
 import SectionReveal from '../../components/Effects/SectionReveal';
 import Footer from '../../components/Footer';
+import SEO from '../../components/SEO';
 
 const TermsOfService: React.FC = () => {
     return (
         <div className="min-h-screen bg-[#08080a] text-slate-200 font-inter selection:bg-[#ff4655] selection:text-white">
+            <SEO 
+                title="Terms & Conditions | ASCENT 2026" 
+                description="Terms and conditions governing the use of the ASCENT 2026 platform, ticket purchases, and live event attendance." 
+                path="/terms-of-service"
+            />
             <ModernNavbar />
 
             <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden"

@@ -13,7 +13,7 @@ import PartnerMarquee from './components/Home/PartnerMarquee';
 import CustomCursor from './components/CustomCursor';
 import Footer from './components/Footer';
 import RegisterSection from './components/PartnerSection';
-
+import SEO from './components/SEO';
 
 // Lazy Load Heavy Components
 import LoadingScreen from './components/LoadingScreen';
@@ -289,6 +289,11 @@ const App: React.FC = () => {
                     } />
                     <Route path="/" element={
                         <div className="relative min-h-screen" style={{ background: 'var(--bg-gradient)' }}>
+                            <SEO 
+                                title="ASCENT 2026 | Sri Lanka's Premier Student Esports Tournament" 
+                                description="Join Sri Lanka's biggest student-led 5v5 Valorant esports tournament. Qualifiers, playoffs & grand finals at Lumina Ballroom, Cinnamon Life. Register now!" 
+                                path="/"
+                            />
                             {/* Global LoadingScreen is now at the root of App */}
                             <CustomCursor />
 

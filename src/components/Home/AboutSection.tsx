@@ -214,9 +214,9 @@ const AboutSection: React.FC = () => {
                 />
 
                 {/* 3. The Text */}
-                <h4 className="relative z-10 font-mono text-[11px] sm:text-sm md:text-lg lg:text-xl xl:text-2xl tracking-[0.3em] sm:tracking-[0.5em] md:tracking-[0.6em] uppercase text-transparent bg-clip-text bg-gradient-to-r from-[#ff4655] via-[#a855f7] to-[#64c8ff] font-bold text-center w-full max-w-7xl drop-shadow-[0_0_15px_rgba(255,255,255,0.2)] px-4">
+                <p className="relative z-10 font-mono text-[11px] sm:text-sm md:text-lg lg:text-xl xl:text-2xl tracking-[0.3em] sm:tracking-[0.5em] md:tracking-[0.6em] uppercase text-transparent bg-clip-text bg-gradient-to-r from-[#ff4655] via-[#a855f7] to-[#64c8ff] font-bold text-center w-full max-w-7xl drop-shadow-[0_0_15px_rgba(255,255,255,0.2)] px-4">
                     COMPETITION EVOLVED. ARTISTRY UNLEASHED.
-                </h4>
+                </p>
             </motion.div>
 
             {/* ── VOLUMETRIC SIDE HAZE ── Pure CSS, zero perf cost */}
@@ -313,13 +313,13 @@ const AboutSection: React.FC = () => {
                                 <span className="font-mono text-[8px] md:text-[10px] tracking-[0.6em] text-white/20 uppercase block mb-4">// Signal Intercept</span>
                                 
                                 <div className="relative">
-                                    <h3 className="font-teko text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black text-white/[0.07] uppercase leading-[0.9] tracking-tight select-none">
+                                    <h2 className="font-teko text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black text-white/[0.07] uppercase leading-[0.9] tracking-tight select-none">
                                         WHERE THE BATTLEFIELD<br />BECOMES A STADIUM
-                                    </h3>
+                                    </h2>
                                     {/* Overlay glow text */}
-                                    <h3 className="absolute inset-0 flex items-center justify-center font-teko text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black uppercase leading-[0.9] tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-[#ff4655] to-[#ff4655]/30 pointer-events-none" style={{ textShadow: '0 0 60px rgba(255,70,85,0.15)' }}>
+                                    <span aria-hidden="true" className="absolute inset-0 flex items-center justify-center font-teko text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black uppercase leading-[0.9] tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-[#ff4655] to-[#ff4655]/30 pointer-events-none" style={{ textShadow: '0 0 60px rgba(255,70,85,0.15)' }}>
                                         WHERE THE BATTLEFIELD<br />BECOMES A STADIUM
-                                    </h3>
+                                    </span>
                                 </div>
                             </motion.div>
 

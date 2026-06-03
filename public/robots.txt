@@ -1,5 +1,27 @@
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /admin/login
+Disallow: /checkout
+Disallow: /maintenance
+Disallow: /ascii-demo
+Disallow: /schools-demo
+Disallow: /transitions-demo
+Disallow: /demo-eclipse
+Disallow: /demo-focus
+Disallow: /demo-stadium
+Disallow: /demo-countdown
+Disallow: /demo-redacted
+Disallow: /demo-signal
+Disallow: /demo-aperture
+
+# AI Crawlers — allow indexing for AI Search visibility
+User-agent: GPTBot
+Allow: /
+User-agent: ClaudeBot
+Allow: /
+User-agent: Google-Extended
+Allow: /
 
 # Sitemaps
 Sitemap: https://ascentlk.com/sitemap.xml

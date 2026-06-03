@@ -8,6 +8,7 @@ import { getLevelCapacity } from '../../utils/SeatingEngine';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import Footer from '../Footer';
+import SEO from '../SEO';
 import '../../styles/tickets.css';
 
 const TicketsPage: React.FC = () => {
@@ -69,7 +70,13 @@ const TicketsPage: React.FC = () => {
 
     return (
         <div className="tickets-page bg-atmospheric min-h-screen relative overflow-hidden">
+            <SEO 
+                title="Book Tickets | ASCENT 2026" 
+                description="Secure your seats for the ASCENT 2026 Grand Finals at Lumina Ballroom. Interactive seat map and instant booking." 
+                path="/tickets"
+            />
             {/* Atmospheric Background & Pulsing Orb */}
+
             <div className="fixed inset-0 z-0 pointer-events-none">
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#ff4655]/10 rounded-full blur-[150px] anim-pulse-slow" />
                 <div className="absolute inset-0 bg-grid opacity-5" />

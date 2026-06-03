@@ -335,9 +335,9 @@ const Footer: React.FC = () => {
             </h2>
 
             {/* Interactive Magnetic Pills */}
-            <div ref={linksRef} className="flex flex-col items-center gap-6 w-full">
+            <nav ref={linksRef} aria-label="Footer navigation" className="flex flex-col items-center gap-6 w-full">
               <div className="flex flex-wrap justify-center gap-3 md:gap-4 w-full">
-                <MagneticButton as="a" href="https://www.instagram.com/ascent_2026/" target="_blank" onMouseEnter={playHover} onClick={playClick} className="footer-glass-pill px-8 md:px-10 py-4 md:py-5 rounded-full text-white font-bold text-xs md:text-base flex items-center gap-3 group uppercase tracking-widest font-teko">
+                <MagneticButton as="a" href="https://www.instagram.com/ascent_2026/" target="_blank" rel="noopener noreferrer" aria-label="Follow ASCENT 2026 on Instagram" onMouseEnter={playHover} onClick={playClick} className="footer-glass-pill px-8 md:px-10 py-4 md:py-5 rounded-full text-white font-bold text-xs md:text-base flex items-center gap-3 group uppercase tracking-widest font-teko">
                   Instagram
                 </MagneticButton>
                 
@@ -358,7 +358,7 @@ const Footer: React.FC = () => {
                   Refund Policy
                 </MagneticButton>
               </div>
-            </div>
+            </nav>
           </div>
 
           {/* 3. Bottom Bar */}
@@ -384,6 +384,7 @@ const Footer: React.FC = () => {
               as="button"
               onClick={() => { playClick(); scrollToTop(); }}
               onMouseEnter={playHover}
+              aria-label="Scroll to top of page"
               className="w-10 h-10 md:w-12 md:h-12 rounded-full footer-glass-pill flex items-center justify-center text-white/40 hover:text-white group order-3"
             >
               <svg className="w-4 h-4 md:w-5 md:h-5 transform group-hover:-translate-y-1.5 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">

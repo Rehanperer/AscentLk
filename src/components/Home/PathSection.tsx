@@ -108,7 +108,8 @@ const PhaseBlock: React.FC<{
                 <div className="relative w-full aspect-video md:aspect-[4/3] border border-white/10 bg-[#08080a] p-2 flex group overflow-hidden">
                     <img 
                         src={imgSrc} 
-                        alt={title} 
+                        alt={`${title} — ASCENT 2026 tournament phase`} 
+                        loading="lazy"
                         className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-700 ease-out"
                     />
                     <div className="absolute inset-0 bg-scanlines opacity-20 pointer-events-none" />
