@@ -59,7 +59,14 @@ const ModernNavbar: React.FC = () => {
                         <div className={`absolute inset-0 bg-[#040814]/60 backdrop-blur-md border border-white/10 rounded-full transition-all duration-500 ${scrolled ? 'opacity-100 shadow-[0_4px_30px_rgba(0,0,0,0.5)]' : 'opacity-0 scale-95 pointer-events-none'}`} />
 
                         <button
-                            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                            onClick={() => {
+                                if (window.location.pathname === '/') {
+                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                } else {
+                                    navigate('/');
+                                    window.scrollTo(0, 0);
+                                }
+                            }}
                             className="relative group cursor-pointer flex items-center justify-center z-10 w-full h-full"
                         >
                             <img
