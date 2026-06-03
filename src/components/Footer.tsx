@@ -341,7 +341,7 @@ const Footer: React.FC = () => {
                   Instagram
                 </MagneticButton>
                 
-                <MagneticButton as="button" onMouseEnter={playHover} onClick={playClick} className="footer-glass-pill px-8 md:px-10 py-4 md:py-5 rounded-full text-white font-bold text-xs md:text-base flex items-center gap-3 group uppercase tracking-widest font-teko">
+                <MagneticButton as={Link} to="/support" onMouseEnter={playHover} onClick={playClick} className="footer-glass-pill px-8 md:px-10 py-4 md:py-5 rounded-full text-white font-bold text-xs md:text-base flex items-center gap-3 group uppercase tracking-widest font-teko">
                   Support
                 </MagneticButton>
               </div>

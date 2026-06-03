@@ -30,11 +30,12 @@ const AdminLoginPage = lazy(() => import('./components/Admin/AdminLoginPage'));
 const CheckoutPage = lazy(() => import('./components/Tickets/CheckoutPage'));
 const RegistrationPage = lazy(() => import('./components/Registration/RegistrationPage'));
 
-// Policy Pages
+// Policy & Info Pages
 const RefundPolicy = lazy(() => import('./pages/Policies/RefundPolicy'));
 const PrivacyPolicy = lazy(() => import('./pages/Policies/PrivacyPolicy'));
 const TermsOfService = lazy(() => import('./pages/Policies/TermsOfService'));
 const Rulebook = lazy(() => import('./pages/Rulebook'));
+const SupportPage = lazy(() => import('./pages/SupportPage'));
 
 // Demos
 const AsciiDemoPage = lazy(() => import('./pages/AsciiDemoPage'));
@@ -279,6 +280,11 @@ const App: React.FC = () => {
                     <Route path="/rulebook" element={
                         <Suspense fallback={<TacticalLoader />}>
                             <Rulebook />
+                        </Suspense>
+                    } />
+                    <Route path="/support" element={
+                        <Suspense fallback={<TacticalLoader />}>
+                            <SupportPage />
                         </Suspense>
                     } />
                     <Route path="/" element={
