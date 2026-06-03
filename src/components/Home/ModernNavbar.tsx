@@ -75,6 +75,25 @@ const ModernNavbar: React.FC = () => {
                         {/* Glass Island Backdrop */}
                         <div className={`absolute inset-0 bg-[#040814]/60 backdrop-blur-md border border-white/10 rounded-full transition-all duration-500 ${scrolled ? 'opacity-100 shadow-[0_4px_30px_rgba(0,0,0,0.5)]' : 'opacity-0 scale-95 pointer-events-none'}`} />
 
+                        {/* Register Now Button */}
+                        <button
+                            onClick={() => navigate('/register')}
+                            className={`group relative z-10 flex items-center justify-center h-9 md:h-10 px-4 md:px-6 font-mono text-[10px] md:text-xs font-bold tracking-[0.2em] md:tracking-[0.3em] uppercase transition-all duration-300 cursor-pointer overflow-hidden rounded-full border border-white/20 hover:border-[#ff4655] bg-white/5 hover:bg-transparent ${mobileOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+                        >
+                            {/* Hover Fill */}
+                            <div className="absolute inset-0 bg-[#ff4655] scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300 ease-out" />
+                            
+                            <span className="relative z-10 text-white group-hover:text-black transition-colors duration-300 whitespace-nowrap flex items-center gap-2 pt-0.5">
+                                {/* Pulsing Live Dot */}
+                                <span className="relative flex h-1.5 w-1.5 md:h-2 md:w-2 -mt-0.5">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#ff4655] group-hover:bg-black opacity-75"></span>
+                                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 md:h-2 md:w-2 bg-[#ff4655] group-hover:bg-black"></span>
+                                </span>
+                                <span className="hidden sm:inline">Register Now</span>
+                                <span className="sm:hidden">Register</span>
+                            </span>
+                        </button>
+
                         {/* Instagram Button */}
                         <a
                             href="https://www.instagram.com/ascent_2026/"
