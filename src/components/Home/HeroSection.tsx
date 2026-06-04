@@ -60,6 +60,17 @@ const HeroSection: React.FC = () => {
             className="relative w-full min-h-[85vh] md:min-h-screen flex items-center justify-center overflow-hidden bg-[#08080a]"
             style={{ perspective: 1500 }}
         >
+            {/* Venom Distortion Filter - Extended bounds to prevent box clipping */}
+            <svg className="absolute w-0 h-0 pointer-events-none">
+                <defs>
+                    <filter id="venom-distortion" x="-50%" y="-50%" width="200%" height="200%">
+                        <feTurbulence type="fractalNoise" baseFrequency="0.03 0.1" numOctaves="3" result="noise" seed="4">
+                            <animate attributeName="baseFrequency" values="0.03 0.1; 0.05 0.15; 0.03 0.1" dur="8s" repeatCount="indefinite" />
+                        </feTurbulence>
+                        <feDisplacementMap in="SourceGraphic" in2="noise" scale="25" xChannelSelector="R" yChannelSelector="G" />
+                    </filter>
+                </defs>
+            </svg>
             {/* Background Parallax Video */}
             <motion.div 
                 className="absolute inset-0 w-full h-full pointer-events-none"
@@ -127,9 +138,9 @@ const HeroSection: React.FC = () => {
                             ASCENT
                         </motion.div>
                         
-                        {/* 2026 (Hollow stroke + Cursor) */}
+                        {/* 2026 (Hollow stroke + Venom fill animation + Cursor) */}
                         <motion.div 
-                            className="flex items-center gap-3 md:gap-5 -mt-2 md:-mt-6"
+                            className="flex items-center gap-3 md:gap-5 -mt-2 md:-mt-6 relative z-10"
                             initial={{ x: 50, opacity: 0 }}
                             animate={{ x: 0, opacity: 1 }}
                             transition={{ duration: 1, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
@@ -138,26 +149,64 @@ const HeroSection: React.FC = () => {
                                 [ YR ]
                             </span>
                             
-                            <motion.span 
-                                className="text-transparent"
-                                style={{ 
-                                    WebkitTextStroke: '3px #ff4655',
-                                    textShadow: '0 0 40px rgba(255, 70, 85, 0.4)'
-                                }}
-                                animate={{ 
-                                    x: [0, -3, 3, -1, 0, 0, 0, 0],
-                                    skewX: [0, -10, 10, -5, 0, 0, 0, 0],
-                                    opacity: [1, 0.8, 1, 0.6, 1, 1, 1, 1]
-                                }}
-                                transition={{
-                                    duration: 0.6,
-                                    repeat: Infinity,
-                                    repeatDelay: 4, // Glitches every 4 seconds
-                                    ease: "easeInOut"
-                                }}
-                            >
-                                2026
-                            </motion.span>
+                            {/* Venom Text Container */}
+                            <div className="relative inline-block">
+                                {/* Base hollow outline */}
+                                <motion.span 
+                                    className="text-transparent absolute inset-0 flex items-center justify-center pointer-events-none"
+                                    style={{ 
+                                        WebkitTextStroke: '2px #ff4655',
+                                        textShadow: '0 0 20px rgba(255, 70, 85, 0.3)'
+                                    }}
+                                    animate={{ 
+                                        x: [0, -2, 2, -1, 0, 0, 0, 0],
+                                        skewX: [0, -5, 5, -2, 0, 0, 0, 0],
+                                    }}
+                                    transition={{
+                                        x: { duration: 0.8, repeat: Infinity, repeatDelay: 5, ease: "easeInOut" },
+                                        skewX: { duration: 0.8, repeat: Infinity, repeatDelay: 5, ease: "easeInOut" }
+                                    }}
+                                >
+                                    2026
+                                </motion.span>
+                                
+                                {/* Venom Fill Overlay - Pure CSS, no SVG filter to prevent box clipping */}
+                                <motion.span 
+                                    className="text-[#ff4655] relative z-10 flex items-center justify-center"
+                                    style={{ 
+                                        filter: 'url(#venom-distortion)',
+                                        textShadow: '0 0 30px rgba(255,70,85,0.9), 0 0 10px rgba(255,70,85,1)',
+                                        WebkitMaskImage: `
+                                            radial-gradient(circle at 10% 20%, black 5%, transparent 40%),
+                                            radial-gradient(circle at 90% 80%, black 5%, transparent 40%),
+                                            radial-gradient(circle at 20% 90%, black 5%, transparent 40%),
+                                            radial-gradient(circle at 80% 10%, black 5%, transparent 40%),
+                                            radial-gradient(circle at 50% 50%, black 10%, transparent 50%)
+                                        `,
+                                        WebkitMaskRepeat: 'no-repeat',
+                                        WebkitMaskPosition: 'center',
+                                    }}
+                                    animate={{ 
+                                        WebkitMaskSize: [
+                                            '0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%', 
+                                            '200% 200%, 0% 0%, 100% 100%, 0% 0%, 50% 50%', 
+                                            '150% 150%, 250% 250%, 50% 50%, 150% 150%, 100% 100%', 
+                                            '300% 300%, 300% 300%, 300% 300%, 300% 300%, 300% 300%', 
+                                            '100% 100%, 200% 200%, 80% 80%, 150% 150%, 50% 50%', 
+                                            '0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%'
+                                        ],
+                                        x: [0, -2, 2, -1, 0, 0, 0, 0],
+                                        skewX: [0, -5, 5, -2, 0, 0, 0, 0],
+                                    } as any}
+                                    transition={{
+                                        WebkitMaskSize: { duration: 6, repeat: Infinity, ease: "easeInOut" },
+                                        x: { duration: 0.8, repeat: Infinity, repeatDelay: 5, ease: "easeInOut" },
+                                        skewX: { duration: 0.8, repeat: Infinity, repeatDelay: 5, ease: "easeInOut" }
+                                    } as any}
+                                >
+                                    2026
+                                </motion.span>
+                            </div>
                             
                             {/* Blinking block cursor */}
                             <motion.div 
@@ -177,34 +226,13 @@ const HeroSection: React.FC = () => {
                     />
                     
                     <motion.div 
-                        className="font-mono text-[9px] md:text-xs tracking-[0.4em] md:tracking-[0.6em] text-white/50 uppercase mt-4 mb-10 text-right"
+                        className="font-mono text-[11px] md:text-sm tracking-[0.4em] md:tracking-[0.6em] text-white/60 uppercase mt-4 mb-10 text-right"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ duration: 1, delay: 1.5 }}
                     >
                         Where Legends Ascend
                     </motion.div>
-
-                    {/* Glassmorphism Button */}
-                    <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => navigate('/register')}
-                        className="group relative flex items-center gap-3 px-8 md:px-12 py-4 cursor-pointer overflow-hidden transition-all duration-300"
-                    >
-                        {/* Glass Background */}
-                        <div className="absolute inset-0 bg-white/5 backdrop-blur-md border border-white/20 group-hover:border-[#ff4655]/50 group-hover:bg-[#ff4655]/10 rounded-sm transition-all duration-500" />
-                        
-                        {/* Shimmer Effect */}
-                        <div className="absolute top-0 left-[-100%] w-1/2 h-full bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-[-20deg] group-hover:animate-[shimmer_1.5s_infinite]" />
-
-                        <span className="relative z-10 font-teko text-2xl md:text-3xl font-bold tracking-widest text-white group-hover:text-white transition-colors uppercase">
-                            Register Now
-                        </span>
-                        
-                        {/* Red tactical dot */}
-                        <span className="relative z-10 w-1.5 h-1.5 rounded-full bg-[#ff4655] shadow-[0_0_10px_#ff4655] group-hover:shadow-[0_0_15px_#ff4655] group-hover:scale-150 transition-all duration-300" />
-                    </motion.button>
                 </div>
             </motion.div>
             
