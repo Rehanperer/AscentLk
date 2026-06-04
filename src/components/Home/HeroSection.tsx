@@ -217,7 +217,7 @@ const HeroSection: React.FC = () => {
                     />
                     
                     <motion.div 
-                        className="font-mono text-[11px] md:text-sm tracking-[0.4em] md:tracking-[0.6em] text-white/60 uppercase mt-4 mb-10 text-right"
+                        className="font-mono text-sm md:text-lg tracking-[0.4em] md:tracking-[0.6em] text-white/60 uppercase mt-4 mb-10 text-right"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ duration: 1, delay: 1.5 }}
