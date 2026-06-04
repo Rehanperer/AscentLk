@@ -26,7 +26,7 @@ export default defineConfig({
       renderer: new PuppeteerRenderer({
         maxConcurrentRoutes: 1,
         renderAfterTime: 500,
-        executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+        executablePath: process.env.CI ? undefined : '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
       }),
       postProcess (renderedRoute) {
         renderedRoute.html = renderedRoute.html.replace(
