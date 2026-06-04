@@ -60,10 +60,10 @@ const HeroSection: React.FC = () => {
             className="relative w-full min-h-[85vh] md:min-h-screen flex items-center justify-center overflow-hidden bg-[#08080a]"
             style={{ perspective: 1500 }}
         >
-            {/* Venom Distortion Filter - Extended bounds to prevent box clipping */}
+            {/* Venom Distortion Filter */}
             <svg className="absolute w-0 h-0 pointer-events-none">
                 <defs>
-                    <filter id="venom-distortion" x="-50%" y="-50%" width="200%" height="200%">
+                    <filter id="venom-distortion">
                         <feTurbulence type="fractalNoise" baseFrequency="0.03 0.1" numOctaves="3" result="noise" seed="4">
                             <animate attributeName="baseFrequency" values="0.03 0.1; 0.05 0.15; 0.03 0.1" dur="8s" repeatCount="indefinite" />
                         </feTurbulence>
@@ -71,6 +71,7 @@ const HeroSection: React.FC = () => {
                     </filter>
                 </defs>
             </svg>
+
             {/* Background Parallax Video */}
             <motion.div 
                 className="absolute inset-0 w-full h-full pointer-events-none"
@@ -138,6 +139,8 @@ const HeroSection: React.FC = () => {
                             ASCENT
                         </motion.div>
                         
+
+                        
                         {/* 2026 (Hollow stroke + Venom fill animation + Cursor) */}
                         <motion.div 
                             className="flex items-center gap-3 md:gap-5 -mt-2 md:-mt-6 relative z-10"
@@ -150,58 +153,46 @@ const HeroSection: React.FC = () => {
                             </span>
                             
                             {/* Venom Text Container */}
-                            <div className="relative inline-block">
+                            <div className="relative inline-block py-8 -my-8 px-4 -mx-4">
                                 {/* Base hollow outline */}
                                 <motion.span 
                                     className="text-transparent absolute inset-0 flex items-center justify-center pointer-events-none"
                                     style={{ 
-                                        WebkitTextStroke: '2px #ff4655',
-                                        textShadow: '0 0 20px rgba(255, 70, 85, 0.3)'
+                                        WebkitTextStroke: '3px #ff4655',
+                                        textShadow: '0 0 40px rgba(255, 70, 85, 0.4)'
                                     }}
                                     animate={{ 
-                                        x: [0, -2, 2, -1, 0, 0, 0, 0],
-                                        skewX: [0, -5, 5, -2, 0, 0, 0, 0],
+                                        x: [0, -3, 3, -1, 0, 0, 0, 0],
+                                        skewX: [0, -10, 10, -5, 0, 0, 0, 0],
                                     }}
                                     transition={{
-                                        x: { duration: 0.8, repeat: Infinity, repeatDelay: 5, ease: "easeInOut" },
-                                        skewX: { duration: 0.8, repeat: Infinity, repeatDelay: 5, ease: "easeInOut" }
+                                        x: { duration: 0.6, repeat: Infinity, repeatDelay: 4, ease: "easeInOut" },
+                                        skewX: { duration: 0.6, repeat: Infinity, repeatDelay: 4, ease: "easeInOut" }
                                     }}
                                 >
                                     2026
                                 </motion.span>
                                 
-                                {/* Venom Fill Overlay - Pure CSS, no SVG filter to prevent box clipping */}
+                                {/* Venom Fill Overlay */}
                                 <motion.span 
                                     className="text-[#ff4655] relative z-10 flex items-center justify-center"
                                     style={{ 
-                                        filter: 'url(#venom-distortion)',
-                                        textShadow: '0 0 30px rgba(255,70,85,0.9), 0 0 10px rgba(255,70,85,1)',
-                                        WebkitMaskImage: `
-                                            radial-gradient(circle at 10% 20%, black 5%, transparent 40%),
-                                            radial-gradient(circle at 90% 80%, black 5%, transparent 40%),
-                                            radial-gradient(circle at 20% 90%, black 5%, transparent 40%),
-                                            radial-gradient(circle at 80% 10%, black 5%, transparent 40%),
-                                            radial-gradient(circle at 50% 50%, black 10%, transparent 50%)
-                                        `,
+                                        filter: 'url(#venom-distortion) drop-shadow(0 0 20px rgba(255,70,85,0.8))',
+                                        WebkitMaskImage: 'linear-gradient(to top, black 45%, transparent 55%)',
+                                        WebkitMaskSize: '100% 250%',
                                         WebkitMaskRepeat: 'no-repeat',
-                                        WebkitMaskPosition: 'center',
+                                        padding: '20px', // Extra padding for distortion bleed
+                                        margin: '-20px'
                                     }}
                                     animate={{ 
-                                        WebkitMaskSize: [
-                                            '0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%', 
-                                            '200% 200%, 0% 0%, 100% 100%, 0% 0%, 50% 50%', 
-                                            '150% 150%, 250% 250%, 50% 50%, 150% 150%, 100% 100%', 
-                                            '300% 300%, 300% 300%, 300% 300%, 300% 300%, 300% 300%', 
-                                            '100% 100%, 200% 200%, 80% 80%, 150% 150%, 50% 50%', 
-                                            '0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%'
-                                        ],
-                                        x: [0, -2, 2, -1, 0, 0, 0, 0],
-                                        skewX: [0, -5, 5, -2, 0, 0, 0, 0],
+                                        WebkitMaskPosition: ['0% 120%', '0% -20%', '0% 120%'],
+                                        x: [0, -3, 3, -1, 0, 0, 0, 0],
+                                        skewX: [0, -10, 10, -5, 0, 0, 0, 0],
                                     } as any}
                                     transition={{
-                                        WebkitMaskSize: { duration: 6, repeat: Infinity, ease: "easeInOut" },
-                                        x: { duration: 0.8, repeat: Infinity, repeatDelay: 5, ease: "easeInOut" },
-                                        skewX: { duration: 0.8, repeat: Infinity, repeatDelay: 5, ease: "easeInOut" }
+                                        WebkitMaskPosition: { duration: 7, repeat: Infinity, ease: "easeInOut" },
+                                        x: { duration: 0.6, repeat: Infinity, repeatDelay: 4, ease: "easeInOut" },
+                                        skewX: { duration: 0.6, repeat: Infinity, repeatDelay: 4, ease: "easeInOut" }
                                     } as any}
                                 >
                                     2026
