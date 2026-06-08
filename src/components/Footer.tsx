@@ -274,12 +274,12 @@ const Footer: React.FC = () => {
           y: 0,
           opacity: 1,
           stagger: 0.1,
+          duration: 1,
           ease: "power3.out",
           scrollTrigger: {
             trigger: wrapperRef.current,
-            start: "top 50%",
-            end: "bottom bottom",
-            scrub: 1,
+            start: "top 75%",
+            toggleActions: "play none none reverse",
           },
         }
       );
@@ -365,7 +365,7 @@ const Footer: React.FC = () => {
           <div className="relative z-20 w-full pb-8 px-6 md:px-12 flex flex-col md:flex-row items-center justify-between gap-6">
             
             <div className="text-white/30 text-[9px] md:text-[10px] font-bold tracking-[0.2em] uppercase order-2 md:order-1 font-mono">
-              © 2026 ASCENT ESPORTS. ALL RIGHTS RESERVED.
+              © 2026 STUDENT VENTURES GROUP. SOME RIGHTS RESERVED.
             </div>
 
             <div className="footer-glass-pill px-6 py-3 rounded-full flex items-center gap-2 order-1 md:order-2 cursor-default border-white/10">
