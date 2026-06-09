@@ -224,6 +224,15 @@ const HeroSection: React.FC = () => {
                     >
                         Where Legends Ascend
                     </motion.div>
+
+                    {/* SEO: Visually hidden but crawlable description for search engines */}
+                    <p className="sr-only">
+                        ASCENT 2026 is Sri Lanka's premier student-led esports tournament, featuring competitive 5v5 Valorant matches 
+                        with open qualifiers, regional playoffs, and a grand final at Lumina Ballroom, Cinnamon Life Colombo. 
+                        This student gaming tournament brings together top school teams from across Sri Lanka for an unforgettable 
+                        esports experience with broadcast-grade production, live concerts, and professional casting. 
+                        Register your team now for the biggest gaming event in Sri Lanka 2026.
+                    </p>
                 </div>
             </motion.div>
             

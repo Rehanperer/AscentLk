@@ -140,12 +140,14 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete }) => {
                     >
                         System Protocol 2026
                     </span>
-                    <h1 
+                    <div 
                         className="text-white font-teko font-black text-7xl md:text-[10rem] leading-none tracking-wider"
                         style={{ textShadow: "0 0 40px rgba(255,255,255,0.4)" }}
+                        role="presentation"
+                        aria-hidden="true"
                     >
                         ASCENT
-                    </h1>
+                    </div>
                 </motion.div>
             </div>
 

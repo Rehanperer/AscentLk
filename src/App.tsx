@@ -291,7 +291,8 @@ const App: React.FC = () => {
                         <div className="relative min-h-screen" style={{ background: 'var(--bg-gradient)' }}>
                             <SEO 
                                 title="ASCENT 2026 | Sri Lanka's Premier Student Esports Tournament" 
-                                description="Join Sri Lanka's biggest student-led 5v5 Valorant esports tournament. Qualifiers, playoffs & grand finals at Lumina Ballroom, Cinnamon Life. Register now!" 
+                                description="ASCENT 2026 is Sri Lanka's biggest student-led esports tournament featuring 5v5 Valorant. Qualifiers, playoffs & grand finals live at Lumina Ballroom, Cinnamon Life Colombo. Register your team now!"
+                                keywords="ASCENT 2026, Esports Sri Lanka, Student Gaming Tournament, Valorant Tournament Sri Lanka, Sri Lanka Esports, Student Esports Colombo, Gaming Tournament 2026, Cinnamon Life Esports"
                                 path="/"
                             />
                             {/* Global LoadingScreen is now at the root of App */}

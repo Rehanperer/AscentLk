@@ -72,7 +72,7 @@ const MarqueeRow: React.FC<{
                                 <span className="font-teko text-base md:text-lg font-bold tracking-wider text-white/80 uppercase leading-none whitespace-nowrap">
                                     {school.name}
                                 </span>
-                                <span className={`font-mono text-[7px] md:text-[8px] tracking-[0.3em] uppercase mt-0.5 ${isConfirmed ? 'text-[#ff4655]' : 'text-white/20'}`}>
+                                <span aria-hidden="true" className={`font-mono text-[7px] md:text-[8px] tracking-[0.3em] uppercase mt-0.5 ${isConfirmed ? 'text-[#ff4655]' : 'text-white/20'}`}>
                                     {isConfirmed ? 'CONFIRMED' : 'PENDING'}
                                 </span>
                             </div>

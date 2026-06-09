@@ -5,6 +5,7 @@ interface SEOProps {
     title: string;
     description: string;
     path: string;
+    keywords?: string;
     ogImage?: string;
     noindex?: boolean;
     type?: string;
@@ -15,6 +16,7 @@ const SEO: React.FC<SEOProps> = ({
     title,
     description,
     path,
+    keywords = 'ASCENT 2026, Esports Sri Lanka, Student Gaming Tournament, Valorant Tournament, Sri Lanka Esports, Student Esports',
     ogImage = 'https://ascentlk.com/img/ASCENT2026-banner.jpg',
     noindex = false,
     type = 'website',
@@ -26,6 +28,7 @@ const SEO: React.FC<SEOProps> = ({
         <Helmet>
             <title>{title}</title>
             <meta name="description" content={description} />
+            <meta name="keywords" content={keywords} />
             <link rel="canonical" href={url} />
 
             {/* Open Graph / Facebook */}
