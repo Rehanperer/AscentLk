@@ -7,12 +7,12 @@ import React, { useState, useEffect, useRef } from 'react';
  */
 
 const partners = [
-    { name: "Cinnamon Life", logo: "/Untitled%20design%20(3)/1.png" },
-    { name: "Red Bull", logo: "/Untitled%20design%20(3)/2.png" },
-    { name: "Star Garments", logo: "/Untitled%20design%20(3)/3.png" },
-    { name: "Scope Cinemas", logo: "/Untitled%20design%20(3)/4.png" },
-    { name: "Leo Club EIC", logo: "/Untitled%20design%20(3)/5.png" },
-    { name: "Aivance", logo: "/Untitled%20design%20(3)/6.png" },
+    { name: "Cinnamon Life", logo: "/partners/1.webp" },
+    { name: "Red Bull", logo: "/partners/2.webp" },
+    { name: "Star Garments", logo: "/partners/3.webp" },
+    { name: "Scope Cinemas", logo: "/partners/4.webp" },
+    { name: "Leo Club EIC", logo: "/partners/5.webp" },
+    { name: "Aivance", logo: "/partners/6.webp" },
     { name: "ASCENT", logo: "/img/SVG.svg" },
 ];
 

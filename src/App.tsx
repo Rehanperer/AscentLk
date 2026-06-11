@@ -128,13 +128,17 @@ const App: React.FC = () => {
     // Track page views for analytics
     usePageView();
     
+    // Check if the app is being prerendered by Puppeteer during build
+    // @ts-ignore
+    const isPrerendering = typeof window !== 'undefined' && window.__PRERENDER_INJECTED?.isPrerendering;
+
     // Check if the intro has already played this session
     const hasIntroPlayed = sessionStorage.getItem('ascent_intro_played') === 'true';
     
-    // Only show the full cinematic intro on homepage AND if it hasn't played yet
-    const showCinematicIntro = isHomePage && !hasIntroPlayed;
+    // Only show the full cinematic intro on homepage AND if it hasn't played yet AND we are not prerendering
+    const showCinematicIntro = !isPrerendering && isHomePage && !hasIntroPlayed;
     // Show the quick tactical loader on homepage refreshes (intro already played)
-    const showTacticalReload = isHomePage && hasIntroPlayed;
+    const showTacticalReload = !isPrerendering && isHomePage && hasIntroPlayed;
     
     const [isLoading, setIsLoading] = useState(showCinematicIntro || showTacticalReload);
     const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
@@ -291,7 +295,7 @@ const App: React.FC = () => {
                         <div className="relative min-h-screen" style={{ background: 'var(--bg-gradient)' }}>
                             <SEO 
                                 title="ASCENT 2026 | Sri Lanka's Premier Student Esports Tournament" 
-                                description="ASCENT 2026 is Sri Lanka's biggest student-led esports tournament featuring 5v5 Valorant. Qualifiers, playoffs & grand finals live at Lumina Ballroom, Cinnamon Life Colombo. Register your team now!"
+                                description="ASCENT 2026: Sri Lanka's biggest student-led 5v5 Valorant esports tournament. Qualifiers & grand finals live at Cinnamon Life Colombo. Register your team now!"
                                 keywords="ASCENT 2026, Esports Sri Lanka, Student Gaming Tournament, Valorant Tournament Sri Lanka, Sri Lanka Esports, Student Esports Colombo, Gaming Tournament 2026, Cinnamon Life Esports"
                                 path="/"
                             />

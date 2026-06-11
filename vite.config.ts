@@ -25,7 +25,9 @@ export default defineConfig({
       ],
       renderer: new PuppeteerRenderer({
         maxConcurrentRoutes: 1,
-        renderAfterTime: 500,
+        renderAfterTime: 2000,
+        injectProperty: '__PRERENDER_INJECTED',
+        inject: { isPrerendering: true },
         executablePath: process.env.CI ? undefined : '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
       }),
       postProcess (renderedRoute) {
@@ -37,6 +39,7 @@ export default defineConfig({
     }),
     VitePWA({
       registerType: 'autoUpdate',
+      injectRegister: 'script-defer',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
       manifest: {
         name: 'ASCENT 2026',

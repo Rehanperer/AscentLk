@@ -31,8 +31,16 @@ const HeroSection: React.FC = () => {
     const rotateX = useTransform(smoothMouseY, [-0.5, 0.5], [8, -8]);
     const rotateY = useTransform(smoothMouseX, [-0.5, 0.5], [-8, 8]);
 
+    // Store rect to avoid layout thrashing on every mouse move
+    const rectRef = useRef<DOMRect | null>(null);
+
+    const handleMouseEnter = (e: React.MouseEvent<HTMLElement>) => {
+        rectRef.current = e.currentTarget.getBoundingClientRect();
+    };
+
     const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
-        const rect = e.currentTarget.getBoundingClientRect();
+        if (!rectRef.current) return;
+        const rect = rectRef.current;
         const x = (e.clientX - rect.left) / rect.width - 0.5; // -0.5 to 0.5
         const y = (e.clientY - rect.top) / rect.height - 0.5; // -0.5 to 0.5
         mouseX.set(x);
@@ -40,20 +48,26 @@ const HeroSection: React.FC = () => {
     };
 
     const handleMouseLeave = () => {
+        rectRef.current = null;
         mouseX.set(0);
         mouseY.set(0);
     };
 
     useEffect(() => {
-        if (videoRef.current) {
-            // Attempt to force play for mobile data saving policies
-            videoRef.current.play().catch(e => console.log("Video autoplay blocked:", e));
-        }
+        // Delay fetching/playing the massive 24MB video to ensure initial LCP is incredibly fast
+        const timer = setTimeout(() => {
+            if (videoRef.current) {
+                videoRef.current.play().catch(e => console.log("Video autoplay blocked:", e));
+            }
+        }, 1500);
+        
+        return () => clearTimeout(timer);
     }, []);
 
     return (
         <section 
             ref={containerRef}
+            onMouseEnter={handleMouseEnter}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
             aria-label="ASCENT 2026 Hero — Sri Lanka's biggest student-led esports tournament"
@@ -79,11 +93,10 @@ const HeroSection: React.FC = () => {
             >
                 <video
                     ref={videoRef}
-                    autoPlay
                     loop
                     muted
                     playsInline
-                    poster="/img/ASCENT2026-banner.jpg"
+                    preload="none"
                     aria-hidden="true"
                     className="w-full h-full object-cover opacity-80"
                 >
