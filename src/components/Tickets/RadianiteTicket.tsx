@@ -207,8 +207,8 @@ class SoundSynthesizer {
     }
 }
 
-// Pulse Ring gap sizes in pixels (using SVG viewBox 0 0 2200 2200)
-const GAP_PX: Record<string, number> = { N: 30, M: 60, W: 100 };
+// Pulse Ring gap sizes in pixels (using SVG viewBox 0 0 2500 2500)
+const GAP_PX: Record<string, number> = { N: 25, M: 65, W: 121 };
 const RING_STROKE = 15;
 const RING_R0 = 320; // innermost ring radius
 const RING_COLOR = '#00FFFF'; // neon cyan
@@ -726,7 +726,7 @@ const RadianiteTicket: React.FC = () => {
                                     className="absolute z-10 pointer-events-none"
                                     width="320"
                                     height="320"
-                                    viewBox="0 0 2200 2200"
+                                    viewBox="0 0 2500 2500"
                                     style={{ filter: 'drop-shadow(0 0 4px rgba(0,255,255,0.5))' }}
                                     animate={{ scale: [0.98, 1.02, 0.98] }}
                                     transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
@@ -739,8 +739,8 @@ const RadianiteTicket: React.FC = () => {
                                         rings.push(
                                             <circle
                                                 key={0}
-                                                cx="1100"
-                                                cy="1100"
+                                                cx="1250"
+                                                cy="1250"
                                                 r={r}
                                                 fill="none"
                                                 stroke={RING_COLOR}
@@ -756,8 +756,8 @@ const RadianiteTicket: React.FC = () => {
                                             rings.push(
                                                 <circle
                                                     key={i + 1}
-                                                    cx="1100"
-                                                    cy="1100"
+                                                    cx="1250"
+                                                    cy="1250"
                                                     r={r}
                                                     fill="none"
                                                     stroke={RING_COLOR}

@@ -195,14 +195,16 @@ const AdminScanner: React.FC = () => {
         const imageData = ctx.getImageData(0, 0, w, h);
         const data = imageData.data;
 
-        // Helper: get cyan-weighted brightness at pixel (x, y)
-        // Rings are #00FFFF (cyan), so we boost G+B and penalize R for better discrimination
-        const getCyanLum = (x: number, y: number): number => {
+        // Helper: get brightness with standard luminance + mild cyan bias
+        // Extremely robust to TrueTone/Night Shift screen warmth
+        const getCyanLuminance = (x: number, y: number): number => {
             if (x < 0 || x >= w || y < 0 || y >= h) return 0;
             const idx = (y * w + x) * 4;
             const r = data[idx], g = data[idx + 1], b = data[idx + 2];
-            // Cyan = high G + high B, low R. Weight accordingly.
-            return (g * 0.5 + b * 0.5) - r * 0.3;
+            const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+            // Mild 1.2x boost for cyan shades (G & B both greater than R)
+            const cyanBias = (g > r && b > r) ? 1.2 : 1.0;
+            return Math.min(255, lum * cyanBias);
         };
 
         // Scan along one axis and find peaks
@@ -211,8 +213,8 @@ const AdminScanner: React.FC = () => {
             const samples: number[] = [];
             const positions: number[] = [];
 
-            // Sample outward from center
-            for (let d = 10; d < maxDist; d++) {
+            // Sample outward from center, starting at d=5 to catch small innermost rings
+            for (let d = 5; d < maxDist; d++) {
                 const x = cx + dx * d;
                 const y = cy + dy * d;
                 // Average a 5x5 area for webcam noise reduction
@@ -220,7 +222,7 @@ const AdminScanner: React.FC = () => {
                 let count = 0;
                 for (let ox = -2; ox <= 2; ox++) {
                     for (let oy = -2; oy <= 2; oy++) {
-                        sum += getCyanLum(Math.round(x + ox), Math.round(y + oy));
+                        sum += getCyanLuminance(Math.round(x + ox), Math.round(y + oy));
                         count++;
                     }
                 }
@@ -352,8 +354,8 @@ const AdminScanner: React.FC = () => {
 
         // === DECODE GAPS ===
         
-        // Accept axes with 6 to 8 peaks (more lenient — webcam may miss outer rings)
-        const validAxes = allPeaks.filter(peaks => peaks.length >= 6 && peaks.length <= 10);
+        // Require axes with exactly 8 peaks to ensure complete, unpadded sequence
+        const validAxes = allPeaks.filter(peaks => peaks.length === 8);
         
         // Show peak count in HUD for debugging
         ctx.fillStyle = '#00FFFF';
@@ -368,34 +370,13 @@ const AdminScanner: React.FC = () => {
             return;
         }
 
-        // Use the best axis (one with peak count closest to 8)
-        const bestAxis = validAxes.reduce((best, current) => 
-            Math.abs(current.length - 8) < Math.abs(best.length - 8) ? current : best
-        );
+        // Use the first valid axis
+        const peaksToUse = validAxes[0];
 
-        // Use the first 8 peaks from the best axis (or pad if fewer)
-        const peaksToUse = bestAxis.slice(0, 8);
-        
-        if (peaksToUse.length < 7) {
-            // Need at least 7 peaks to get 6 gaps (minimum useful)
-            setDetectedSequence(['?', '?', '?', '?', '?', '?', '?']);
-            rollingHistory.current = [];
-            return;
-        }
-
-        // Compute gaps between consecutive peaks
+        // Compute gaps between consecutive peaks (exactly 7 gaps)
         const gaps: number[] = [];
-        for (let g = 0; g < peaksToUse.length - 1 && g < 7; g++) {
+        for (let g = 0; g < 7; g++) {
             gaps.push(peaksToUse[g + 1] - peaksToUse[g]);
-        }
-
-        // Pad with the median gap if we have fewer than 7
-        if (gaps.length < 7) {
-            const sortedGaps = [...gaps].sort((a, b) => a - b);
-            const medianGap = sortedGaps[Math.floor(sortedGaps.length / 2)];
-            while (gaps.length < 7) {
-                gaps.push(medianGap);
-            }
         }
 
         // Find the minimum gap (the N baseline)
