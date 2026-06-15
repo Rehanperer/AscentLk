@@ -207,11 +207,15 @@ class SoundSynthesizer {
     }
 }
 
-// Pulse Ring gap sizes in pixels (using SVG viewBox 0 0 2500 2500)
-const GAP_PX: Record<string, number> = { N: 25, M: 65, W: 121 };
-const RING_STROKE = 15;
-const RING_R0 = 320; // innermost ring radius
+// Pulse Ring gap sizes — viewBox 500×500 displayed at 320×320 CSS px
+// Scale factor ≈ 0.64, so gaps are physically large enough for camera detection
+const GAP_PX: Record<string, number> = { N: 8, M: 20, W: 36 };
+const RING_STROKE = 4;
+const RING_R0 = 48; // innermost ring radius (clears the 40px-radius blob center)
 const RING_COLOR = '#00FFFF'; // neon cyan
+
+// Label map for the text code fallback
+const GAP_LABEL: Record<string, string> = { N: 'N', M: 'M', W: 'W' };
 
 const RadianiteTicket: React.FC = () => {
     const { id: ticketId } = useParams<{ id: string }>();
@@ -726,11 +730,20 @@ const RadianiteTicket: React.FC = () => {
                                     className="absolute z-10 pointer-events-none"
                                     width="320"
                                     height="320"
-                                    viewBox="0 0 2500 2500"
-                                    style={{ filter: 'drop-shadow(0 0 4px rgba(0,255,255,0.5))' }}
+                                    viewBox="0 0 500 500"
+                                    style={{ filter: 'drop-shadow(0 0 6px rgba(0,255,255,0.6))' }}
                                     animate={{ scale: [0.98, 1.02, 0.98] }}
                                     transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
                                 >
+                                    <defs>
+                                        <filter id="ring-glow-ticket" x="-50%" y="-50%" width="200%" height="200%">
+                                            <feGaussianBlur stdDeviation="2" result="blur" />
+                                            <feMerge>
+                                                <feMergeNode in="blur" />
+                                                <feMergeNode in="SourceGraphic" />
+                                            </feMerge>
+                                        </filter>
+                                    </defs>
 
                                     {(() => {
                                         const rings: React.ReactElement[] = [];
@@ -739,13 +752,14 @@ const RadianiteTicket: React.FC = () => {
                                         rings.push(
                                             <circle
                                                 key={0}
-                                                cx="1250"
-                                                cy="1250"
+                                                cx="250"
+                                                cy="250"
                                                 r={r}
                                                 fill="none"
                                                 stroke={RING_COLOR}
                                                 strokeWidth={RING_STROKE}
-                                                opacity={0.9}
+                                                opacity={0.95}
+                                                filter="url(#ring-glow-ticket)"
                                             />
                                         );
                                         // 7 more rings, each spaced by the gap value
@@ -756,13 +770,14 @@ const RadianiteTicket: React.FC = () => {
                                             rings.push(
                                                 <circle
                                                     key={i + 1}
-                                                    cx="1250"
-                                                    cy="1250"
+                                                    cx="250"
+                                                    cy="250"
                                                     r={r}
                                                     fill="none"
                                                     stroke={RING_COLOR}
                                                     strokeWidth={RING_STROKE}
-                                                    opacity={0.85 - i * 0.06}
+                                                    opacity={0.9 - i * 0.04}
+                                                    filter="url(#ring-glow-ticket)"
                                                 />
                                             );
                                         }
@@ -772,10 +787,30 @@ const RadianiteTicket: React.FC = () => {
                             </div>
 
                             {/* Ring status details */}
-                            <div className="w-[300px] flex justify-between px-1 font-mono text-[9px] text-white/40 mb-5">
+                            <div className="w-[300px] flex justify-between px-1 font-mono text-[9px] text-white/40 mb-3">
                                 <span>[ PULSE RING ACTIVE ]</span>
                                 <span className="text-[#00ff88] animate-pulse font-bold">STABILITY: SECURE</span>
                                 <span>[ GATE_SYS ]</span>
+                            </div>
+
+                            {/* Text Code Fallback — displays the sequence as typed characters */}
+                            <div className="w-[300px] bg-black/60 border border-white/10 rounded px-3 py-2 mb-5 flex flex-col items-center gap-1">
+                                <span className="font-mono text-[8px] text-white/30 tracking-widest uppercase">MANUAL VERIFICATION CODE</span>
+                                <div className="flex items-center gap-1 font-mono text-base font-bold tracking-[0.25em]">
+                                    {colorSequence.map((gap, idx) => (
+                                        <span 
+                                            key={idx} 
+                                            className="transition-colors duration-300"
+                                            style={{ 
+                                                color: gap === 'N' ? '#00FFFF' : gap === 'M' ? '#FFFF00' : '#FF8C00',
+                                                textShadow: `0 0 8px ${gap === 'N' ? 'rgba(0,255,255,0.5)' : gap === 'M' ? 'rgba(255,255,0,0.5)' : 'rgba(255,140,0,0.5)'}`
+                                            }}
+                                        >
+                                            {gap}
+                                        </span>
+                                    ))}
+                                </div>
+                                <span className="font-mono text-[7px] text-white/20">READ THIS CODE TO GATE STAFF IF CAMERA FAILS</span>
                             </div>
 
                             {/* Decryption status bar */}

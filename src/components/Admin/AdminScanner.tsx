@@ -426,13 +426,23 @@ const AdminScanner: React.FC = () => {
         setScanStatus('processing');
         synthRef.current.playLock();
 
+        console.log('[SCANNER] === VERIFICATION TRIGGERED ===');
+        console.log('[SCANNER] Decoded sequence:', JSON.stringify(sequence));
+        console.log('[SCANNER] Sequence length:', sequence.length);
+
         try {
             // Call Supabase RPC validation
+            console.log('[SCANNER] Calling supabase.rpc(validate_ticket, { scanned_sequence:', sequence, '})');
             const { data, error } = await supabase.rpc('validate_ticket', { scanned_sequence: sequence });
+            
+            console.log('[SCANNER] Supabase response - data:', JSON.stringify(data));
+            console.log('[SCANNER] Supabase response - error:', JSON.stringify(error));
+
             if (error) throw error;
 
             if (data && data.length > 0) {
                 // Success!
+                console.log('[SCANNER] ✅ MATCH FOUND:', data[0].full_name);
                 const matchedTicket = data[0];
                 setVerifiedTicket(matchedTicket);
                 setScanStatus('success');
@@ -463,6 +473,7 @@ const AdminScanner: React.FC = () => {
                 }, 4000);
             } else {
                 // Invalid or Expired Sequence
+                console.log('[SCANNER] ❌ NO MATCH - sequence not found or expired');
                 setScanStatus('invalid');
                 setInvalidReason('PAYLOAD MISMATCH: DYNAMIC SEQUENCE EXPIRED OR TICKET BOOKING REJECTED.');
                 synthRef.current.playError();
@@ -476,7 +487,7 @@ const AdminScanner: React.FC = () => {
                 }, 3500);
             }
         } catch (err) {
-            console.error(err);
+            console.error('[SCANNER] ❌ NETWORK/RPC ERROR:', err);
             setScanStatus('invalid');
             setInvalidReason('NETWORK FAULT: CANNOT RETRIEVE REGISTRATION SECURE KEYS.');
             synthRef.current.playError();
