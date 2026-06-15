@@ -571,6 +571,14 @@ const AdminPage: React.FC = () => {
                     <div className="flex flex-wrap gap-2 md:gap-3">
                         <button
                             onClick={() => {
+                                window.location.href = '/admin/scanner';
+                            }}
+                            className="flex items-center gap-2 px-4 py-2 border border-[#64c8ff]/30 bg-[#64c8ff]/10 font-mono text-[10px] md:text-xs hover:bg-[#64c8ff]/20 transition-colors text-[#64c8ff] rounded-sm font-semibold tracking-wider"
+                        >
+                            LIVE SCANNER
+                        </button>
+                        <button
+                            onClick={() => {
                                 localStorage.removeItem('admin_session');
                                 window.location.href = '/admin/login';
                             }}
@@ -662,8 +670,17 @@ const AdminPage: React.FC = () => {
                                     <AlertItem type="success" text="STABLE: Payment gateway handshake successful." />
                                     <AlertItem type="info" text={`STATS: ${stats.totalRegistrations} total units processed.`} />
                                 </div>
-                                <div className="mt-6 pt-5 border-t border-white/5">
-                                    <div className="font-mono text-[10px] text-white/20 mb-3 tracking-widest uppercase">Quick Actions</div>
+                                <div className="mt-6 pt-5 border-t border-white/5 space-y-3">
+                                    <div className="font-mono text-[10px] text-white/20 mb-1 tracking-widest uppercase">Quick Actions</div>
+                                    <button
+                                        onClick={() => {
+                                            window.location.href = '/admin/scanner';
+                                        }}
+                                        className="w-full py-3 bg-[#64c8ff] text-black font-teko text-lg tracking-widest hover:bg-[#78d2ff] transition-colors rounded-sm font-bold flex items-center justify-center gap-2"
+                                    >
+                                        <Ticket size={16} />
+                                        LAUNCH LIVE SCANNER
+                                    </button>
                                     <button className="w-full py-3 bg-[#ff4655] text-white font-teko text-lg tracking-widest hover:bg-[#ff5a68] transition-colors rounded-sm">
                                         BROADCAST UPDATE
                                     </button>
