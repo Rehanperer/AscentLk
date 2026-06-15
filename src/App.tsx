@@ -22,11 +22,13 @@ import TacticalLoader from './components/TacticalLoader';
 // Lazy Load Pages/Components
 const MaintenancePage = lazy(() => import('./components/MaintenancePage'));
 const TicketsPage = lazy(() => import('./components/Tickets/TicketsPage'));
+const RadianiteTicket = lazy(() => import('./components/Tickets/RadianiteTicket'));
 
 const RegistrationModal = lazy(() => import('./components/RegistrationModal'));
 
 const AdminPage = lazy(() => import('./components/Admin/AdminPage'));
 const AdminLoginPage = lazy(() => import('./components/Admin/AdminLoginPage'));
+const AdminScanner = lazy(() => import('./components/Admin/AdminScanner'));
 const CheckoutPage = lazy(() => import('./components/Tickets/CheckoutPage'));
 const RegistrationPage = lazy(() => import('./components/Registration/RegistrationPage'));
 
@@ -199,10 +201,22 @@ const App: React.FC = () => {
                             <CheckoutPage />
                         </Suspense>
                     } />
+                    <Route path="/ticket/:id" element={
+                        <Suspense fallback={<TacticalLoader />}>
+                            <RadianiteTicket />
+                        </Suspense>
+                    } />
                     <Route path="/admin" element={
                         <Suspense fallback={<TacticalLoader />}>
                             <AdminGuard>
                                 <AdminPage />
+                            </AdminGuard>
+                        </Suspense>
+                    } />
+                    <Route path="/admin/scanner" element={
+                        <Suspense fallback={<TacticalLoader />}>
+                            <AdminGuard>
+                                <AdminScanner />
                             </AdminGuard>
                         </Suspense>
                     } />
