@@ -204,6 +204,23 @@ const AdminPage: React.FC = () => {
     // Modal State
     const [selectedTeam, setSelectedTeam] = useState<any | null>(null);
 
+    // All Seats State (for available seats list)
+    const [allSeats, setAllSeats] = useState<any[]>([]);
+
+    // Create Test Ticket Modal State
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [newTicketName, setNewTicketName] = useState('');
+    const [newTicketEmail, setNewTicketEmail] = useState('');
+    const [newTicketPhone, setNewTicketPhone] = useState('');
+    const [newTicketSchool, setNewTicketSchool] = useState('');
+    const [newTicketSeatId, setNewTicketSeatId] = useState('random');
+    const [isCreatingTicket, setIsCreatingTicket] = useState(false);
+    const [createTicketError, setCreateTicketError] = useState<string | null>(null);
+
+    const availableSeats = useMemo(() => {
+        return allSeats.filter(s => s.status === 'available');
+    }, [allSeats]);
+
     // Monitor State
     const [bookedSeats, setBookedSeats] = useState<string[]>([]);
     const [heldSeats, setHeldSeats] = useState<string[]>([]);
@@ -235,6 +252,7 @@ const AdminPage: React.FC = () => {
         // Fetch Seat Stats
         const { data: seatData } = await supabase.from('seats').select('id, status, price');
         if (seatData) {
+            setAllSeats(seatData);
             const booked = seatData.filter(s => s.status === 'booked');
             const held = seatData.filter(s => s.status === 'held');
             const revenue = booked.reduce((sum, s) => sum + (s.price || 750), 0);
@@ -381,6 +399,73 @@ const AdminPage: React.FC = () => {
     }, [pageViews]);
 
     // ─── Handlers ────────────────────────────────────────────────────────
+
+    const handleCreateTestTicket = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!newTicketName || !newTicketEmail) {
+            setCreateTicketError('NAME_AND_EMAIL_REQUIRED');
+            return;
+        }
+
+        setIsCreatingTicket(true);
+        setCreateTicketError(null);
+
+        try {
+            let assignedSeatId: string | null = null;
+            if (newTicketSeatId === 'random') {
+                if (availableSeats.length > 0) {
+                    assignedSeatId = availableSeats[Math.floor(Math.random() * availableSeats.length)].id;
+                } else {
+                    throw new Error('NO_SEATS_AVAILABLE');
+                }
+            } else if (newTicketSeatId !== 'none') {
+                assignedSeatId = newTicketSeatId;
+            }
+
+            // 1. Update seat status in Supabase if a seat is assigned
+            if (assignedSeatId) {
+                const { error: seatErr } = await supabase
+                    .from('seats')
+                    .update({
+                        status: 'booked',
+                        booked_by: newTicketEmail
+                    })
+                    .eq('id', assignedSeatId);
+                if (seatErr) throw seatErr;
+            }
+
+            // 2. Insert registration in Supabase
+            const { error: regErr } = await supabase
+                .from('registrations')
+                .insert({
+                    seat_id: assignedSeatId || null,
+                    full_name: newTicketName,
+                    email: newTicketEmail,
+                    phone: newTicketPhone || '+94770000000',
+                    school: newTicketSchool || 'Independent',
+                    transaction_id: `ASCENT-MOCK-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
+                    ticket_status: 'issued'
+                });
+
+            if (regErr) throw regErr;
+
+            // 3. Clear form and close modal
+            setNewTicketName('');
+            setNewTicketEmail('');
+            setNewTicketPhone('');
+            setNewTicketSchool('');
+            setNewTicketSeatId('random');
+            setIsCreateModalOpen(false);
+
+            // 4. Refresh data
+            await fetchData();
+        } catch (err: any) {
+            console.error('Create ticket error:', err);
+            setCreateTicketError(err.message || 'CREATION_FAILED');
+        } finally {
+            setIsCreatingTicket(false);
+        }
+    };
 
     const handleDeleteRegistration = async (id: string, seatId: string) => {
         if (!window.confirm(`Are you sure you want to delete this registration? This will also free up seat ${seatId}.`)) return;
@@ -703,9 +788,17 @@ const AdminPage: React.FC = () => {
                                     className="bg-[#040814] border border-white/10 pl-10 pr-4 py-2.5 font-mono text-xs w-full sm:w-80 outline-none focus:border-[#64c8ff] transition-colors rounded-sm"
                                 />
                             </div>
-                            <button className="flex items-center gap-2 px-4 py-2.5 bg-white/5 hover:bg-white/10 font-mono text-xs transition-colors border border-white/10 rounded-sm">
-                                <Download size={14} /> EXPORT CSV
-                            </button>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => setIsCreateModalOpen(true)}
+                                    className="flex items-center gap-2 px-4 py-2.5 bg-[#64c8ff] hover:bg-[#78d2ff] text-black font-mono text-xs font-bold transition-colors rounded-sm"
+                                >
+                                    + CREATE TEST TICKET
+                                </button>
+                                <button className="flex items-center gap-2 px-4 py-2.5 bg-white/5 hover:bg-white/10 font-mono text-xs transition-colors border border-white/10 rounded-sm">
+                                    <Download size={14} /> EXPORT CSV
+                                </button>
+                            </div>
                         </div>
 
                         <div className="overflow-x-auto">
@@ -1338,6 +1431,111 @@ const AdminPage: React.FC = () => {
                                     </div>
                                 )}
                             </div>
+                        </motion.div>
+                    </div>
+                )}
+
+                {isCreateModalOpen && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70" onClick={() => setIsCreateModalOpen(false)}>
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 20 }}
+                            transition={{ duration: 0.3 }}
+                            className="bg-[#0c0e1a] border border-white/10 w-full max-w-md relative p-6 md:p-8 shadow-2xl rounded-sm"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <button
+                                onClick={() => setIsCreateModalOpen(false)}
+                                className="absolute top-4 right-4 text-white/30 hover:text-white transition-colors"
+                            >
+                                <X size={20} />
+                            </button>
+
+                            <div className="mb-6 border-b border-white/10 pb-3">
+                                <h2 className="font-teko text-2xl md:text-3xl text-white uppercase">CREATE TEST TICKET</h2>
+                                <p className="font-mono text-[10px] text-[#64c8ff] tracking-widest mt-1">
+                                    ADMINISTRATIVE TICKET INJECTOR
+                                </p>
+                            </div>
+
+                            <form onSubmit={handleCreateTestTicket} className="space-y-4 font-mono text-xs">
+                                <div className="space-y-1.5">
+                                    <label className="block text-white/40 text-[10px] uppercase">Attendee Name</label>
+                                    <input
+                                        type="text"
+                                        required
+                                        value={newTicketName}
+                                        onChange={(e) => setNewTicketName(e.target.value)}
+                                        className="w-full bg-[#040814] border border-white/10 p-3 text-white focus:border-[#64c8ff] outline-none rounded-sm"
+                                        placeholder="E.g. VIPER TESTER"
+                                    />
+                                </div>
+
+                                <div className="space-y-1.5">
+                                    <label className="block text-white/40 text-[10px] uppercase">Email Address</label>
+                                    <input
+                                        type="email"
+                                        required
+                                        value={newTicketEmail}
+                                        onChange={(e) => setNewTicketEmail(e.target.value)}
+                                        className="w-full bg-[#040814] border border-white/10 p-3 text-white focus:border-[#64c8ff] outline-none rounded-sm"
+                                        placeholder="E.g. tester@ascent.lk"
+                                    />
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-1.5">
+                                        <label className="block text-white/40 text-[10px] uppercase">Phone (Optional)</label>
+                                        <input
+                                            type="text"
+                                            value={newTicketPhone}
+                                            onChange={(e) => setNewTicketPhone(e.target.value)}
+                                            className="w-full bg-[#040814] border border-white/10 p-3 text-white focus:border-[#64c8ff] outline-none rounded-sm"
+                                            placeholder="+94771234567"
+                                        />
+                                    </div>
+                                    <div className="space-y-1.5">
+                                        <label className="block text-white/40 text-[10px] uppercase">School (Optional)</label>
+                                        <input
+                                            type="text"
+                                            value={newTicketSchool}
+                                            onChange={(e) => setNewTicketSchool(e.target.value)}
+                                            className="w-full bg-[#040814] border border-white/10 p-3 text-white focus:border-[#64c8ff] outline-none rounded-sm"
+                                            placeholder="Valorant High"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-1.5">
+                                    <label className="block text-white/40 text-[10px] uppercase">Seat Allocation</label>
+                                    <select
+                                        value={newTicketSeatId}
+                                        onChange={(e) => setNewTicketSeatId(e.target.value)}
+                                        className="w-full bg-[#040814] border border-white/10 p-3 text-white focus:border-[#64c8ff] outline-none rounded-sm"
+                                    >
+                                        <option value="random">Assign Random Seat ({availableSeats.length} left)</option>
+                                        <option value="none">No Seat (General Admission / Standing)</option>
+                                        {availableSeats.slice(0, 100).map(seat => (
+                                            <option key={seat.id} value={seat.id}>{seat.id}</option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                {createTicketError && (
+                                    <div className="bg-[#ff4655]/10 border-l-2 border-[#ff4655] p-3 text-[10px] text-[#ff4655]">
+                                        ERROR: {createTicketError}
+                                    </div>
+                                )}
+
+                                <button
+                                    type="submit"
+                                    disabled={isCreatingTicket}
+                                    className="w-full py-3 bg-[#64c8ff] hover:bg-[#78d2ff] disabled:bg-[#64c8ff]/30 text-black font-teko text-lg tracking-widest font-bold uppercase transition-colors rounded-sm flex items-center justify-center gap-2"
+                                >
+                                    {isCreatingTicket ? 'INJECTING TICKET...' : 'CONFIRM & INJECT TICKET'}
+                                </button>
+                            </form>
                         </motion.div>
                     </div>
                 )}
