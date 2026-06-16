@@ -730,16 +730,31 @@ const AdminPage: React.FC = () => {
                                             <td className="p-3 md:p-4 uppercase">{reg.school}</td>
                                             <td className="p-3 md:p-4 text-white/40">{new Date(reg.created_at).toLocaleString()}</td>
                                             <td className="p-3 md:p-4">
-                                                <span className="px-2 py-0.5 bg-[#00ff88]/10 text-[#00ff88] text-[9px] border border-[#00ff88]/20 rounded-sm">VERIFIED</span>
+                                                {reg.ticket_status === 'scanned' ? (
+                                                    <span className="px-2 py-0.5 bg-[#00ff88]/10 text-[#00ff88] text-[9px] border border-[#00ff88]/20 rounded-sm font-semibold">SCANNED</span>
+                                                ) : (
+                                                    <span className="px-2 py-0.5 bg-[#64c8ff]/10 text-[#64c8ff] text-[9px] border border-[#64c8ff]/20 rounded-sm font-semibold">ISSUED</span>
+                                                )}
                                             </td>
                                             <td className="p-3 md:p-4 text-right">
-                                                <button
-                                                    onClick={() => handleDeleteRegistration(reg.id, reg.seat_id)}
-                                                    className="p-2 text-white/20 hover:text-[#ff4655] transition-colors"
-                                                    title="Delete Registration"
-                                                >
-                                                    <Trash2 size={16} />
-                                                </button>
+                                                <div className="flex justify-end gap-2">
+                                                    <a
+                                                        href={`/ticket/${reg.id}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="p-2 text-white/40 hover:text-[#64c8ff] transition-colors"
+                                                        title="View Ticket"
+                                                    >
+                                                        <Ticket size={16} />
+                                                    </a>
+                                                    <button
+                                                        onClick={() => handleDeleteRegistration(reg.id, reg.seat_id)}
+                                                        className="p-2 text-white/20 hover:text-[#ff4655] transition-colors"
+                                                        title="Delete Registration"
+                                                    >
+                                                        <Trash2 size={16} />
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
                                     )) : (

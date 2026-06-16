@@ -379,19 +379,34 @@ const AdminScanner: React.FC = () => {
             gaps.push(peaksToUse[g + 1] - peaksToUse[g]);
         }
 
-        // Find the minimum gap (the N baseline)
-        const minGap = Math.min(...gaps);
-        if (minGap <= 0) {
-            setDetectedSequence(['?', '?', '?', '?', '?', '?', '?']);
-            rollingHistory.current = [];
-            return;
+        // Find best-fit scale factor S that minimizes quantization error
+        // Expected gap templates are N=12 (8 gap + 4 stroke), M=24 (20 gap + 4 stroke), W=40 (36 gap + 4 stroke)
+        let bestS = 1.0;
+        let minError = Infinity;
+
+        // Scan S in a reasonable range (0.15 to 4.0 in steps of 0.02)
+        for (let s = 0.15; s <= 4.0; s += 0.02) {
+            let error = 0;
+            for (const gap of gaps) {
+                const diffN = Math.abs(gap - 12 * s);
+                const diffM = Math.abs(gap - 24 * s);
+                const diffW = Math.abs(gap - 40 * s);
+                error += Math.min(diffN, diffM, diffW);
+            }
+            if (error < minError) {
+                minError = error;
+                bestS = s;
+            }
         }
 
-        // Classify each gap by its ratio to the minimum
+        // Classify each gap by comparing it to the templates scaled by bestS
         const decoded: string[] = gaps.map(gap => {
-            const ratio = gap / minGap;
-            if (ratio < 1.6) return 'N';
-            if (ratio < 2.9) return 'M';
+            const diffN = Math.abs(gap - 12 * bestS);
+            const diffM = Math.abs(gap - 24 * bestS);
+            const diffW = Math.abs(gap - 40 * bestS);
+            const m = Math.min(diffN, diffM, diffW);
+            if (m === diffN) return 'N';
+            if (m === diffM) return 'M';
             return 'W';
         });
 

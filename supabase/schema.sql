@@ -114,10 +114,9 @@ BEGIN
         attempts := attempts + 1;
     END LOOP;
 
-    -- Update the ticket
     UPDATE registrations
     SET active_color_sequence = new_seq,
-        sequence_expires_at = NOW() + INTERVAL '35 seconds'
+        sequence_expires_at = NOW() + INTERVAL '180 seconds'
     WHERE id = ticket_id AND ticket_status = 'issued';
 
     RETURN new_seq;

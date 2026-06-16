@@ -405,7 +405,7 @@ const RadianiteTicket: React.FC = () => {
                     if (error) throw error;
                     if (data) {
                         setColorSequence(data);
-                        setExpiresIn(30);
+                        setExpiresIn(180);
                     } else {
                         // Ticket was already scanned
                         setChargeState('scanned');
@@ -823,7 +823,7 @@ const RadianiteTicket: React.FC = () => {
                                     <motion.div 
                                         className="h-full bg-gradient-to-r from-[#00ff88] to-[#00ffff]"
                                         initial={{ width: '100%' }}
-                                        animate={{ width: `${(expiresIn / 30) * 100}%` }}
+                                        animate={{ width: `${(expiresIn / 180) * 100}%` }}
                                         transition={{ duration: 1, ease: 'linear' }}
                                     />
                                 </div>
