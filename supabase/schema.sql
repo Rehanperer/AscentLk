@@ -84,6 +84,7 @@ DECLARE
     rand_idx INT;
     i INT;
     attempts INT := 0;
+    sum_val INT;
 BEGIN
     -- Verify ticket is still active
     IF NOT EXISTS (SELECT 1 FROM registrations WHERE id = ticket_id AND ticket_status = 'issued') THEN
@@ -92,14 +93,25 @@ BEGIN
 
     LOOP
         new_seq := ARRAY[]::TEXT[];
-        FOR i IN 1..7 LOOP
-            rand_idx := floor(random() * 3)::INT + 1;
-            new_seq := array_append(new_seq, gaps[rand_idx]);
+        sum_val := 0;
+        
+        -- Generate 6 random rings
+        FOR i IN 1..6 LOOP
+            rand_idx := floor(random() * 3)::INT; -- 0, 1, or 2
+            sum_val := sum_val + rand_idx;
+            new_seq := array_append(new_seq, gaps[rand_idx + 1]);
         END LOOP;
 
-        -- Ensure at least one 'N' is present so ratio decoding is stable
-        IF NOT ('N' = ANY(new_seq)) THEN
-            new_seq[floor(random() * 7)::INT + 1] := 'N';
+        -- 7th ring is the checksum (modulo 3)
+        new_seq := array_append(new_seq, gaps[(sum_val % 3) + 1]);
+
+        -- Ensure at least one 'N' is present (excluding checksum) so ratio decoding is stable
+        IF NOT ('N' = ANY(new_seq[1:6])) THEN
+            rand_idx := floor(random() * 6)::INT + 1;
+            sum_val := sum_val - array_position(gaps, new_seq[rand_idx]) + 1; -- Remove old value
+            new_seq[rand_idx] := 'N';
+            sum_val := sum_val + 0; -- 'N' is 0
+            new_seq[7] := gaps[(sum_val % 3) + 1]; -- Recalculate checksum
         END IF;
 
         -- Check if this sequence is already active elsewhere to prevent collision

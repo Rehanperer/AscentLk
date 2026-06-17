@@ -5,6 +5,7 @@ import { Camera, ShieldCheck, ShieldAlert, Users, ArrowLeft, RefreshCw, Volume2,
 import { supabase } from '../../lib/supabase';
 import { Link } from 'react-router-dom';
 import SEO from '../SEO';
+import ScannerWorker from './scanner.worker?worker';
 
 // Programmatic Web Audio synth for the scanner feedbacks
 class ScannerAudio {
@@ -153,13 +154,26 @@ const AdminScanner: React.FC = () => {
         }
     }, []);
 
+    // Web Worker Setup
+    const workerRef = useRef<Worker | null>(null);
+
+    useEffect(() => {
+        workerRef.current = new ScannerWorker();
+        workerRef.current.onmessage = (e) => {
+            handleWorkerMessage(e.data);
+        };
+        return () => {
+            workerRef.current?.terminate();
+        };
+    }, []);
+
     // Frame Analyzer loop
     useEffect(() => {
         let active = true;
         const scanInterval = setInterval(() => {
             if (!active || scanStatus !== 'searching' || !cameraReady || processingSequence.current) return;
             analyzeFrame();
-        }, 110); // Check frame every ~110ms
+        }, 40); // Check frame every 40ms (~25 FPS) for faster detection
 
         return () => {
             active = false;
@@ -170,7 +184,7 @@ const AdminScanner: React.FC = () => {
     const analyzeFrame = () => {
         const webcam = webcamRef.current;
         const canvas = canvasRef.current;
-        if (!webcam || !canvas) return;
+        if (!webcam || !canvas || !workerRef.current) return;
 
         const video = webcam.video;
         if (!video || video.readyState !== video.HAVE_ENOUGH_DATA) return;
@@ -187,107 +201,32 @@ const AdminScanner: React.FC = () => {
 
         ctx.drawImage(video, 0, 0, w, h);
 
-        // Center of frame
-        const cx = Math.round(w / 2);
-        const cy = Math.round(h / 2);
-
-        // Get full frame image data
+        // Get full frame image data and send to worker
         const imageData = ctx.getImageData(0, 0, w, h);
-        const data = imageData.data;
+        workerRef.current.postMessage({ imageData, width: w, height: h });
+    };
 
-        // Helper: get brightness with standard luminance + mild cyan bias
-        // Extremely robust to TrueTone/Night Shift screen warmth
-        const getCyanLuminance = (x: number, y: number): number => {
-            if (x < 0 || x >= w || y < 0 || y >= h) return 0;
-            const idx = (y * w + x) * 4;
-            const r = data[idx], g = data[idx + 1], b = data[idx + 2];
-            const lum = 0.299 * r + 0.587 * g + 0.114 * b;
-            // Mild 1.2x boost for cyan shades (G & B both greater than R)
-            const cyanBias = (g > r && b > r) ? 1.2 : 1.0;
-            return Math.min(255, lum * cyanBias);
-        };
+    const handleWorkerMessage = (data: any) => {
+        if (scanStatus !== 'searching' || processingSequence.current) return;
 
-        // Scan along one axis and find peaks
-        const scanAxis = (dx: number, dy: number): number[] => {
-            const maxDist = Math.min(w, h) / 2 - 10;
-            const samples: number[] = [];
-            const positions: number[] = [];
+        const { success, center, allPeaks, decoded, checksumFail } = data;
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
 
-            // Sample outward from center, starting at d=5 to catch small innermost rings
-            for (let d = 5; d < maxDist; d++) {
-                const x = cx + dx * d;
-                const y = cy + dy * d;
-                // Average a 5x5 area for webcam noise reduction
-                let sum = 0;
-                let count = 0;
-                for (let ox = -2; ox <= 2; ox++) {
-                    for (let oy = -2; oy <= 2; oy++) {
-                        sum += getCyanLuminance(Math.round(x + ox), Math.round(y + oy));
-                        count++;
-                    }
-                }
-                samples.push(sum / count);
-                positions.push(d);
-            }
-
-            if (samples.length < 20) return [];
-
-            // Dynamic threshold: mean + 0.3 * (max - mean) — more lenient
-            const maxLum = Math.max(...samples);
-            const meanLum = samples.reduce((a, b) => a + b, 0) / samples.length;
-            const threshold = meanLum + 0.3 * (maxLum - meanLum);
-
-            // Minimum brightness contrast needed (lower for phone screens)
-            if (maxLum - meanLum < 12) return [];
-
-            // Find local maxima above threshold
-            const peaks: number[] = [];
-            const minPeakDist = 3; // Pixels between peaks — relaxed for lower res
-
-            for (let i = 2; i < samples.length - 2; i++) {
-                if (samples[i] > threshold &&
-                    samples[i] >= samples[i - 1] &&
-                    samples[i] >= samples[i + 1] &&
-                    samples[i] >= samples[i - 2] &&
-                    samples[i] >= samples[i + 2]) {
-                    // Check minimum distance from last peak
-                    if (peaks.length === 0 || positions[i] - peaks[peaks.length - 1] >= minPeakDist) {
-                        peaks.push(positions[i]);
-                    }
-                }
-            }
-
-            return peaks.slice(0, 10); // Cap at 10 to allow filtering
-        };
-
-        // Scan 4 orthogonal directions + 4 diagonal for better coverage
-        const axes = [
-            { dx: 1, dy: 0, label: 'R' },
-            { dx: -1, dy: 0, label: 'L' },
-            { dx: 0, dy: 1, label: 'D' },
-            { dx: 0, dy: -1, label: 'U' },
-            { dx: 0.707, dy: 0.707, label: 'DR' },
-            { dx: -0.707, dy: 0.707, label: 'DL' },
-            { dx: 0.707, dy: -0.707, label: 'UR' },
-            { dx: -0.707, dy: -0.707, label: 'UL' },
-        ];
-
-        const allPeaks: number[][] = [];
-        const allPeakPositions: { x: number; y: number }[][] = [];
-
-        for (const axis of axes) {
-            const peaks = scanAxis(axis.dx, axis.dy);
-            allPeaks.push(peaks);
-            allPeakPositions.push(
-                peaks.map(d => ({
-                    x: cx + axis.dx * d,
-                    y: cy + axis.dy * d
-                }))
-            );
-        }
+        const w = canvas.width;
+        const h = canvas.height;
+        const { cx, cy } = center || { cx: w / 2, cy: h / 2 };
 
         // === DRAW HUD OVERLAY ===
-        
+        ctx.clearRect(0, 0, w, h); // Clear previous HUD if we want, but actually we need the video frame behind it.
+        // Wait, analyzeFrame draws the video to the canvas! But handleWorkerMessage runs async. 
+        // By the time handleWorkerMessage runs, analyzeFrame might have drawn a new video frame, or not.
+        // To avoid flickering, we should let analyzeFrame draw the video, and handleWorkerMessage draw the HUD on top.
+        // However, if we don't clear, we draw HUD over HUD. But analyzeFrame overwrites the whole canvas with drawImage!
+        // So we don't need to clear.
+
         // Draw crosshair lines through center
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
         ctx.lineWidth = 1;
@@ -298,6 +237,12 @@ const AdminScanner: React.FC = () => {
 
         // Draw scanning axes (brighter, shorter)
         const scanLen = Math.min(w, h) / 2 - 10;
+        const axes = [
+            { dx: 1, dy: 0 }, { dx: -1, dy: 0 }, { dx: 0, dy: 1 }, { dx: 0, dy: -1 },
+            { dx: 0.707, dy: 0.707 }, { dx: -0.707, dy: 0.707 }, 
+            { dx: 0.707, dy: -0.707 }, { dx: -0.707, dy: -0.707 }
+        ];
+
         ctx.strokeStyle = 'rgba(0, 255, 255, 0.2)';
         ctx.lineWidth = 1;
         for (const axis of axes) {
@@ -318,19 +263,24 @@ const AdminScanner: React.FC = () => {
         ctx.arc(cx, cy, 3, 0, Math.PI * 2);
         ctx.fill();
 
-        // Draw detected peaks on each axis
-        for (const peakPositions of allPeakPositions) {
-            for (const pos of peakPositions) {
-                ctx.strokeStyle = '#00ff88';
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                ctx.arc(pos.x, pos.y, 5, 0, Math.PI * 2);
-                ctx.stroke();
-                ctx.fillStyle = '#00ff88';
-                ctx.beginPath();
-                ctx.arc(pos.x, pos.y, 2, 0, Math.PI * 2);
-                ctx.fill();
-            }
+        // Draw detected peaks
+        if (allPeaks) {
+            allPeaks.forEach((peaks: number[], axisIdx: number) => {
+                const axis = axes[axisIdx];
+                peaks.forEach((d: number) => {
+                    const px = cx + axis.dx * d;
+                    const py = cy + axis.dy * d;
+                    ctx.strokeStyle = '#00ff88';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.arc(px, py, 5, 0, Math.PI * 2);
+                    ctx.stroke();
+                    ctx.fillStyle = '#00ff88';
+                    ctx.beginPath();
+                    ctx.arc(px, py, 2, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+            });
         }
 
         // Corner brackets
@@ -352,63 +302,21 @@ const AdminScanner: React.FC = () => {
         ctx.beginPath(); ctx.moveTo(bx + cornerLen, by + bh); ctx.lineTo(bx, by + bh); ctx.lineTo(bx, by + bh - cornerLen); ctx.stroke();
         ctx.beginPath(); ctx.moveTo(bx + bw - cornerLen, by + bh); ctx.lineTo(bx + bw, by + bh); ctx.lineTo(bx + bw, by + bh - cornerLen); ctx.stroke();
 
-        // === DECODE GAPS ===
-        
-        // Require axes with exactly 8 peaks to ensure complete, unpadded sequence
-        const validAxes = allPeaks.filter(peaks => peaks.length === 8);
-        
-        // Show peak count in HUD for debugging
-        ctx.fillStyle = '#00FFFF';
-        ctx.font = 'bold 11px monospace';
-        ctx.textAlign = 'left';
-        ctx.fillText(`PEAKS: ${allPeaks.map(p => p.length).join('/')}`, 10, h - 10);
-        ctx.fillText(`VALID AXES: ${validAxes.length}`, 10, h - 25);
-
-        if (validAxes.length < 1) {
+        if (checksumFail) {
+            ctx.fillStyle = '#ff4655';
+            ctx.font = 'bold 12px monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText('CHECKSUM FAILED', cx, by - 8);
             setDetectedSequence(['?', '?', '?', '?', '?', '?', '?']);
             rollingHistory.current = [];
             return;
         }
 
-        // Use the first valid axis
-        const peaksToUse = validAxes[0];
-
-        // Compute gaps between consecutive peaks (exactly 7 gaps)
-        const gaps: number[] = [];
-        for (let g = 0; g < 7; g++) {
-            gaps.push(peaksToUse[g + 1] - peaksToUse[g]);
+        if (!success || !decoded) {
+            setDetectedSequence(['?', '?', '?', '?', '?', '?', '?']);
+            rollingHistory.current = [];
+            return;
         }
-
-        // Find best-fit scale factor S that minimizes quantization error
-        // Expected gap templates are N=12 (8 gap + 4 stroke), M=24 (20 gap + 4 stroke), W=40 (36 gap + 4 stroke)
-        let bestS = 1.0;
-        let minError = Infinity;
-
-        // Scan S in a reasonable range (0.15 to 4.0 in steps of 0.02)
-        for (let s = 0.15; s <= 4.0; s += 0.02) {
-            let error = 0;
-            for (const gap of gaps) {
-                const diffN = Math.abs(gap - 12 * s);
-                const diffM = Math.abs(gap - 24 * s);
-                const diffW = Math.abs(gap - 40 * s);
-                error += Math.min(diffN, diffM, diffW);
-            }
-            if (error < minError) {
-                minError = error;
-                bestS = s;
-            }
-        }
-
-        // Classify each gap by comparing it to the templates scaled by bestS
-        const decoded: string[] = gaps.map(gap => {
-            const diffN = Math.abs(gap - 12 * bestS);
-            const diffM = Math.abs(gap - 24 * bestS);
-            const diffW = Math.abs(gap - 40 * bestS);
-            const m = Math.min(diffN, diffM, diffW);
-            if (m === diffN) return 'N';
-            if (m === diffM) return 'M';
-            return 'W';
-        });
 
         setDetectedSequence(decoded);
 
@@ -418,13 +326,13 @@ const AdminScanner: React.FC = () => {
         ctx.textAlign = 'center';
         ctx.fillText(decoded.join(' '), cx, by - 8);
 
-        // Rolling history for lock (5 identical frames)
+        // Rolling history for lock (3 identical frames)
         rollingHistory.current.push(decoded);
-        if (rollingHistory.current.length > 5) {
+        if (rollingHistory.current.length > 3) {
             rollingHistory.current.shift();
         }
 
-        if (rollingHistory.current.length === 5) {
+        if (rollingHistory.current.length === 3) {
             const first = rollingHistory.current[0];
             const allMatch = rollingHistory.current.every(seq =>
                 seq.every((val, idx) => val === first[idx])
@@ -435,6 +343,8 @@ const AdminScanner: React.FC = () => {
             }
         }
     };
+
+    // --- END WORKER LOGIC ---
 
     const triggerVerification = async (sequence: string[]) => {
         processingSequence.current = true;
