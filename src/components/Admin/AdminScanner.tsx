@@ -220,12 +220,7 @@ const AdminScanner: React.FC = () => {
         const { cx, cy } = center || { cx: w / 2, cy: h / 2 };
 
         // === DRAW HUD OVERLAY ===
-        ctx.clearRect(0, 0, w, h); // Clear previous HUD if we want, but actually we need the video frame behind it.
-        // Wait, analyzeFrame draws the video to the canvas! But handleWorkerMessage runs async. 
-        // By the time handleWorkerMessage runs, analyzeFrame might have drawn a new video frame, or not.
-        // To avoid flickering, we should let analyzeFrame draw the video, and handleWorkerMessage draw the HUD on top.
-        // However, if we don't clear, we draw HUD over HUD. But analyzeFrame overwrites the whole canvas with drawImage!
-        // So we don't need to clear.
+        // We do not call clearRect here! analyzeFrame draws the video which naturally clears the old HUD.
 
         // Draw crosshair lines through center
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
