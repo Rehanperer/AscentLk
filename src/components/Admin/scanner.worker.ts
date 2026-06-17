@@ -50,10 +50,10 @@ function getCyanLuminance(data: Uint8ClampedArray, w: number, h: number, x: numb
 
 function scanAxis(data: Uint8ClampedArray, w: number, h: number, cx: number, cy: number, dx: number, dy: number): number[] {
     const maxDist = Math.min(w, h) / 2 - 10;
-    const samples: number[] = [];
-    const positions: number[] = [];
-
-    for (let d = 5; d < maxDist; d++) {
+    const rawSamples: number[] = [];
+    
+    // 1. Gather all samples first
+    for (let d = 0; d < maxDist; d++) {
         const x = cx + dx * d;
         const y = cy + dy * d;
         let sum = 0;
@@ -64,30 +64,38 @@ function scanAxis(data: Uint8ClampedArray, w: number, h: number, cx: number, cy:
                 count++;
             }
         }
-        samples.push(sum / count);
-        positions.push(d);
+        rawSamples.push(sum / count);
     }
 
-    if (samples.length < 20) return [];
+    if (rawSamples.length < 20) return [];
 
-    const maxLum = Math.max(...samples);
-    const meanLum = samples.reduce((a, b) => a + b, 0) / samples.length;
+    const maxLum = Math.max(...rawSamples);
+    const meanLum = rawSamples.reduce((a, b) => a + b, 0) / rawSamples.length;
     // Adaptive Threshold
     const threshold = meanLum + 0.25 * (maxLum - meanLum);
 
     if (maxLum - meanLum < 12) return [];
 
+    // 2. Skip the central orb blob
+    // The orb is at d=0. We walk forward until brightness drops below the threshold to exit the orb
+    let startD = 5;
+    while (startD < rawSamples.length && rawSamples[startD] >= threshold) {
+        startD++;
+    }
+
+    // Now startD is the first pixel OUTSIDE the orb
     const peaks: number[] = [];
     const minPeakDist = 3;
 
-    for (let i = 2; i < samples.length - 2; i++) {
-        if (samples[i] > threshold &&
-            samples[i] >= samples[i - 1] &&
-            samples[i] >= samples[i + 1] &&
-            samples[i] >= samples[i - 2] &&
-            samples[i] >= samples[i + 2]) {
-            if (peaks.length === 0 || positions[i] - peaks[peaks.length - 1] >= minPeakDist) {
-                peaks.push(positions[i]);
+    for (let i = startD + 2; i < rawSamples.length - 2; i++) {
+        if (rawSamples[i] > threshold &&
+            rawSamples[i] >= rawSamples[i - 1] &&
+            rawSamples[i] >= rawSamples[i + 1] &&
+            rawSamples[i] >= rawSamples[i - 2] &&
+            rawSamples[i] >= rawSamples[i + 2]) {
+            
+            if (peaks.length === 0 || i - peaks[peaks.length - 1] >= minPeakDist) {
+                peaks.push(i);
             }
         }
     }
