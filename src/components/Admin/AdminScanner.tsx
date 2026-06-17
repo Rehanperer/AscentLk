@@ -156,10 +156,12 @@ const AdminScanner: React.FC = () => {
 
     // Web Worker Setup
     const workerRef = useRef<Worker | null>(null);
+    const workerBusy = useRef(false);
 
     useEffect(() => {
         workerRef.current = new ScannerWorker();
         workerRef.current.onmessage = (e) => {
+            workerBusy.current = false;
             handleWorkerMessage(e.data);
         };
         return () => {
@@ -172,8 +174,9 @@ const AdminScanner: React.FC = () => {
         let active = true;
         const scanInterval = setInterval(() => {
             if (!active || scanStatus !== 'searching' || !cameraReady || processingSequence.current) return;
+            if (workerBusy.current) return; // Don't queue frames while worker is processing
             analyzeFrame();
-        }, 40); // Check frame every 40ms (~25 FPS) for faster detection
+        }, 60); // ~16 FPS — enough for fast detection without overwhelming the worker
 
         return () => {
             active = false;
@@ -201,15 +204,18 @@ const AdminScanner: React.FC = () => {
 
         ctx.drawImage(video, 0, 0, w, h);
 
-        // Get full frame image data and send to worker
+        // Extract pixel data and transfer the underlying ArrayBuffer to the worker
+        // This is the ONLY reliable way to pass pixel data to a Web Worker.
         const imageData = ctx.getImageData(0, 0, w, h);
-        workerRef.current.postMessage({ imageData, width: w, height: h });
+        const buffer = imageData.data.buffer.slice(0); // Copy the buffer
+        workerBusy.current = true;
+        workerRef.current.postMessage({ buffer, width: w, height: h }, [buffer]);
     };
 
     const handleWorkerMessage = (data: any) => {
         if (scanStatus !== 'searching' || processingSequence.current) return;
 
-        const { success, center, allPeaks, decoded, checksumFail } = data;
+        const { success, center, decoded, checksumFail, lowConfidence } = data;
         const canvas = canvasRef.current;
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
@@ -217,12 +223,12 @@ const AdminScanner: React.FC = () => {
 
         const w = canvas.width;
         const h = canvas.height;
-        const { cx, cy } = center || { cx: w / 2, cy: h / 2 };
+        const cx = center?.cx ?? Math.round(w / 2);
+        const cy = center?.cy ?? Math.round(h / 2);
 
         // === DRAW HUD OVERLAY ===
-        // We do not call clearRect here! analyzeFrame draws the video which naturally clears the old HUD.
 
-        // Draw crosshair lines through center
+        // Draw crosshair lines through detected center
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
         ctx.lineWidth = 1;
         ctx.beginPath();
@@ -230,7 +236,7 @@ const AdminScanner: React.FC = () => {
         ctx.moveTo(0, cy); ctx.lineTo(w, cy);
         ctx.stroke();
 
-        // Draw scanning axes (brighter, shorter)
+        // Draw scanning axes
         const scanLen = Math.min(w, h) / 2 - 10;
         const axes = [
             { dx: 1, dy: 0 }, { dx: -1, dy: 0 }, { dx: 0, dy: 1 }, { dx: 0, dy: -1 },
@@ -248,35 +254,15 @@ const AdminScanner: React.FC = () => {
         }
 
         // Draw center target
-        ctx.strokeStyle = '#ff4655';
+        ctx.strokeStyle = success ? '#00ff88' : '#ff4655';
         ctx.lineWidth = 2;
         ctx.beginPath();
         ctx.arc(cx, cy, 8, 0, Math.PI * 2);
         ctx.stroke();
-        ctx.fillStyle = '#ff4655';
+        ctx.fillStyle = success ? '#00ff88' : '#ff4655';
         ctx.beginPath();
         ctx.arc(cx, cy, 3, 0, Math.PI * 2);
         ctx.fill();
-
-        // Draw detected peaks
-        if (allPeaks) {
-            allPeaks.forEach((peaks: number[], axisIdx: number) => {
-                const axis = axes[axisIdx];
-                peaks.forEach((d: number) => {
-                    const px = cx + axis.dx * d;
-                    const py = cy + axis.dy * d;
-                    ctx.strokeStyle = '#00ff88';
-                    ctx.lineWidth = 2;
-                    ctx.beginPath();
-                    ctx.arc(px, py, 5, 0, Math.PI * 2);
-                    ctx.stroke();
-                    ctx.fillStyle = '#00ff88';
-                    ctx.beginPath();
-                    ctx.arc(px, py, 2, 0, Math.PI * 2);
-                    ctx.fill();
-                });
-            });
-        }
 
         // Corner brackets
         const bracketSize = Math.min(w, h) * 0.35;
@@ -297,17 +283,24 @@ const AdminScanner: React.FC = () => {
         ctx.beginPath(); ctx.moveTo(bx + cornerLen, by + bh); ctx.lineTo(bx, by + bh); ctx.lineTo(bx, by + bh - cornerLen); ctx.stroke();
         ctx.beginPath(); ctx.moveTo(bx + bw - cornerLen, by + bh); ctx.lineTo(bx + bw, by + bh); ctx.lineTo(bx + bw, by + bh - cornerLen); ctx.stroke();
 
+        // Status text
+        ctx.font = 'bold 11px monospace';
+        ctx.textAlign = 'left';
         if (checksumFail) {
             ctx.fillStyle = '#ff4655';
-            ctx.font = 'bold 12px monospace';
-            ctx.textAlign = 'center';
-            ctx.fillText('CHECKSUM FAILED', cx, by - 8);
-            setDetectedSequence(['?', '?', '?', '?', '?', '?', '?']);
-            rollingHistory.current = [];
-            return;
+            ctx.fillText('CHECKSUM FAIL', 10, h - 10);
+        } else if (lowConfidence) {
+            ctx.fillStyle = '#FFFF00';
+            ctx.fillText('LOW CONFIDENCE', 10, h - 10);
+        } else if (success) {
+            ctx.fillStyle = '#00ff88';
+            ctx.fillText('LOCKED', 10, h - 10);
+        } else {
+            ctx.fillStyle = '#00FFFF';
+            ctx.fillText('SCANNING...', 10, h - 10);
         }
 
-        if (!success || !decoded) {
+        if (checksumFail || lowConfidence || !success || !decoded) {
             setDetectedSequence(['?', '?', '?', '?', '?', '?', '?']);
             rollingHistory.current = [];
             return;
