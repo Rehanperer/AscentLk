@@ -110,6 +110,28 @@ class ScannerAudio {
 const GAP_LABELS: Record<string, string> = { N: 'NAR', M: 'MED', W: 'WDE' };
 const GAP_COLORS: Record<string, string> = { N: '#00FFFF', M: '#FFFF00', W: '#FF8C00' };
 
+// Scrambler effect component for decrypting agent credentials in HUD style
+const ScrambledText: React.FC<{ text: string; delay?: number }> = ({ text, delay = 30 }) => {
+    const [display, setDisplay] = useState('');
+    useEffect(() => {
+        let iterations = 0;
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&*';
+        const interval = setInterval(() => {
+            setDisplay(
+                text.split('').map((char, index) => {
+                    if (index < iterations) return char;
+                    if (char === ' ') return ' ';
+                    return chars[Math.floor(Math.random() * chars.length)];
+                }).join('')
+            );
+            iterations += 1/3;
+            if (iterations >= text.length) clearInterval(interval);
+        }, delay);
+        return () => clearInterval(interval);
+    }, [text, delay]);
+    return <span>{display}</span>;
+};
+
 interface AdmittedTicket {
     id: string;
     full_name: string;
@@ -133,6 +155,7 @@ const AdminScanner: React.FC = () => {
     // Live sequence variables
     const [detectedSequence, setDetectedSequence] = useState<string[]>(['?', '?', '?', '?', '?', '?', '?']);
     const [recentAdmits, setRecentAdmits] = useState<AdmittedTicket[]>([]);
+    const [hudInstruction, setHudInstruction] = useState('CENTER PULSE RINGS IN CROSSHAIR');
 
     // Rolling history for sequence lock (needs 5 identical frames to validate)
     const rollingHistory = useRef<string[][]>([]);
@@ -190,19 +213,43 @@ const AdminScanner: React.FC = () => {
         const imageData = ctx.getImageData(0, 0, w, h);
         const data = imageData.data;
 
-        // ─── Find center: brightest pixel in central 50% ───
+        // ─── Find center: cyan centroid (highly robust to glare/orb morphing) ───
         const sx = Math.floor(w * 0.25), ex = Math.floor(w * 0.75);
         const sy = Math.floor(h * 0.25), ey = Math.floor(h * 0.75);
-        let maxCL = 0, cx = Math.round(w / 2), cy = Math.round(h / 2);
-        for (let y = sy; y < ey; y += 3) {
-            for (let x = sx; x < ex; x += 3) {
+        let cx = Math.round(w / 2), cy = Math.round(h / 2);
+        
+        let sumX = 0, sumY = 0, count = 0;
+        for (let y = sy; y < ey; y += 4) {
+            for (let x = sx; x < ex; x += 4) {
                 const idx = (y * w + x) * 4;
-                const lum = 0.299 * data[idx] + 0.587 * data[idx + 1] + 0.114 * data[idx + 2];
-                if (lum > maxCL) { maxCL = lum; cx = x; cy = y; }
+                const r = data[idx], g = data[idx + 1], b = data[idx + 2];
+                // Neon Cyan filter: Green & Blue are high, Red is lower than both by a margin
+                if (g > 90 && b > 90 && r < g * 0.8 && r < b * 0.8) {
+                    sumX += x;
+                    sumY += y;
+                    count++;
+                }
             }
         }
-        // Fall back to frame center if nothing bright found
-        if (maxCL < 60) { cx = Math.round(w / 2); cy = Math.round(h / 2); }
+        
+        if (count > 30) {
+            cx = Math.round(sumX / count);
+            cy = Math.round(sumY / count);
+        } else {
+            // Fallback: search for brightest pixel in central region
+            let maxCL = 0;
+            for (let y = sy; y < ey; y += 4) {
+                for (let x = sx; x < ex; x += 4) {
+                    const idx = (y * w + x) * 4;
+                    const lum = 0.299 * data[idx] + 0.587 * data[idx + 1] + 0.114 * data[idx + 2];
+                    if (lum > maxCL) { maxCL = lum; cx = x; cy = y; }
+                }
+            }
+            if (maxCL < 50) {
+                cx = Math.round(w / 2);
+                cy = Math.round(h / 2);
+            }
+        }
 
         // ─── Luminance helper with cyan bias ───
         const getLum = (x: number, y: number): number => {
@@ -211,10 +258,10 @@ const AdminScanner: React.FC = () => {
             const idx = (iy * w + ix) * 4;
             const r = data[idx], g = data[idx + 1], b = data[idx + 2];
             const lum = 0.299 * r + 0.587 * g + 0.114 * b;
-            return Math.min(255, lum * ((g > r && b > r) ? 1.2 : 1.0));
+            return Math.min(255, lum * ((g > r && b > r) ? 1.25 : 1.0));
         };
 
-        // ─── Scan axis: sample luminance outward, skip orb, find peaks ───
+        // ─── Scan axis: sample luminance outward, skip orb, smooth, find peaks ───
         const scanAxis = (dx: number, dy: number): number[] => {
             const maxDist = Math.min(w, h) / 2 - 10;
             const samples: number[] = [];
@@ -222,7 +269,7 @@ const AdminScanner: React.FC = () => {
 
             for (let d = 0; d < maxDist; d++) {
                 const px = cx + dx * d, py = cy + dy * d;
-                // 3x3 average for noise reduction
+                // 3x3 average for spatial noise reduction
                 let sum = 0;
                 for (let ox = -1; ox <= 1; ox++)
                     for (let oy = -1; oy <= 1; oy++)
@@ -240,19 +287,39 @@ const AdminScanner: React.FC = () => {
 
             const threshold = meanLum + 0.3 * contrast;
 
-            // Skip central orb: walk until brightness drops below threshold
-            let scanStart = 0;
-            for (let d = 0; d < samples.length; d++) {
-                if (samples[d] < threshold) { scanStart = d; break; }
+            // Skip central orb: find brightest part of core and walk until it drops below threshold
+            let maxCoreLum = 0;
+            let maxCorePos = 0;
+            const coreLimit = Math.min(35, samples.length);
+            for (let d = 0; d < coreLimit; d++) {
+                if (samples[d] > maxCoreLum) {
+                    maxCoreLum = samples[d];
+                    maxCorePos = d;
+                }
             }
-            scanStart = Math.max(scanStart, 5);
 
-            // Find peaks (local maxima above threshold)
+            let scanStart = maxCorePos;
+            for (let d = maxCorePos; d < samples.length; d++) {
+                if (samples[d] < threshold) {
+                    scanStart = d;
+                    break;
+                }
+            }
+            scanStart = Math.max(scanStart, 6);
+
+            // Smooth the samples array with a 3-point moving average to filter out high-frequency sensor noise
+            const smoothed: number[] = [];
+            for (let i = 0; i < samples.length; i++) {
+                const prev = i > 0 ? samples[i - 1] : samples[i];
+                const next = i < samples.length - 1 ? samples[i + 1] : samples[i];
+                smoothed.push((prev + samples[i] + next) / 3);
+            }
+
+            // Find peaks (local maxima in smoothed signal above threshold)
             const peaks: number[] = [];
-            for (let i = scanStart + 2; i < samples.length - 2; i++) {
-                if (samples[i] > threshold &&
-                    samples[i] >= samples[i - 1] && samples[i] >= samples[i + 1] &&
-                    samples[i] >= samples[i - 2] && samples[i] >= samples[i + 2]) {
+            for (let i = scanStart + 1; i < smoothed.length - 1; i++) {
+                if (smoothed[i] > threshold &&
+                    smoothed[i] >= smoothed[i - 1] && smoothed[i] >= smoothed[i + 1]) {
                     if (peaks.length === 0 || positions[i] - peaks[peaks.length - 1] >= 3) {
                         peaks.push(positions[i]);
                     }
@@ -274,8 +341,8 @@ const AdminScanner: React.FC = () => {
             allPeaks.push(scanAxis(axis.dx, axis.dy));
         }
 
-        // ─── Draw HUD ───
-        // Crosshairs
+        // ─── Draw HUD overlay ───
+        // Crosshairs intersecting at the detected center cx, cy
         ctx.strokeStyle = 'rgba(255,255,255,0.15)';
         ctx.lineWidth = 1;
         ctx.beginPath();
@@ -283,7 +350,7 @@ const AdminScanner: React.FC = () => {
         ctx.moveTo(0, cy); ctx.lineTo(w, cy);
         ctx.stroke();
 
-        // Scan lines
+        // Scan lines radiating outward from detected center cx, cy
         const scanLen = Math.min(w, h) / 2 - 10;
         ctx.strokeStyle = 'rgba(0,255,255,0.2)';
         for (const axis of axes) {
@@ -293,13 +360,13 @@ const AdminScanner: React.FC = () => {
             ctx.stroke();
         }
 
-        // Center dot
+        // Lock-on target dot (indicates where the scanner tracked the ticket center)
         ctx.strokeStyle = '#ff4655'; ctx.lineWidth = 2;
         ctx.beginPath(); ctx.arc(cx, cy, 8, 0, Math.PI * 2); ctx.stroke();
         ctx.fillStyle = '#ff4655';
         ctx.beginPath(); ctx.arc(cx, cy, 3, 0, Math.PI * 2); ctx.fill();
 
-        // Peak dots
+        // Green peak marker dots
         for (let ai = 0; ai < axes.length; ai++) {
             const axis = axes[ai];
             for (const d of allPeaks[ai]) {
@@ -309,7 +376,7 @@ const AdminScanner: React.FC = () => {
             }
         }
 
-        // Corner brackets
+        // Sci-fi corners tracking outline
         const bs = Math.min(w, h) * 0.35;
         const bx = cx - bs, by = cy - bs, bw = bs * 2, bh = bs * 2;
         ctx.strokeStyle = 'rgba(255,70,85,0.35)'; ctx.lineWidth = 1;
@@ -324,55 +391,88 @@ const AdminScanner: React.FC = () => {
         // ─── Decode: pick axes with exactly 8 peaks ───
         const validAxes = allPeaks.filter(p => p.length === 8);
 
-        // Debug HUD
+        // Debug HUD readouts
         ctx.fillStyle = '#00FFFF'; ctx.font = 'bold 11px monospace'; ctx.textAlign = 'left';
         ctx.fillText(`PEAKS: ${allPeaks.map(p => p.length).join('/')}`, 10, h - 25);
         ctx.fillText(`VALID: ${validAxes.length}`, 10, h - 10);
 
         if (validAxes.length < 1) {
             setDetectedSequence(['?', '?', '?', '?', '?', '?', '?']);
+            setHudInstruction('CENTER PULSE RINGS IN CROSSHAIR');
             rollingHistory.current = [];
             return;
         }
 
-        // Use first valid axis
-        const peaksToUse = validAxes[0];
-        const gaps: number[] = [];
-        for (let g = 0; g < 7; g++) gaps.push(peaksToUse[g + 1] - peaksToUse[g]);
+        // ─── Decode: find the best valid axis by template matching error ───
+        // Templates: N = 10, M = 18, W = 27
+        let bestDecoded: string[] | null = null;
+        let bestError = Infinity;
+        let finalScale = 1.0;
 
-        // ─── Scale-factor search (PROVEN algorithm) ───
-        // Templates: N = 8gap + 4stroke = 12, M = 20+4 = 24, W = 36+4 = 40
-        let bestS = 1.0, minErr = Infinity;
-        for (let s = 0.1; s <= 5.0; s += 0.02) {
-            let err = 0;
-            for (const gap of gaps) {
-                err += Math.min(
-                    Math.abs(gap - 12 * s),
-                    Math.abs(gap - 24 * s),
-                    Math.abs(gap - 40 * s)
-                );
+        for (const peaks of validAxes) {
+            const gaps: number[] = [];
+            for (let g = 0; g < 7; g++) {
+                gaps.push(peaks[g + 1] - peaks[g]);
             }
-            if (err < minErr) { minErr = err; bestS = s; }
+
+            // Find optimal scale s to minimize total deviation from template ratios
+            let bestS = 1.0;
+            let minErr = Infinity;
+            for (let s = 0.25; s <= 4.0; s += 0.02) {
+                let err = 0;
+                for (const gap of gaps) {
+                    err += Math.min(
+                        Math.abs(gap - 10 * s),
+                        Math.abs(gap - 18 * s),
+                        Math.abs(gap - 27 * s)
+                    );
+                }
+                if (err < minErr) {
+                    minErr = err;
+                    bestS = s;
+                }
+            }
+
+            if (minErr < bestError) {
+                bestError = minErr;
+                finalScale = bestS;
+                bestDecoded = gaps.map(gap => {
+                    const dN = Math.abs(gap - 10 * bestS);
+                    const dM = Math.abs(gap - 18 * bestS);
+                    const dW = Math.abs(gap - 27 * bestS);
+                    const m = Math.min(dN, dM, dW);
+                    if (m === dN) return 'N';
+                    if (m === dM) return 'M';
+                    return 'W';
+                });
+            }
         }
 
-        const decoded: string[] = gaps.map(gap => {
-            const dN = Math.abs(gap - 12 * bestS);
-            const dM = Math.abs(gap - 24 * bestS);
-            const dW = Math.abs(gap - 40 * bestS);
-            const m = Math.min(dN, dM, dW);
-            if (m === dN) return 'N';
-            if (m === dM) return 'M';
-            return 'W';
-        });
+        // Check if template fit error is within acceptable limits relative to scale
+        if (!bestDecoded || bestError > 7.5 * finalScale) {
+            setDetectedSequence(['?', '?', '?', '?', '?', '?', '?']);
+            setHudInstruction('CENTER PULSE RINGS IN CROSSHAIR');
+            rollingHistory.current = [];
+            return;
+        }
 
-        setDetectedSequence(decoded);
+        // Update dynamic HUD instruction messages based on scale
+        if (finalScale < 0.35) {
+            setHudInstruction('MOVE CLOSER');
+        } else if (finalScale > 2.2) {
+            setHudInstruction('MOVE AWAY');
+        } else {
+            setHudInstruction('HOLD STILL... DECODING');
+        }
 
-        // Draw decoded
+        setDetectedSequence(bestDecoded);
+
+        // Draw decoded sequence on canvas
         ctx.fillStyle = '#00FFFF'; ctx.font = 'bold 12px monospace'; ctx.textAlign = 'center';
-        ctx.fillText(decoded.join(' '), cx, by - 8);
+        ctx.fillText(bestDecoded.join(' '), cx, by - 8);
 
         // Rolling history for lock (3 identical frames)
-        rollingHistory.current.push(decoded);
+        rollingHistory.current.push(bestDecoded);
         if (rollingHistory.current.length > 3) rollingHistory.current.shift();
 
         if (rollingHistory.current.length === 3) {
@@ -483,6 +583,21 @@ const AdminScanner: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-[#070b0e] text-white flex flex-col justify-between p-6 select-none relative font-sans">
+            <style dangerouslySetInnerHTML={{ __html: `
+                @keyframes scan-glitch {
+                    0%, 100% { filter: none; }
+                    5% { filter: drop-shadow(2px 0 0 #ff4655) drop-shadow(-2px 0 0 #00ff88); }
+                    10% { filter: none; }
+                }
+                @keyframes scan-bracket-assemble {
+                    0% { transform: scale(1.5); opacity: 0; }
+                    100% { transform: scale(1); opacity: 1; }
+                }
+                @keyframes scan-grid-warp {
+                    0% { background-position: 0% 0%; }
+                    100% { background-position: 100% 100%; }
+                }
+            `}} />
             <SEO 
                 title="Radianite Scanner | Admin Panel" 
                 description="Secure Radianite ticket sequence decoder scanner app for event gate staff."
@@ -534,37 +649,76 @@ const AdminScanner: React.FC = () => {
                         {scanStatus === 'success' && verifiedTicket && (
                             <motion.div 
                                 key="success"
-                                initial={{ opacity: 0, scale: 0.95 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0, scale: 0.9 }}
-                                className="absolute inset-0 bg-[#00ff88]/10 flex flex-col items-center justify-center p-6 text-center z-25 backdrop-blur-sm"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                className="absolute inset-0 bg-[#070b0e]/95 flex flex-col items-center justify-center p-6 text-center z-25 backdrop-blur-md overflow-hidden"
                             >
-                                <div className="border-2 border-[#00ff88] bg-[#00ff88]/20 text-[#00ff88] p-4 rounded-full shadow-[0_0_30px_rgba(0,255,136,0.3)] mb-4">
-                                    <ShieldCheck size={48} className="animate-bounce" />
+                                {/* Fullscreen digital grid scan line movement */}
+                                <div 
+                                    className="absolute inset-0 opacity-10 pointer-events-none"
+                                    style={{
+                                        backgroundImage: 'radial-gradient(#00ff88 1px, transparent 1px), linear-gradient(0deg, rgba(7,11,14,0) 0%, rgba(0,255,136,0.15) 50%, rgba(7,11,14,0) 100%)',
+                                        backgroundSize: '24px 24px, 100% 200px',
+                                        animation: 'scan-grid-warp 15s linear infinite, rt-scanline 3s linear infinite',
+                                    }}
+                                />
+
+                                {/* 3D perspective tech brackets */}
+                                <div 
+                                    className="relative flex flex-col items-center mb-6"
+                                    style={{ animation: 'scan-bracket-assemble 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards' }}
+                                >
+                                    {/* Tech target outline */}
+                                    <div className="absolute inset-[-15px] border border-[#00ff88]/30 rounded-full animate-spin" style={{ animationDuration: '6s' }} />
+                                    <div className="absolute inset-[-25px] border border-dashed border-[#00ff88]/15 rounded-full animate-spin" style={{ animationDuration: '12s', animationDirection: 'reverse' }} />
+                                    
+                                    <div 
+                                        className="relative border border-[#00ff88]/40 bg-[#00ff88]/10 text-[#00ff88] p-5 rounded-full shadow-[0_0_40px_rgba(0,255,136,0.25)]"
+                                        style={{ animation: 'scan-glitch 4s ease-in-out infinite' }}
+                                    >
+                                        <ShieldCheck size={44} />
+                                    </div>
                                 </div>
-                                <h2 className="font-teko text-5xl uppercase tracking-wider text-[#00ff88] mb-1">
+
+                                <h2 
+                                    className="font-teko text-5xl uppercase tracking-wider text-[#00ff88] mb-1"
+                                    style={{ textShadow: '0 0 15px rgba(0,255,136,0.4)' }}
+                                >
                                     AGENT VERIFIED
                                 </h2>
-                                <p className="font-mono text-xs text-white/70 tracking-widest uppercase mb-6">
+                                <p className="font-mono text-[9px] text-[#00ff88]/60 tracking-[0.3em] uppercase mb-6">
                                     ACCESS COMPATIBLE // REMOVE SECURITY GATE
                                 </p>
 
-                                <div className="w-full max-w-sm bg-black/60 border border-[#00ff88]/30 rounded p-5 font-mono text-xs text-left space-y-3">
+                                <div className="w-full max-w-sm border border-[#00ff88]/30 bg-black/60 rounded-xl relative overflow-hidden p-5 font-mono text-xs text-left space-y-4 shadow-[0_8px_32px_rgba(0,255,136,0.05)]">
+                                    {/* Corner brackets */}
+                                    <div className="absolute -top-px -left-px w-3.5 h-3.5 border-t border-l border-[#00ff88]" />
+                                    <div className="absolute -top-px -right-px w-3.5 h-3.5 border-t border-r border-[#00ff88]" />
+                                    <div className="absolute -bottom-px -left-px w-3.5 h-3.5 border-b border-l border-[#00ff88]" />
+                                    <div className="absolute -bottom-px -right-px w-3.5 h-3.5 border-b border-r border-[#00ff88]" />
+
                                     <div>
-                                        <span className="text-white/40 block text-[9px]">FULL REGISTRATION NAME</span>
-                                        <span className="text-[#00ff88] font-bold text-sm tracking-wide">{verifiedTicket.full_name.toUpperCase()}</span>
+                                        <span className="text-white/30 block text-[8px] tracking-[0.2em]">AGENT DESIGNATION</span>
+                                        <span className="text-[#00ff88] font-bold text-base tracking-wide">
+                                            <ScrambledText text={verifiedTicket.full_name.toUpperCase()} delay={25} />
+                                        </span>
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
-                                            <span className="text-white/40 block text-[9px]">SEAT LOCK</span>
-                                            <span className="text-white font-bold">{verifiedTicket.seat_id ? verifiedTicket.seat_id.toUpperCase() : 'GENERAL'}</span>
+                                            <span className="text-white/30 block text-[8px] tracking-[0.2em]">SEAT LOCK</span>
+                                            <span className="text-white font-bold">
+                                                <ScrambledText text={verifiedTicket.seat_id ? verifiedTicket.seat_id.toUpperCase() : 'GENERAL'} delay={30} />
+                                            </span>
                                         </div>
                                         <div>
-                                            <span className="text-white/40 block text-[9px]">INSTITUTION</span>
-                                            <span className="text-white">{verifiedTicket.school ? verifiedTicket.school.toUpperCase() : 'INDEPENDENT'}</span>
+                                            <span className="text-white/30 block text-[8px] tracking-[0.2em]">INSTITUTION</span>
+                                            <span className="text-white">
+                                                <ScrambledText text={verifiedTicket.school ? verifiedTicket.school.toUpperCase() : 'INDEPENDENT'} delay={30} />
+                                            </span>
                                         </div>
                                     </div>
-                                    <div className="border-t border-white/10 pt-2 text-[9px] text-white/30 flex justify-between">
+                                    <div className="border-t border-white/10 pt-2.5 text-[8px] text-white/30 flex justify-between">
                                         <span>STATUS: SCANNED & INVALIDATED</span>
                                         <span>{new Date().toLocaleTimeString()}</span>
                                     </div>
@@ -621,8 +775,11 @@ const AdminScanner: React.FC = () => {
                                     className="w-full h-full object-contain rounded bg-black"
                                 />
 
-                                <div className="absolute bottom-4 inset-x-0 text-center font-mono text-[9px] text-[#ff4655] font-bold tracking-widest uppercase pointer-events-none z-10 animate-pulse">
-                                    CENTER PULSE RINGS IN CROSSHAIR
+                                <div 
+                                    className="absolute bottom-4 inset-x-0 text-center font-mono text-[9px] font-bold tracking-widest uppercase pointer-events-none z-10 animate-pulse"
+                                    style={{ color: hudInstruction.includes('HOLD') ? '#00ff88' : '#ff4655' }}
+                                >
+                                    {hudInstruction}
                                 </div>
                             </motion.div>
                         )}

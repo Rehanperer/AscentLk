@@ -110,7 +110,7 @@ export const CinematicOrb: React.FC<CinematicOrbProps> = ({
             // ─── Render Cinematic Deforming Orb ───
             
             // Base radius scales down slightly when charged to fit inside rings
-            const targetBaseR = state === 'charged' ? 35 : 60;
+            const targetBaseR = state === 'charged' ? 23 : 60;
             // Charge intensity
             const intensity = state === 'charging' ? (chargeProgress / 100) : (state === 'charged' ? 0.8 : 0.2);
             const baseR = targetBaseR + (state === 'charging' ? intensity * 15 : 0);

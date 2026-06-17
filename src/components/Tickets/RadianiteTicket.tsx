@@ -193,9 +193,9 @@ class SoundSynthesizer {
 }
 
 // ─── Pulse Ring Constants ───────────────────────────────────────────────────
-const GAP_PX: Record<string, number> = { N: 8, M: 20, W: 36 };
-const RING_STROKE = 4;
-const RING_R0 = 48;
+const GAP_PX: Record<string, number> = { N: 7, M: 15, W: 24 };
+const RING_STROKE = 3;
+const RING_R0 = 50;
 const RING_COLOR = '#00FFFF';
 const GAP_LABEL: Record<string, string> = { N: 'N', M: 'M', W: 'W' };
 
@@ -258,7 +258,20 @@ const KEYFRAME_STYLES = `
   50% { width: 100%; opacity: 1; }
   100% { width: 100%; opacity: 0.4; }
 }
-
+@keyframes rt-chromatic-glitch {
+  0%, 100% { filter: none; opacity: 1; }
+  10%, 14% { filter: drop-shadow(2px 0 0 rgba(0,255,255,0.6)) drop-shadow(-2px 0 0 rgba(255,70,85,0.6)); }
+  12% { transform: scale(1.02) skewX(1deg); }
+  15% { filter: none; }
+  40%, 44% { filter: contrast(1.3) brightness(1.2); }
+  42% { transform: scale(0.99) skewX(-1deg); }
+  45% { filter: none; }
+}
+@keyframes rt-lens-flare {
+  0% { transform: rotate(0deg) scale(0.8); opacity: 0.3; }
+  50% { transform: rotate(180deg) scale(1.2); opacity: 0.6; }
+  100% { transform: rotate(360deg) scale(0.8); opacity: 0.3; }
+}
 `;
 
 // ─── Deterministic HSL color generator based on ticket UUID ──────────────────
@@ -288,6 +301,28 @@ const getUniqueTicketColors = (id?: string) => {
         hue1,
         hue2
     };
+};
+
+// Scrambler effect component for decrypting agent designation in premium HUD style
+const ScrambledDesignation: React.FC<{ text: string }> = ({ text }) => {
+    const [display, setDisplay] = useState('');
+    useEffect(() => {
+        let iterations = 0;
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#@$%&*';
+        const interval = setInterval(() => {
+            setDisplay(
+                text.split('').map((char, index) => {
+                    if (index < iterations) return char;
+                    if (char === ' ') return ' ';
+                    return chars[Math.floor(Math.random() * chars.length)];
+                }).join('')
+            );
+            iterations += 1/3;
+            if (iterations >= text.length) clearInterval(interval);
+        }, 30);
+        return () => clearInterval(interval);
+    }, [text]);
+    return <span>{display}</span>;
 };
 
 // ─── Component ──────────────────────────────────────────────────────────────
@@ -707,6 +742,14 @@ const RadianiteTicket: React.FC = () => {
                                 transition={{ type: 'spring', damping: 15 }}
                                 className="w-full max-w-sm flex flex-col items-center relative"
                             >
+                                {/* ── Chromatic Screen Glitch Overlay ── */}
+                                <div 
+                                    className="fixed inset-0 pointer-events-none z-45"
+                                    style={{
+                                        animation: 'rt-chromatic-glitch 2s ease-in-out infinite',
+                                    }}
+                                />
+
                                 {/* ── Explosion Flash Overlay ── */}
                                 <motion.div 
                                     className="fixed inset-0 pointer-events-none z-50"
@@ -769,6 +812,12 @@ const RadianiteTicket: React.FC = () => {
                                 
                                 {/* ── Holographic Hexagonal Badge ── */}
                                 <div className="relative mb-6 mt-4">
+                                    {/* Rotating lens flare behind badge */}
+                                    <div 
+                                        className="absolute inset-[-50px] bg-gradient-to-r from-transparent via-[#00ff88]/30 to-transparent rounded-full blur-[40px] pointer-events-none"
+                                        style={{ animation: 'rt-lens-flare 5s linear infinite' }}
+                                    />
+
                                     {/* Rotating hex border */}
                                     <div 
                                         className="absolute inset-[-12px] opacity-30"
@@ -848,13 +897,15 @@ const RadianiteTicket: React.FC = () => {
                                         <div className="border-b border-white/5 pb-3">
                                             <span className="text-white/30 block text-[8px] tracking-[0.2em] uppercase mb-1">AGENT DESIGNATION</span>
                                             <span className="text-white font-bold text-base tracking-wide" style={{ textShadow: '0 0 10px rgba(255,255,255,0.1)' }}>
-                                                {ticket?.full_name?.toUpperCase() || 'AGENT'}
+                                                <ScrambledDesignation text={ticket?.full_name?.toUpperCase() || 'AGENT'} />
                                             </span>
                                         </div>
                                         <div className="grid grid-cols-2 gap-4">
                                             <div>
                                                 <span className="text-white/30 block text-[8px] tracking-[0.2em] uppercase mb-1">SEAT / SECTION</span>
-                                                <span className="text-[#00FFFF] font-bold text-sm">{ticket?.seat_id ? ticket.seat_id.toUpperCase() : 'GENERAL'}</span>
+                                                <span className="text-[#00FFFF] font-bold text-sm">
+                                                    <ScrambledDesignation text={ticket?.seat_id ? ticket.seat_id.toUpperCase() : 'GENERAL'} />
+                                                </span>
                                             </div>
                                             <div>
                                                 <span className="text-white/30 block text-[8px] tracking-[0.2em] uppercase mb-1">GATE ENTRY</span>
@@ -915,14 +966,14 @@ const RadianiteTicket: React.FC = () => {
 
                                     {/* ── Cinematic Deforming Orb ── */}
                                     <div
-                                        className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none"
+                                        className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none"
                                     >
                                         <CinematicOrb state={chargeState as any} chargeProgress={chargeProgress} size={280} />
                                     </div>
 
                                     {/* ── Concentric Pulse Rings (SVG) ── */}
                                     <motion.svg
-                                        className="absolute z-10 pointer-events-none w-full h-full"
+                                        className="absolute z-20 pointer-events-none w-full h-full"
                                         viewBox="0 0 500 500"
                                         style={{ filter: `drop-shadow(0 0 8px ${colors.glow})` }}
                                         animate={{ scale: [0.98, 1.02, 0.98] }}
@@ -943,7 +994,7 @@ const RadianiteTicket: React.FC = () => {
                                             let r = RING_R0;
                                             rings.push(
                                                 <circle key={0} cx="250" cy="250" r={r}
-                                                    fill="none" stroke={colors.color1} strokeWidth={RING_STROKE}
+                                                    fill="none" stroke={RING_COLOR} strokeWidth={RING_STROKE}
                                                     opacity={0.95} filter="url(#ring-glow-ticket)" />
                                             );
                                             for (let i = 0; i < 7; i++) {
@@ -952,7 +1003,7 @@ const RadianiteTicket: React.FC = () => {
                                                 r += gapSize + RING_STROKE;
                                                 rings.push(
                                                     <circle key={i + 1} cx="250" cy="250" r={r}
-                                                        fill="none" stroke={colors.color1} strokeWidth={RING_STROKE}
+                                                        fill="none" stroke={RING_COLOR} strokeWidth={RING_STROKE}
                                                         opacity={0.9 - i * 0.04} filter="url(#ring-glow-ticket)" />
                                                 );
                                             }
