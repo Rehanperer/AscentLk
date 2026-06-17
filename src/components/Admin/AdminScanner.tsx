@@ -5,7 +5,6 @@ import { Camera, ShieldCheck, ShieldAlert, Users, ArrowLeft, RefreshCw, Volume2,
 import { supabase } from '../../lib/supabase';
 import { Link } from 'react-router-dom';
 import SEO from '../SEO';
-import ScannerWorker from './scanner.worker?worker';
 
 // Programmatic Web Audio synth for the scanner feedbacks
 class ScannerAudio {
@@ -154,29 +153,13 @@ const AdminScanner: React.FC = () => {
         }
     }, []);
 
-    // Web Worker Setup
-    const workerRef = useRef<Worker | null>(null);
-    const workerBusy = useRef(false);
-
-    useEffect(() => {
-        workerRef.current = new ScannerWorker();
-        workerRef.current.onmessage = (e) => {
-            workerBusy.current = false;
-            handleWorkerMessage(e.data);
-        };
-        return () => {
-            workerRef.current?.terminate();
-        };
-    }, []);
-
     // Frame Analyzer loop
     useEffect(() => {
         let active = true;
         const scanInterval = setInterval(() => {
             if (!active || scanStatus !== 'searching' || !cameraReady || processingSequence.current) return;
-            if (workerBusy.current) return; // Don't queue frames while worker is processing
             analyzeFrame();
-        }, 60); // ~16 FPS — enough for fast detection without overwhelming the worker
+        }, 40); // ~25 FPS
 
         return () => {
             active = false;
@@ -187,7 +170,7 @@ const AdminScanner: React.FC = () => {
     const analyzeFrame = () => {
         const webcam = webcamRef.current;
         const canvas = canvasRef.current;
-        if (!webcam || !canvas || !workerRef.current) return;
+        if (!webcam || !canvas) return;
 
         const video = webcam.video;
         if (!video || video.readyState !== video.HAVE_ENOUGH_DATA) return;
@@ -204,48 +187,105 @@ const AdminScanner: React.FC = () => {
 
         ctx.drawImage(video, 0, 0, w, h);
 
-        // Extract pixel data and transfer the underlying ArrayBuffer to the worker
-        // This is the ONLY reliable way to pass pixel data to a Web Worker.
         const imageData = ctx.getImageData(0, 0, w, h);
-        const buffer = imageData.data.buffer.slice(0); // Copy the buffer
-        workerBusy.current = true;
-        workerRef.current.postMessage({ buffer, width: w, height: h }, [buffer]);
-    };
+        const data = imageData.data;
 
-    const handleWorkerMessage = (data: any) => {
-        if (scanStatus !== 'searching' || processingSequence.current) return;
+        // ─── Find center: brightest pixel in central 50% ───
+        const sx = Math.floor(w * 0.25), ex = Math.floor(w * 0.75);
+        const sy = Math.floor(h * 0.25), ey = Math.floor(h * 0.75);
+        let maxCL = 0, cx = Math.round(w / 2), cy = Math.round(h / 2);
+        for (let y = sy; y < ey; y += 3) {
+            for (let x = sx; x < ex; x += 3) {
+                const idx = (y * w + x) * 4;
+                const lum = 0.299 * data[idx] + 0.587 * data[idx + 1] + 0.114 * data[idx + 2];
+                if (lum > maxCL) { maxCL = lum; cx = x; cy = y; }
+            }
+        }
+        // Fall back to frame center if nothing bright found
+        if (maxCL < 60) { cx = Math.round(w / 2); cy = Math.round(h / 2); }
 
-        const { success, center, decoded, checksumFail, lowConfidence } = data;
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return;
+        // ─── Luminance helper with cyan bias ───
+        const getLum = (x: number, y: number): number => {
+            const ix = Math.round(x), iy = Math.round(y);
+            if (ix < 0 || ix >= w || iy < 0 || iy >= h) return 0;
+            const idx = (iy * w + ix) * 4;
+            const r = data[idx], g = data[idx + 1], b = data[idx + 2];
+            const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+            return Math.min(255, lum * ((g > r && b > r) ? 1.2 : 1.0));
+        };
 
-        const w = canvas.width;
-        const h = canvas.height;
-        const cx = center?.cx ?? Math.round(w / 2);
-        const cy = center?.cy ?? Math.round(h / 2);
+        // ─── Scan axis: sample luminance outward, skip orb, find peaks ───
+        const scanAxis = (dx: number, dy: number): number[] => {
+            const maxDist = Math.min(w, h) / 2 - 10;
+            const samples: number[] = [];
+            const positions: number[] = [];
 
-        // === DRAW HUD OVERLAY ===
+            for (let d = 0; d < maxDist; d++) {
+                const px = cx + dx * d, py = cy + dy * d;
+                // 3x3 average for noise reduction
+                let sum = 0;
+                for (let ox = -1; ox <= 1; ox++)
+                    for (let oy = -1; oy <= 1; oy++)
+                        sum += getLum(px + ox, py + oy);
+                samples.push(sum / 9);
+                positions.push(d);
+            }
 
-        // Draw crosshair lines through detected center
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+            if (samples.length < 30) return [];
+
+            const maxLum = Math.max(...samples);
+            const meanLum = samples.reduce((a, b) => a + b, 0) / samples.length;
+            const contrast = maxLum - meanLum;
+            if (contrast < 8) return [];
+
+            const threshold = meanLum + 0.3 * contrast;
+
+            // Skip central orb: walk until brightness drops below threshold
+            let scanStart = 0;
+            for (let d = 0; d < samples.length; d++) {
+                if (samples[d] < threshold) { scanStart = d; break; }
+            }
+            scanStart = Math.max(scanStart, 5);
+
+            // Find peaks (local maxima above threshold)
+            const peaks: number[] = [];
+            for (let i = scanStart + 2; i < samples.length - 2; i++) {
+                if (samples[i] > threshold &&
+                    samples[i] >= samples[i - 1] && samples[i] >= samples[i + 1] &&
+                    samples[i] >= samples[i - 2] && samples[i] >= samples[i + 2]) {
+                    if (peaks.length === 0 || positions[i] - peaks[peaks.length - 1] >= 3) {
+                        peaks.push(positions[i]);
+                    }
+                }
+            }
+            return peaks.slice(0, 10);
+        };
+
+        // ─── Scan 8 axes ───
+        const axes = [
+            { dx: 1, dy: 0 }, { dx: -1, dy: 0 },
+            { dx: 0, dy: 1 }, { dx: 0, dy: -1 },
+            { dx: 0.707, dy: 0.707 }, { dx: -0.707, dy: 0.707 },
+            { dx: 0.707, dy: -0.707 }, { dx: -0.707, dy: -0.707 },
+        ];
+
+        const allPeaks: number[][] = [];
+        for (const axis of axes) {
+            allPeaks.push(scanAxis(axis.dx, axis.dy));
+        }
+
+        // ─── Draw HUD ───
+        // Crosshairs
+        ctx.strokeStyle = 'rgba(255,255,255,0.15)';
         ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.moveTo(cx, 0); ctx.lineTo(cx, h);
         ctx.moveTo(0, cy); ctx.lineTo(w, cy);
         ctx.stroke();
 
-        // Draw scanning axes
+        // Scan lines
         const scanLen = Math.min(w, h) / 2 - 10;
-        const axes = [
-            { dx: 1, dy: 0 }, { dx: -1, dy: 0 }, { dx: 0, dy: 1 }, { dx: 0, dy: -1 },
-            { dx: 0.707, dy: 0.707 }, { dx: -0.707, dy: 0.707 }, 
-            { dx: 0.707, dy: -0.707 }, { dx: -0.707, dy: -0.707 }
-        ];
-
-        ctx.strokeStyle = 'rgba(0, 255, 255, 0.2)';
-        ctx.lineWidth = 1;
+        ctx.strokeStyle = 'rgba(0,255,255,0.2)';
         for (const axis of axes) {
             ctx.beginPath();
             ctx.moveTo(cx, cy);
@@ -253,86 +293,98 @@ const AdminScanner: React.FC = () => {
             ctx.stroke();
         }
 
-        // Draw center target
-        ctx.strokeStyle = success ? '#00ff88' : '#ff4655';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.arc(cx, cy, 8, 0, Math.PI * 2);
-        ctx.stroke();
-        ctx.fillStyle = success ? '#00ff88' : '#ff4655';
-        ctx.beginPath();
-        ctx.arc(cx, cy, 3, 0, Math.PI * 2);
-        ctx.fill();
+        // Center dot
+        ctx.strokeStyle = '#ff4655'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.arc(cx, cy, 8, 0, Math.PI * 2); ctx.stroke();
+        ctx.fillStyle = '#ff4655';
+        ctx.beginPath(); ctx.arc(cx, cy, 3, 0, Math.PI * 2); ctx.fill();
 
-        // Corner brackets
-        const bracketSize = Math.min(w, h) * 0.35;
-        const bx = cx - bracketSize;
-        const by = cy - bracketSize;
-        const bw = bracketSize * 2;
-        const bh = bracketSize * 2;
-        
-        ctx.strokeStyle = 'rgba(255, 70, 85, 0.35)';
-        ctx.lineWidth = 1;
-        ctx.strokeRect(bx, by, bw, bh);
-
-        ctx.strokeStyle = '#ff4655';
-        ctx.lineWidth = 4;
-        const cornerLen = 16;
-        ctx.beginPath(); ctx.moveTo(bx + cornerLen, by); ctx.lineTo(bx, by); ctx.lineTo(bx, by + cornerLen); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(bx + bw - cornerLen, by); ctx.lineTo(bx + bw, by); ctx.lineTo(bx + bw, by + cornerLen); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(bx + cornerLen, by + bh); ctx.lineTo(bx, by + bh); ctx.lineTo(bx, by + bh - cornerLen); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(bx + bw - cornerLen, by + bh); ctx.lineTo(bx + bw, by + bh); ctx.lineTo(bx + bw, by + bh - cornerLen); ctx.stroke();
-
-        // Status text
-        ctx.font = 'bold 11px monospace';
-        ctx.textAlign = 'left';
-        if (checksumFail) {
-            ctx.fillStyle = '#ff4655';
-            ctx.fillText('CHECKSUM FAIL', 10, h - 10);
-        } else if (lowConfidence) {
-            ctx.fillStyle = '#FFFF00';
-            ctx.fillText('LOW CONFIDENCE', 10, h - 10);
-        } else if (success) {
-            ctx.fillStyle = '#00ff88';
-            ctx.fillText('LOCKED', 10, h - 10);
-        } else {
-            ctx.fillStyle = '#00FFFF';
-            ctx.fillText('SCANNING...', 10, h - 10);
+        // Peak dots
+        for (let ai = 0; ai < axes.length; ai++) {
+            const axis = axes[ai];
+            for (const d of allPeaks[ai]) {
+                const px = cx + axis.dx * d, py = cy + axis.dy * d;
+                ctx.fillStyle = '#00ff88';
+                ctx.beginPath(); ctx.arc(px, py, 2, 0, Math.PI * 2); ctx.fill();
+            }
         }
 
-        if (checksumFail || lowConfidence || !success || !decoded) {
+        // Corner brackets
+        const bs = Math.min(w, h) * 0.35;
+        const bx = cx - bs, by = cy - bs, bw = bs * 2, bh = bs * 2;
+        ctx.strokeStyle = 'rgba(255,70,85,0.35)'; ctx.lineWidth = 1;
+        ctx.strokeRect(bx, by, bw, bh);
+        ctx.strokeStyle = '#ff4655'; ctx.lineWidth = 4;
+        const cl = 16;
+        ctx.beginPath(); ctx.moveTo(bx + cl, by); ctx.lineTo(bx, by); ctx.lineTo(bx, by + cl); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(bx + bw - cl, by); ctx.lineTo(bx + bw, by); ctx.lineTo(bx + bw, by + cl); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(bx + cl, by + bh); ctx.lineTo(bx, by + bh); ctx.lineTo(bx, by + bh - cl); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(bx + bw - cl, by + bh); ctx.lineTo(bx + bw, by + bh); ctx.lineTo(bx + bw, by + bh - cl); ctx.stroke();
+
+        // ─── Decode: pick axes with exactly 8 peaks ───
+        const validAxes = allPeaks.filter(p => p.length === 8);
+
+        // Debug HUD
+        ctx.fillStyle = '#00FFFF'; ctx.font = 'bold 11px monospace'; ctx.textAlign = 'left';
+        ctx.fillText(`PEAKS: ${allPeaks.map(p => p.length).join('/')}`, 10, h - 25);
+        ctx.fillText(`VALID: ${validAxes.length}`, 10, h - 10);
+
+        if (validAxes.length < 1) {
             setDetectedSequence(['?', '?', '?', '?', '?', '?', '?']);
             rollingHistory.current = [];
             return;
         }
 
+        // Use first valid axis
+        const peaksToUse = validAxes[0];
+        const gaps: number[] = [];
+        for (let g = 0; g < 7; g++) gaps.push(peaksToUse[g + 1] - peaksToUse[g]);
+
+        // ─── Scale-factor search (PROVEN algorithm) ───
+        // Templates: N = 8gap + 4stroke = 12, M = 20+4 = 24, W = 36+4 = 40
+        let bestS = 1.0, minErr = Infinity;
+        for (let s = 0.1; s <= 5.0; s += 0.02) {
+            let err = 0;
+            for (const gap of gaps) {
+                err += Math.min(
+                    Math.abs(gap - 12 * s),
+                    Math.abs(gap - 24 * s),
+                    Math.abs(gap - 40 * s)
+                );
+            }
+            if (err < minErr) { minErr = err; bestS = s; }
+        }
+
+        const decoded: string[] = gaps.map(gap => {
+            const dN = Math.abs(gap - 12 * bestS);
+            const dM = Math.abs(gap - 24 * bestS);
+            const dW = Math.abs(gap - 40 * bestS);
+            const m = Math.min(dN, dM, dW);
+            if (m === dN) return 'N';
+            if (m === dM) return 'M';
+            return 'W';
+        });
+
         setDetectedSequence(decoded);
 
-        // Draw decoded sequence on canvas
-        ctx.fillStyle = '#00FFFF';
-        ctx.font = 'bold 12px monospace';
-        ctx.textAlign = 'center';
+        // Draw decoded
+        ctx.fillStyle = '#00FFFF'; ctx.font = 'bold 12px monospace'; ctx.textAlign = 'center';
         ctx.fillText(decoded.join(' '), cx, by - 8);
 
         // Rolling history for lock (3 identical frames)
         rollingHistory.current.push(decoded);
-        if (rollingHistory.current.length > 3) {
-            rollingHistory.current.shift();
-        }
+        if (rollingHistory.current.length > 3) rollingHistory.current.shift();
 
         if (rollingHistory.current.length === 3) {
             const first = rollingHistory.current[0];
             const allMatch = rollingHistory.current.every(seq =>
                 seq.every((val, idx) => val === first[idx])
             );
-
             if (allMatch) {
                 triggerVerification(first);
             }
         }
     };
-
-    // --- END WORKER LOGIC ---
 
     const triggerVerification = async (sequence: string[]) => {
         processingSequence.current = true;
