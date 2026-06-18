@@ -933,12 +933,12 @@ const RadianiteTicket: React.FC = () => {
 
             {/* Title reveal text — on top of the blur */}
             <AnimatePresence>
-                {isIntroRevealed && orbTargetRect && (
+                {isIntroRevealed && (
                     <motion.div
                         key="cinematic-title"
                         className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center justify-center w-full max-w-md px-6 z-50 pointer-events-none"
                         style={{
-                            top: orbTargetRect.y + orbTargetRect.height / 2 + 24,
+                            top: orbTargetRect ? orbTargetRect.y + orbTargetRect.height / 2 + 24 : 'calc(45% + 164px)',
                         }}
                         initial={{ opacity: 0, y: 15 }}
                         animate={{

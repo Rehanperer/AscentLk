@@ -304,9 +304,10 @@ FOR ALL TO authenticated USING (is_admin());
 -- 5. SECURING RPC FUNCTIONS & EXECUTION
 -- ==========================================
 
--- Revoke validation execution from public, grant to auth admins only
+-- Revoke validation execution from public, grant to auth admins and anon (for Clerk)
 REVOKE EXECUTE ON FUNCTION validate_ticket(TEXT[]) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION validate_ticket(TEXT[]) TO authenticated;
+GRANT EXECUTE ON FUNCTION validate_ticket(TEXT[]) TO anon;
 
 -- Hardened get_ticket (includes rate limit)
 CREATE OR REPLACE FUNCTION get_ticket(ticket_id UUID)
@@ -390,7 +391,7 @@ BEGIN
 END;
 $$;
 
--- Hardened validate_ticket (includes auth verify and rate limit)
+-- Hardened validate_ticket (includes rate limit, allows Clerk anon)
 CREATE OR REPLACE FUNCTION validate_ticket(scanned_sequence TEXT[])
 RETURNS TABLE (
     id UUID,
@@ -403,10 +404,6 @@ RETURNS TABLE (
 DECLARE
     matched_id UUID;
 BEGIN
-    IF auth.role() <> 'authenticated' THEN
-        RAISE EXCEPTION 'UNAUTHORIZED: Only authenticated operators can validate tickets.';
-    END IF;
-
     IF NOT check_rate_limit('validate_ticket', 30, 60) THEN
         RAISE EXCEPTION 'RATE_LIMIT_EXCEEDED: Too many ticket scans. Please wait 1 minute.';
     END IF;
