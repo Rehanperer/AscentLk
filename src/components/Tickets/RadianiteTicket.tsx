@@ -23,6 +23,16 @@ class SoundSynthesizer {
         if (this.ctx.state === 'suspended') {
             this.ctx.resume();
         }
+        try {
+            // Play a brief silent buffer to fully unlock audio on mobile browsers (iOS/Safari)
+            const buffer = this.ctx.createBuffer(1, 1, 22050);
+            const source = this.ctx.createBufferSource();
+            source.buffer = buffer;
+            source.connect(this.ctx.destination);
+            source.start(0);
+        } catch (e) {
+            // ignore
+        }
     }
 
     startCharge() {
@@ -131,19 +141,83 @@ class SoundSynthesizer {
 
         try {
             const now = this.ctx.currentTime;
-            const osc = this.ctx.createOscillator();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(523.25, now);
-            osc.frequency.exponentialRampToValueAtTime(1046.5, now + 0.35);
+            const dest = this.ctx.destination;
 
-            const gain = this.ctx.createGain();
-            gain.gain.setValueAtTime(0.4, now);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+            // ── Create a subtle reverb tail via IIR convolver ──
+            const reverbGain = this.ctx.createGain();
+            reverbGain.gain.setValueAtTime(0.18, now);
+            reverbGain.connect(dest);
 
-            osc.connect(gain);
-            gain.connect(this.ctx.destination);
-            osc.start();
-            osc.stop(now + 0.65);
+            // Build a short synthetic impulse response (0.6s reverb)
+            const irLen = Math.floor(this.ctx.sampleRate * 0.6);
+            const irBuf = this.ctx.createBuffer(2, irLen, this.ctx.sampleRate);
+            for (let ch = 0; ch < 2; ch++) {
+                const data = irBuf.getChannelData(ch);
+                for (let i = 0; i < irLen; i++) {
+                    data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / irLen, 3.5);
+                }
+            }
+            const convolver = this.ctx.createConvolver();
+            convolver.buffer = irBuf;
+            convolver.connect(reverbGain);
+
+            // ── Helper: create a bell-like tone with harmonics ──
+            const playTone = (freq: number, startAt: number, vol: number, dur: number) => {
+                // Fundamental (sine)
+                const osc1 = this.ctx!.createOscillator();
+                osc1.type = 'sine';
+                osc1.frequency.setValueAtTime(freq, startAt);
+
+                // 3rd harmonic for bell shimmer
+                const osc2 = this.ctx!.createOscillator();
+                osc2.type = 'sine';
+                osc2.frequency.setValueAtTime(freq * 3, startAt);
+
+                // 5th harmonic (very subtle)
+                const osc3 = this.ctx!.createOscillator();
+                osc3.type = 'sine';
+                osc3.frequency.setValueAtTime(freq * 5, startAt);
+
+                // Gain envelopes – quick attack, smooth exponential decay
+                const g1 = this.ctx!.createGain();
+                g1.gain.setValueAtTime(0, startAt);
+                g1.gain.linearRampToValueAtTime(vol, startAt + 0.008);          // 8ms attack
+                g1.gain.setTargetAtTime(0, startAt + 0.06, dur * 0.28);        // smooth decay
+
+                const g2 = this.ctx!.createGain();
+                g2.gain.setValueAtTime(0, startAt);
+                g2.gain.linearRampToValueAtTime(vol * 0.12, startAt + 0.005);  // quieter harmonic
+                g2.gain.setTargetAtTime(0, startAt + 0.04, dur * 0.18);        // faster decay
+
+                const g3 = this.ctx!.createGain();
+                g3.gain.setValueAtTime(0, startAt);
+                g3.gain.linearRampToValueAtTime(vol * 0.04, startAt + 0.005);
+                g3.gain.setTargetAtTime(0, startAt + 0.03, dur * 0.12);
+
+                // Highpass to keep it clean
+                const hp = this.ctx!.createBiquadFilter();
+                hp.type = 'highpass';
+                hp.frequency.setValueAtTime(400, startAt);
+                hp.Q.setValueAtTime(0.5, startAt);
+
+                // Route: oscs → gains → hp → destination + reverb
+                osc1.connect(g1); g1.connect(hp);
+                osc2.connect(g2); g2.connect(hp);
+                osc3.connect(g3); g3.connect(hp);
+                hp.connect(dest);
+                hp.connect(convolver);
+
+                const stopAt = startAt + dur + 0.3;
+                osc1.start(startAt); osc1.stop(stopAt);
+                osc2.start(startAt); osc2.stop(stopAt);
+                osc3.start(startAt); osc3.stop(stopAt);
+            };
+
+            // ── Two-tone ascending chime (Apple Pay style) ──
+            // Tone 1: E6 (1318.5 Hz) — first ding
+            playTone(1318.5, now, 0.30, 0.22);
+            // Tone 2: G#6 (1661.2 Hz) — second ding, major third up
+            playTone(1661.2, now + 0.11, 0.34, 0.28);
         } catch (e) {}
     }
 
@@ -272,6 +346,40 @@ const KEYFRAME_STYLES = `
   50% { transform: rotate(180deg) scale(1.2); opacity: 0.6; }
   100% { transform: rotate(360deg) scale(0.8); opacity: 0.3; }
 }
+@keyframes rt-intro-scanline {
+  0% { top: -10%; opacity: 0; }
+  5% { opacity: 1; }
+  95% { opacity: 1; }
+  100% { top: 110%; opacity: 0; }
+}
+@keyframes rt-intro-text-glitch {
+  0%, 100% { transform: translate(0); filter: none; }
+  20% { transform: translate(-2px, 1px); filter: drop-shadow(2px 0 #ff4655) drop-shadow(-2px 0 #00FFFF); }
+  40% { transform: translate(1px, -1px); filter: none; }
+  60% { transform: translate(-1px, 2px); filter: drop-shadow(1px 0 #ff4655) drop-shadow(-1px 0 #00FFFF); }
+  80% { transform: translate(2px, -2px); filter: none; }
+}
+@keyframes rt-fluid-flow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.rt-fluid-text {
+  background: linear-gradient(
+    90deg,
+    #ff4655 0%,
+    #080d12 25%,
+    #0088ff 50%,
+    #080d12 75%,
+    #ff4655 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: rt-fluid-flow 4s linear infinite;
+  filter: drop-shadow(0 0 10px rgba(255, 70, 85, 0.4)) drop-shadow(0 0 20px rgba(0, 136, 255, 0.2));
+}
 `;
 
 // ─── Deterministic HSL color generator based on ticket UUID ──────────────────
@@ -334,11 +442,16 @@ const RadianiteTicket: React.FC = () => {
     const [errorMsg, setErrorMsg] = useState('');
     const [isMuted, setIsMuted] = useState(false);
 
-    const [chargeState, setChargeState] = useState<'idle' | 'charging' | 'charged' | 'scanned'>('idle');
+        const [chargeState, setChargeState] = useState<'idle' | 'charging' | 'charged' | 'scanned'>('idle');
     const [chargeProgress, setChargeProgress] = useState(0);
+    // Intro animation phases: 'flying' -> 'settling' -> 'reveal' -> 'done'
+    const [introPhase, setIntroPhase] = useState<'flying' | 'settling' | 'reveal' | 'done'>('flying');
     const [colorSequence, setColorSequence] = useState<string[]>([]);
     const [expiresIn, setExpiresIn] = useState<number>(0);
     const [coreTemp, setCoreTemp] = useState(45.2);
+
+    const idleOrbRef = useRef<HTMLDivElement>(null);
+    const [orbTargetRect, setOrbTargetRect] = useState<{ x: number; y: number; width: number; height: number } | null>(null);
 
     const synthRef = useRef<SoundSynthesizer>(new SoundSynthesizer());
     const chargeIntervalRef = useRef<number | null>(null);
@@ -349,6 +462,38 @@ const RadianiteTicket: React.FC = () => {
     useEffect(() => {
         synthRef.current.isMuted = isMuted;
     }, [isMuted]);
+
+    // Measure the idle orb container's position on screen
+    useEffect(() => {
+        const measure = () => {
+            if (idleOrbRef.current) {
+                const rect = idleOrbRef.current.getBoundingClientRect();
+                if (rect.width > 0 && rect.height > 0) {
+                    setOrbTargetRect({
+                        x: rect.left + rect.width / 2,
+                        y: rect.top + rect.height / 2,
+                        width: rect.width,
+                        height: rect.height,
+                    });
+                }
+            }
+        };
+
+        measure();
+
+        // Staggered layout checks
+        const t1 = setTimeout(measure, 100);
+        const t2 = setTimeout(measure, 400);
+        const t3 = setTimeout(measure, 800);
+
+        window.addEventListener('resize', measure);
+        return () => {
+            clearTimeout(t1);
+            clearTimeout(t2);
+            clearTimeout(t3);
+            window.removeEventListener('resize', measure);
+        };
+    }, []);
 
     // Fluctuating temperature gauge
     useEffect(() => {
@@ -369,6 +514,29 @@ const RadianiteTicket: React.FC = () => {
             style.textContent = KEYFRAME_STYLES;
             document.head.appendChild(style);
         }
+    }, []);
+
+    // Intro phase timeline (runs once on mount)
+    useEffect(() => {
+        const t1 = window.setTimeout(() => setIntroPhase('settling'), 2500);
+        const t2 = window.setTimeout(() => setIntroPhase('reveal'), 3800);
+        const t3 = window.setTimeout(() => setIntroPhase('done'), 8600);
+        return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+    // iOS Web Audio autoplay unlock on first touch/interaction
+    useEffect(() => {
+        const unlock = () => {
+            synthRef.current.init();
+            document.removeEventListener('touchstart', unlock);
+            document.removeEventListener('click', unlock);
+        };
+        document.addEventListener('touchstart', unlock, { passive: true });
+        document.addEventListener('click', unlock);
+        return () => {
+            document.removeEventListener('touchstart', unlock);
+            document.removeEventListener('click', unlock);
+        };
     }, []);
 
     // ─── Fetch Ticket & Realtime ────────────────────────────────────────
@@ -417,12 +585,27 @@ const RadianiteTicket: React.FC = () => {
             }, (payload: any) => {
                 const updated = payload.new;
                 if (updated.ticket_status === 'scanned') {
-                    synthRef.current.playExplosion();
-                    if ('vibrate' in navigator) {
-                        navigator.vibrate([400, 100, 200, 50, 100]);
-                    }
                     setChargeState('scanned');
                     setTicket((prev: any) => ({ ...prev, ticket_status: 'scanned' }));
+
+                    // Rising audio overload hum for 1.2s, then play explosion sound
+                    synthRef.current.startCharge();
+                    let elapsed = 0;
+                    if (chargeIntervalRef.current) clearInterval(chargeIntervalRef.current);
+                    chargeIntervalRef.current = window.setInterval(() => {
+                        elapsed += 100;
+                        if (elapsed >= 1200) {
+                            if (chargeIntervalRef.current) clearInterval(chargeIntervalRef.current);
+                            synthRef.current.stopCharge();
+                            synthRef.current.playExplosion();
+                        } else {
+                            synthRef.current.updateProgress(elapsed / 1200);
+                        }
+                    }, 100);
+
+                    if ('vibrate' in navigator) {
+                        navigator.vibrate([80, 50, 120, 50, 160, 50, 240, 50, 600]);
+                    }
                 }
             })
             .subscribe();
@@ -595,6 +778,237 @@ const RadianiteTicket: React.FC = () => {
         </div>
     );
 
+    // Orb flight path — erratic waypoints as percentages
+    const flyingKeyframes = [
+        { x: '15%', y: '20%', scale: 0.6, rotate: 0 },
+        { x: '75%', y: '15%', scale: 0.9, rotate: 120 },
+        { x: '85%', y: '70%', scale: 0.5, rotate: 240 },
+        { x: '25%', y: '80%', scale: 1.1, rotate: 360 },
+        { x: '60%', y: '30%', scale: 0.7, rotate: 480 },
+        { x: '40%', y: '60%', scale: 0.8, rotate: 600 },
+        { x: '50%', y: '45%', scale: 1.0, rotate: 720 },
+    ];
+
+    const isIntroSettling = introPhase === 'settling' || introPhase === 'reveal';
+    const isIntroRevealed = introPhase === 'reveal';
+
+    const introOverlayJSX = introPhase !== 'done' ? (
+        <motion.div
+            key="intro-overlay"
+            className="fixed inset-0 z-[100] flex items-center justify-center"
+            style={{ background: '#0a0f14' }}
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.6 }}
+        >
+            {/* Ambient deep background */}
+            <div className="absolute inset-0 overflow-hidden">
+                <div
+                    className="absolute inset-0"
+                    style={{
+                        background: 'radial-gradient(ellipse at 50% 50%, rgba(0,255,255,0.03) 0%, transparent 60%)',
+                    }}
+                />
+                {/* Grid overlay */}
+                <div
+                    className="absolute inset-0 opacity-[0.03]"
+                    style={{
+                        backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
+                                          linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
+                        backgroundSize: '40px 40px',
+                    }}
+                />
+            </div>
+
+            {/* Scanning laser during flight */}
+            {!isIntroRevealed && (
+                <div
+                    className="absolute left-0 right-0 h-[2px] pointer-events-none z-20"
+                    style={{
+                        background: 'linear-gradient(90deg, transparent, rgba(0,255,255,0.6), rgba(0,255,255,0.8), rgba(0,255,255,0.6), transparent)',
+                        boxShadow: '0 0 20px rgba(0,255,255,0.4), 0 0 60px rgba(0,255,255,0.2)',
+                        animation: 'rt-intro-scanline 1.5s linear infinite',
+                        willChange: 'top',
+                    }}
+                />
+            )}
+
+            {/* Orb trail particles during flight */}
+            {!isIntroSettling && (
+                <div className="absolute inset-0 pointer-events-none z-10">
+                    {[...Array(20)].map((_, i) => (
+                        <motion.div
+                            key={i}
+                            className="absolute w-1 h-1 rounded-full bg-[#00FFFF]"
+                            style={{
+                                boxShadow: '0 0 6px #00FFFF',
+                                left: `${20 + Math.random() * 60}%`,
+                                top: `${20 + Math.random() * 60}%`,
+                            }}
+                            animate={{
+                                opacity: [0, 0.8, 0],
+                                scale: [0, 1.5, 0],
+                            }}
+                            transition={{
+                                duration: 0.8 + Math.random() * 0.6,
+                                repeat: Infinity,
+                                delay: i * 0.12,
+                                ease: 'easeOut',
+                            }}
+                        />
+                    ))}
+                </div>
+            )}
+
+            {/* Flying Orb */}
+            <motion.div
+                className="absolute z-30"
+                style={{ width: 280, height: 280 }}
+                initial={{
+                    left: flyingKeyframes[0].x,
+                    top: flyingKeyframes[0].y,
+                    x: '-50%',
+                    y: '-50%',
+                    scale: flyingKeyframes[0].scale * 0.5,
+                    rotate: 0,
+                }}
+                animate={
+                    isIntroSettling
+                        ? {
+                            left: orbTargetRect ? orbTargetRect.x : '50%',
+                            top: orbTargetRect ? orbTargetRect.y : '45%',
+                            x: '-50%',
+                            y: '-50%',
+                            scale: orbTargetRect ? (orbTargetRect.width / 280) : 1.0,
+                            rotate: 720,
+                        }
+                        : {
+                            left: flyingKeyframes.map(k => k.x),
+                            top: flyingKeyframes.map(k => k.y),
+                            scale: flyingKeyframes.map(k => k.scale * 0.5),
+                            rotate: flyingKeyframes.map(k => k.rotate),
+                        }
+                }
+                transition={
+                    isIntroSettling
+                        ? {
+                            duration: 1.3,
+                            ease: [0.16, 1, 0.3, 1],
+                        }
+                        : {
+                            duration: 2.5,
+                            ease: 'easeInOut',
+                            times: [0, 0.15, 0.3, 0.45, 0.6, 0.8, 1],
+                        }
+                }
+            >
+                {/* Glow trail behind the orb */}
+                <motion.div
+                    className="absolute inset-[-30px] rounded-full pointer-events-none"
+                    style={{
+                        background: `radial-gradient(circle, ${colors.glow} 0%, transparent 70%)`,
+                        filter: 'blur(20px)',
+                    }}
+                    animate={{
+                        opacity: isIntroSettling ? [0.8, 0.4] : [0.3, 0.8, 0.3],
+                        scale: isIntroSettling ? [1.5, 1] : [1, 1.5, 1],
+                    }}
+                    transition={{ duration: isIntroSettling ? 1.2 : 1.5, repeat: isIntroSettling ? 0 : Infinity }}
+                />
+                <CinematicOrb state="idle" chargeProgress={0} size={280} />
+            </motion.div>
+
+            {/* Glassmorphism blur overlay */}
+            <motion.div
+                className="absolute inset-0 z-40 pointer-events-none"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: isIntroRevealed ? 1 : 0 }}
+                transition={{ duration: 0.8, ease: 'easeOut' }}
+                style={{
+                    backdropFilter: 'blur(30px) saturate(1.4)',
+                    WebkitBackdropFilter: 'blur(30px) saturate(1.4)',
+                    background: 'rgba(10,15,20,0.65)',
+                }}
+            />
+
+            {/* Title reveal text — on top of the blur */}
+            <AnimatePresence>
+                {isIntroRevealed && orbTargetRect && (
+                    <motion.div
+                        key="cinematic-title"
+                        className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center justify-center w-full max-w-md px-6 z-50 pointer-events-none"
+                        style={{
+                            top: orbTargetRect.y + orbTargetRect.height / 2 + 24,
+                        }}
+                        initial={{ opacity: 0, y: 15 }}
+                        animate={{
+                            opacity: [0, 1, 1, 0],
+                            y: [15, 0, 0, -10],
+                        }}
+                        transition={{
+                            times: [0, 0.1, 0.85, 1],
+                            duration: 4.2,
+                            ease: 'easeInOut',
+                        }}
+                    >
+                        <div className="relative w-full flex items-center justify-center">
+                            {/* Outline Layer: Fades in */}
+                            <motion.h1
+                                className="text-5xl sm:text-6xl tracking-[0.12em] font-bold uppercase leading-none text-center font-teko text-transparent"
+                                style={{
+                                    WebkitTextStroke: '1.5px rgba(0, 255, 255, 0.75)',
+                                    textShadow: '0 0 8px rgba(0, 255, 255, 0.15)',
+                                }}
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ duration: 0.6, ease: 'easeOut' }}
+                            >
+                                YOUR TICKET FOR ASCENT
+                            </motion.h1>
+
+                            {/* Organic Filled Layer: "Infected" spread outward */}
+                            <motion.h1
+                                className="absolute inset-0 text-5xl sm:text-6xl tracking-[0.12em] font-bold uppercase leading-none text-center font-teko rt-fluid-text"
+                                initial={{ 
+                                    clipPath: 'circle(0% at 50% 50%)',
+                                    filter: 'drop-shadow(0 0 2px rgba(0, 255, 136, 0))',
+                                }}
+                                animate={{ 
+                                    clipPath: [
+                                        'circle(0% at 50% 50%)',
+                                        'circle(35% at 42% 58%)',   // organic skew/drift center-left
+                                        'circle(70% at 58% 42%)',   // organic drift center-right
+                                        'circle(120% at 50% 50%)'
+                                    ],
+                                    filter: [
+                                        'drop-shadow(0 0 2px rgba(0, 255, 136, 0))',
+                                        'drop-shadow(0 0 8px rgba(0, 255, 136, 0.5))',
+                                        'drop-shadow(0 0 15px rgba(0, 255, 255, 0.8))'
+                                    ]
+                                }}
+                                transition={{
+                                    clipPath: {
+                                        duration: 1.6,
+                                        delay: 0.5,
+                                        ease: 'easeInOut',
+                                        times: [0, 0.35, 0.7, 1],
+                                    },
+                                    filter: {
+                                        duration: 1.6,
+                                        delay: 0.5,
+                                        ease: 'easeInOut',
+                                    }
+                                }}
+                            >
+                                YOUR TICKET FOR ASCENT
+                            </motion.h1>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </motion.div>
+    ) : null;
+
     // ─── Loading State ──────────────────────────────────────────────────
     if (loading) {
         return (
@@ -622,7 +1036,11 @@ const RadianiteTicket: React.FC = () => {
     }
 
     return (
-        <div className="min-h-screen bg-[#0a0f14] text-white overflow-y-auto flex flex-col justify-between select-none relative font-sans">
+        <div className={`min-h-screen bg-[#0a0f14] text-white flex flex-col justify-between select-none relative font-sans overflow-x-hidden ${introPhase !== 'done' ? 'overflow-hidden max-h-screen' : 'overflow-y-auto'}`}>
+            {/* ═══ Cinematic Intro Overlay ═══ */}
+            <AnimatePresence>
+                {introOverlayJSX}
+            </AnimatePresence>
             <SEO 
                 title={`Secure Radianite Ticket | ASCENT 2026`} 
                 description="Your highly secure digital ticket for ASCENT 2026. Hold to charge the Radianite core to present pulse ring pattern."
@@ -689,7 +1107,12 @@ const RadianiteTicket: React.FC = () => {
             {/* ═══ Content Container ═══ */}
             <div className="relative z-10 flex flex-col justify-between min-h-screen p-5">
                 {/* ═══ Top HUD Row ═══ */}
-                <header className="flex justify-between items-center border-b border-white/10 pb-3 mb-2">
+                <motion.header 
+                    className="flex justify-between items-center border-b border-white/10 pb-3 mb-2"
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={introPhase === 'done' && chargeState !== 'scanned' ? { opacity: 1, y: 0 } : { opacity: 0, y: -10 }}
+                    transition={{ duration: 0.4, ease: 'easeInOut' }}
+                >
                     <div className="flex items-center gap-2">
                         <Ticket className="text-[#ff4655] animate-pulse" size={18} />
                         <span className="font-mono text-[9px] tracking-[0.2em] text-white/60 uppercase">
@@ -708,10 +1131,15 @@ const RadianiteTicket: React.FC = () => {
                             {ticketId?.slice(0, 8)}
                         </span>
                     </div>
-                </header>
+                </motion.header>
 
                 {/* ═══ HUD Status Bar ═══ */}
-                <div className="flex items-center justify-between px-1 mb-3">
+                <motion.div 
+                    className="flex items-center justify-between px-1 mb-3"
+                    initial={{ opacity: 0 }}
+                    animate={introPhase === 'done' && chargeState !== 'scanned' ? { opacity: 1 } : { opacity: 0 }}
+                    transition={{ duration: 0.4, ease: 'easeInOut' }}
+                >
                     <div className="flex items-center gap-2">
                         <CoolingFan size={18} />
                         <span className="font-mono text-[9px] text-[#00FFFF]/70" style={{ animation: 'rt-temp-flicker 2s ease-in-out infinite' }}>
@@ -725,7 +1153,7 @@ const RadianiteTicket: React.FC = () => {
                         <div className={`w-1.5 h-1.5 rounded-full ${chargeState === 'scanned' ? 'bg-[#00ff88]' : chargeState === 'charged' ? 'bg-[#00FFFF] animate-pulse' : 'bg-white/20'}`} />
                         <span className="font-mono text-[8px] text-white/40">SYS OK</span>
                     </div>
-                </div>
+                </motion.div>
 
                 {/* ═══ Main Content ═══ */}
                 <main className="flex-grow flex flex-col items-center justify-center">
@@ -750,174 +1178,135 @@ const RadianiteTicket: React.FC = () => {
                                     }}
                                 />
 
-                                {/* ── Explosion Flash Overlay ── */}
-                                <motion.div 
-                                    className="fixed inset-0 pointer-events-none z-50"
-                                    initial={{ opacity: 1 }}
-                                    animate={{ opacity: 0 }}
-                                    transition={{ duration: 1.8, ease: 'easeOut' }}
-                                    style={{ background: 'radial-gradient(circle at 50% 40%, rgba(0,255,255,0.9), rgba(255,255,255,0.8) 30%, transparent 70%)' }}
-                                />
+                                {/* ── Cinematic Orb & Badge Container ── */}
+                                <div className="relative w-full max-w-[288px] aspect-square flex items-center justify-center mb-6 select-none mt-4">
+                                    {/* The exploding orb: size expanded to 600px to prevent box-clipping */}
+                                    <div className="absolute w-[600px] h-[600px] pointer-events-none z-10 flex items-center justify-center">
+                                        <CinematicOrb state="scanned" chargeProgress={100} size={600} />
+                                    </div>
 
-                                {/* ── Shockwave Rings ── */}
-                                <div className="absolute inset-0 pointer-events-none z-40 flex items-center justify-center">
-                                    {[0, 0.15, 0.3].map((delay, i) => (
-                                        <div
-                                            key={i}
-                                            className="absolute w-32 h-32 rounded-full border-[#00FFFF]"
-                                            style={{
-                                                borderWidth: '3px',
-                                                borderStyle: 'solid',
-                                                animation: `rt-shockwave 1.2s ${delay}s ease-out forwards`,
-                                                opacity: 0,
-                                            }}
+                                    {/* The verified badge: Fades in after the blast */}
+                                    <motion.div
+                                        className="relative z-20"
+                                        initial={{ opacity: 0, scale: 0.5 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        transition={{ delay: 1.8, duration: 0.8, type: 'spring', damping: 15 }}
+                                    >
+                                        {/* Rotating lens flare behind badge */}
+                                        <div 
+                                            className="absolute inset-[-50px] bg-gradient-to-r from-transparent via-[#00ff88]/30 to-transparent rounded-full blur-[40px] pointer-events-none"
+                                            style={{ animation: 'rt-lens-flare 5s linear infinite' }}
                                         />
-                                    ))}
-                                </div>
 
-                                {/* ── Cinematic Particle Explosion ── */}
-                                <div className="absolute inset-0 pointer-events-none z-30 flex items-center justify-center">
-                                    {[...Array(50)].map((_, i) => {
-                                        const angle = Math.random() * Math.PI * 2;
-                                        const velocity = 80 + Math.random() * 280;
-                                        const targetX = Math.cos(angle) * velocity;
-                                        const targetY = Math.sin(angle) * velocity;
-                                        const colors = ['#00FFFF', '#00ff88', '#FF00FF', '#FFFF00', '#8A2BE2', '#ff4655'];
-                                        const randColor = colors[Math.floor(Math.random() * colors.length)];
-                                        return (
-                                            <motion.div
-                                                key={i}
-                                                className="absolute rounded-full"
-                                                style={{
-                                                    width: `${3 + Math.random() * 6}px`,
-                                                    height: `${3 + Math.random() * 6}px`,
-                                                    backgroundColor: randColor,
-                                                    boxShadow: `0 0 8px ${randColor}, 0 0 16px ${randColor}50`
-                                                }}
-                                                initial={{ x: 0, y: 0, scale: 1.8, opacity: 1 }}
-                                                animate={{
-                                                    x: targetX,
-                                                    y: targetY + 100,
-                                                    scale: 0,
-                                                    opacity: 0
-                                                }}
-                                                transition={{
-                                                    duration: 0.8 + Math.random() * 0.8,
-                                                    ease: 'easeOut'
-                                                }}
-                                            />
-                                        );
-                                    })}
-                                </div>
-                                
-                                {/* ── Holographic Hexagonal Badge ── */}
-                                <div className="relative mb-6 mt-4">
-                                    {/* Rotating lens flare behind badge */}
-                                    <div 
-                                        className="absolute inset-[-50px] bg-gradient-to-r from-transparent via-[#00ff88]/30 to-transparent rounded-full blur-[40px] pointer-events-none"
-                                        style={{ animation: 'rt-lens-flare 5s linear infinite' }}
-                                    />
-
-                                    {/* Rotating hex border */}
-                                    <div 
-                                        className="absolute inset-[-12px] opacity-30"
-                                        style={{ animation: 'rt-hex-rotate 8s linear infinite', willChange: 'transform' }}
-                                    >
-                                        <svg viewBox="0 0 100 100" className="w-full h-full">
-                                            <polygon 
-                                                points="50,2 93,25 93,75 50,98 7,75 7,25" 
-                                                fill="none" 
-                                                stroke="#00ff88" 
-                                                strokeWidth="1"
-                                                strokeDasharray="8 4"
-                                            />
-                                        </svg>
-                                    </div>
-                                    {/* Counter-rotating hex */}
-                                    <div 
-                                        className="absolute inset-[-20px] opacity-15"
-                                        style={{ animation: 'rt-hex-rotate 12s linear infinite', animationDirection: 'reverse', willChange: 'transform' }}
-                                    >
-                                        <svg viewBox="0 0 100 100" className="w-full h-full">
-                                            <polygon 
-                                                points="50,5 90,27 90,73 50,95 10,73 10,27" 
-                                                fill="none" 
-                                                stroke="#00FFFF" 
-                                                strokeWidth="0.8"
-                                            />
-                                        </svg>
-                                    </div>
-                                    {/* Main badge */}
-                                    <div 
-                                        className="relative border-2 border-[#00ff88] bg-[#00ff88]/10 text-[#00ff88] p-6 rounded-full"
-                                        style={{ animation: 'rt-badge-glow 2s ease-in-out infinite' }}
-                                    >
-                                        <ShieldCheck size={48} />
-                                    </div>
-                                </div>
-
-                                {/* ── Agent Verified Title ── */}
-                                <h2 className="font-teko text-5xl text-center uppercase tracking-wider text-[#00ff88] mb-0.5"
-                                    style={{ textShadow: '0 0 20px rgba(0,255,136,0.4), 0 0 40px rgba(0,255,136,0.15)' }}>
-                                    AGENT VERIFIED
-                                </h2>
-                                
-                                {/* Animated underline */}
-                                <div className="w-48 h-px bg-gradient-to-r from-transparent via-[#00ff88] to-transparent mb-1"
-                                    style={{ animation: 'rt-verified-line 2s ease-out forwards' }} />
-                                
-                                <p className="font-mono text-center text-[10px] text-[#00ff88]/60 tracking-[0.3em] uppercase mb-6">
-                                    SECURE GATE ACCESS APPROVED
-                                </p>
-
-                                {/* ── Apple Glassmorphic Ticket Details Card ── */}
-                                <div className="w-full border border-white/10 bg-white/[0.03] rounded-xl relative overflow-hidden shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]"
-                                    style={{ 
-                                        backdropFilter: 'blur(20px)',
-                                        WebkitBackdropFilter: 'blur(20px)',
-                                    }}>
-                                    <CornerBrackets color="rgba(0,255,136,0.4)" />
-
-                                    {/* Inner scanline */}
-                                    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                                        <div style={{
-                                            position: 'absolute', left: 0, right: 0, height: '40px',
-                                            background: 'linear-gradient(180deg, transparent, rgba(0,255,136,0.04), transparent)',
-                                            animation: 'rt-scanline 3s linear infinite',
-                                        }} />
-                                    </div>
-
-                                    {/* Top status strip */}
-                                    <div className="flex justify-between items-center px-4 py-1.5 border-b border-white/5 bg-[#00ff88]/5">
-                                        <span className="font-mono text-[8px] text-[#00ff88]/60 tracking-widest">CLASSIFIED // AGENT FILE</span>
-                                        <span className="font-mono text-[8px] text-[#00ff88] animate-pulse">● COMMS SECURE</span>
-                                    </div>
-
-                                    <div className="p-5 space-y-4 font-mono text-xs relative">
-                                        <div className="border-b border-white/5 pb-3">
-                                            <span className="text-white/30 block text-[8px] tracking-[0.2em] uppercase mb-1">AGENT DESIGNATION</span>
-                                            <span className="text-white font-bold text-base tracking-wide" style={{ textShadow: '0 0 10px rgba(255,255,255,0.1)' }}>
-                                                <ScrambledDesignation text={ticket?.full_name?.toUpperCase() || 'AGENT'} />
-                                            </span>
+                                        {/* Rotating hex border */}
+                                        <div 
+                                            className="absolute inset-[-12px] opacity-30"
+                                            style={{ animation: 'rt-hex-rotate 8s linear infinite', willChange: 'transform' }}
+                                        >
+                                            <svg viewBox="0 0 100 100" className="w-full h-full">
+                                                <polygon 
+                                                    points="50,2 93,25 93,75 50,98 7,75 7,25" 
+                                                    fill="none" 
+                                                    stroke="#00ff88" 
+                                                    strokeWidth="1"
+                                                    strokeDasharray="8 4"
+                                                />
+                                            </svg>
                                         </div>
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div>
-                                                <span className="text-white/30 block text-[8px] tracking-[0.2em] uppercase mb-1">SEAT / SECTION</span>
-                                                <span className="text-[#00FFFF] font-bold text-sm">
-                                                    <ScrambledDesignation text={ticket?.seat_id ? ticket.seat_id.toUpperCase() : 'GENERAL'} />
+                                        {/* Counter-rotating hex */}
+                                        <div 
+                                            className="absolute inset-[-20px] opacity-15"
+                                            style={{ animation: 'rt-hex-rotate 12s linear infinite', animationDirection: 'reverse', willChange: 'transform' }}
+                                        >
+                                            <svg viewBox="0 0 100 100" className="w-full h-full">
+                                                <polygon 
+                                                    points="50,5 90,27 90,73 50,95 10,73 10,27" 
+                                                    fill="none" 
+                                                    stroke="#00FFFF" 
+                                                    strokeWidth="0.8"
+                                                />
+                                            </svg>
+                                        </div>
+                                        {/* Main badge */}
+                                        <div 
+                                            className="relative border-2 border-[#00ff88] bg-[#00ff88]/10 text-[#00ff88] p-6 rounded-full"
+                                            style={{ animation: 'rt-badge-glow 2s ease-in-out infinite' }}
+                                        >
+                                            <ShieldCheck size={48} />
+                                        </div>
+                                    </motion.div>
+                                </div>
+
+                                {/* ── Verified Details: Fades in after detonation ── */}
+                                <motion.div
+                                    className="w-full flex flex-col items-center"
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 2.0, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                                >
+                                    {/* ── Agent Verified Title ── */}
+                                    <h2 className="font-teko text-5xl text-center uppercase tracking-wider text-[#00ff88] mb-0.5"
+                                        style={{ textShadow: '0 0 20px rgba(0,255,136,0.4), 0 0 40px rgba(0,255,136,0.15)' }}>
+                                        AGENT VERIFIED
+                                    </h2>
+                                    
+                                    {/* Animated underline */}
+                                    <div className="w-48 h-px bg-gradient-to-r from-transparent via-[#00ff88] to-transparent mb-1"
+                                        style={{ animation: 'rt-verified-line 2s ease-out forwards' }} />
+                                    
+                                    <p className="font-mono text-center text-[10px] text-[#00ff88]/60 tracking-[0.3em] uppercase mb-6">
+                                        SECURE GATE ACCESS APPROVED
+                                    </p>
+
+                                    {/* ── Apple Glassmorphic Ticket Details Card ── */}
+                                    <div className="w-full border border-white/10 bg-white/[0.03] rounded-xl relative overflow-hidden shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]"
+                                        style={{ 
+                                            backdropFilter: 'blur(20px)',
+                                            WebkitBackdropFilter: 'blur(20px)',
+                                        }}>
+                                        <CornerBrackets color="rgba(0,255,136,0.4)" />
+
+                                        {/* Inner scanline */}
+                                        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                                            <div style={{
+                                                position: 'absolute', left: 0, right: 0, height: '40px',
+                                                background: 'linear-gradient(180deg, transparent, rgba(0,255,136,0.04), transparent)',
+                                                animation: 'rt-scanline 3s linear infinite',
+                                            }} />
+                                        </div>
+
+                                        {/* Top status strip */}
+                                        <div className="flex justify-between items-center px-4 py-1.5 border-b border-white/5 bg-[#00ff88]/5">
+                                            <span className="font-mono text-[8px] text-[#00ff88]/60 tracking-widest">CLASSIFIED // AGENT FILE</span>
+                                            <span className="font-mono text-[8px] text-[#00ff88] animate-pulse">● COMMS SECURE</span>
+                                        </div>
+
+                                        <div className="p-5 space-y-4 font-mono text-xs relative">
+                                            <div className="border-b border-white/5 pb-3">
+                                                <span className="text-white/30 block text-[8px] tracking-[0.2em] uppercase mb-1">AGENT DESIGNATION</span>
+                                                <span className="text-white font-bold text-base tracking-wide" style={{ textShadow: '0 0 10px rgba(255,255,255,0.1)' }}>
+                                                    <ScrambledDesignation text={ticket?.full_name?.toUpperCase() || 'AGENT'} />
                                                 </span>
                                             </div>
-                                            <div>
-                                                <span className="text-white/30 block text-[8px] tracking-[0.2em] uppercase mb-1">GATE ENTRY</span>
-                                                <span className="text-white font-bold text-sm">NORTH ARCHWAY</span>
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div>
+                                                    <span className="text-white/30 block text-[8px] tracking-[0.2em] uppercase mb-1">SEAT / SECTION</span>
+                                                    <span className="text-[#00FFFF] font-bold text-sm">
+                                                        <ScrambledDesignation text={ticket?.seat_id ? ticket.seat_id.toUpperCase() : 'GENERAL'} />
+                                                    </span>
+                                                </div>
+                                                <div>
+                                                    <span className="text-white/30 block text-[8px] tracking-[0.2em] uppercase mb-1">GATE ENTRY</span>
+                                                    <span className="text-white font-bold text-sm">NORTH ARCHWAY</span>
+                                                </div>
+                                            </div>
+                                            <div className="border-t border-white/5 pt-3 flex justify-between items-center text-[9px] text-white/30">
+                                                <span>ASCENT INDEPENDENT SEATING</span>
+                                                <span>2026.06.15</span>
                                             </div>
                                         </div>
-                                        <div className="border-t border-white/5 pt-3 flex justify-between items-center text-[9px] text-white/30">
-                                            <span>ASCENT INDEPENDENT SEATING</span>
-                                            <span>2026.06.15</span>
-                                        </div>
                                     </div>
-                                </div>
+                                </motion.div>
                             </motion.div>
                         )}
 
@@ -968,7 +1357,11 @@ const RadianiteTicket: React.FC = () => {
                                     <div
                                         className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none"
                                     >
-                                        <CinematicOrb state={chargeState as any} chargeProgress={chargeProgress} size={280} />
+                                        <CinematicOrb 
+                                            state={(chargeState as string) === 'scanned' ? 'charged' : (chargeState as any)} 
+                                            chargeProgress={chargeProgress} 
+                                            size={280} 
+                                        />
                                     </div>
 
                                     {/* ── Concentric Pulse Rings (SVG) ── */}
@@ -1082,13 +1475,25 @@ const RadianiteTicket: React.FC = () => {
                                 className="flex flex-col items-center w-full"
                             >
                                 {/* ── Cinematic Orb (Idle/Charging) ── */}
-                                <div className="relative w-full max-w-[288px] aspect-square flex items-center justify-center mb-6 select-none">
+                                <div 
+                                    ref={idleOrbRef}
+                                    className="relative w-full max-w-[288px] aspect-square flex items-center justify-center mb-6 select-none"
+                                >
                                     <div className="absolute inset-0 pointer-events-none z-10">
-                                        <CinematicOrb state={chargeState as any} chargeProgress={chargeProgress} size={280} />
+                                        <CinematicOrb 
+                                            state={(chargeState as string) === 'scanned' ? 'idle' : (chargeState as any)} 
+                                            chargeProgress={chargeProgress} 
+                                            size={280} 
+                                        />
                                     </div>
 
                                     {/* Circular progress ring overlay */}
-                                    <svg className="absolute w-56 h-56 -rotate-90 pointer-events-none z-20">
+                                    <motion.svg 
+                                        className="absolute w-56 h-56 -rotate-90 pointer-events-none z-20"
+                                        initial={{ opacity: 0, scale: 0.9 }}
+                                        animate={introPhase === 'done' ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
+                                        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+                                    >
                                         <circle cx="112" cy="112" r="106" fill="transparent" stroke="rgba(255,255,255,0.03)" strokeWidth="2" />
                                         <motion.circle 
                                             cx="112" cy="112" r="106" fill="transparent" 
@@ -1100,11 +1505,11 @@ const RadianiteTicket: React.FC = () => {
                                                 filter: chargeState === 'charging' ? `drop-shadow(0 0 8px ${colors.glow})` : 'none'
                                             }}
                                         />
-                                    </svg>
+                                    </motion.svg>
                                 </div>
 
                                 {/* ── Charge Button ── */}
-                                <button
+                                <motion.button
                                     onPointerDown={handleStartCharge}
                                     onPointerUp={handleStopCharge}
                                     onPointerLeave={handleStopCharge}
@@ -1120,20 +1525,28 @@ const RadianiteTicket: React.FC = () => {
                                             : '0 8px 32px 0 rgba(0,0,0,0.3)',
                                         WebkitTouchCallout: 'none',
                                     }}
+                                    initial={{ opacity: 0, y: 15 }}
+                                    animate={introPhase === 'done' ? { opacity: 1, y: 0 } : { opacity: 0, y: 15 }}
+                                    transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
                                 >
                                     <CornerBrackets color={chargeState === 'charging' ? colors.color1 : 'rgba(255,255,255,0.15)'} />
                                     <span>{chargeState === 'charging' ? 'HOLDING...' : 'HOLD TO ACTIVATE'}</span>
                                     <span className="font-mono text-[9px] tracking-wider normal-case opacity-60 mt-0.5">
                                         {chargeState === 'charging' ? `${Math.round(chargeProgress)}% CHARGED` : 'REQUIRES SUSTAINED CONTACT'}
                                     </span>
-                                </button>
+                                </motion.button>
 
                                 {/* ── Ticket Info Card ── */}
-                                <div className="w-full max-w-[288px] mt-5 bg-white/[0.03] border border-white/10 rounded-xl p-4 font-mono text-[10px] relative overflow-hidden shadow-[0_8px_32px_0_rgba(0,0,0,0.3)]"
+                                <motion.div 
+                                    className="w-full max-w-[288px] mt-5 bg-white/[0.03] border border-white/10 rounded-xl p-4 font-mono text-[10px] relative overflow-hidden shadow-[0_8px_32px_0_rgba(0,0,0,0.3)]"
                                     style={{ 
                                         backdropFilter: 'blur(16px)',
                                         WebkitBackdropFilter: 'blur(16px)',
-                                    }}>
+                                    }}
+                                    initial={{ opacity: 0, y: 15 }}
+                                    animate={introPhase === 'done' ? { opacity: 1, y: 0 } : { opacity: 0, y: 15 }}
+                                    transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.45 }}
+                                >
                                     <CornerBrackets color="rgba(255,255,255,0.1)" />
                                     <div className="flex justify-between mb-2 text-white/30">
                                         <span>AGENT: <span className="text-white/70">{ticket?.full_name?.toUpperCase().slice(0, 16) || 'N/A'}</span></span>
@@ -1144,14 +1557,19 @@ const RadianiteTicket: React.FC = () => {
                                         <span>CINNAMON LIFE COLOMBO</span>
                                         <span>15 JUN 2026</span>
                                     </div>
-                                </div>
+                                </motion.div>
                             </motion.div>
                         )}
                     </AnimatePresence>
                 </main>
 
                 {/* ═══ Bottom HUD Footer ═══ */}
-                <footer className="border-t border-white/8 pt-3 flex flex-col items-center">
+                <motion.footer 
+                    className="border-t border-white/8 pt-3 flex flex-col items-center"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={introPhase === 'done' && chargeState !== 'scanned' ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+                    transition={{ duration: 0.4, ease: 'easeInOut' }}
+                >
                     <div className="w-full flex justify-between items-center text-[9px] font-mono text-white/30 mb-1.5">
                         <span>SECTOR: CINNAMON LIFE</span>
                         <span className="flex items-center gap-1">
@@ -1162,7 +1580,7 @@ const RadianiteTicket: React.FC = () => {
                     <div className="font-mono text-[8px] text-white/15 text-center leading-relaxed max-w-xs">
                         Dynamic pulse ring patterns expire automatically. Screenshot protection active.
                     </div>
-                </footer>
+                </motion.footer>
             </div>
         </div>
     );
