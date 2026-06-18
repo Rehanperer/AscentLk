@@ -25,6 +25,7 @@
     "vite": "^7.3.1"
   },
   "dependencies": {
+    "@clerk/clerk-react": "^5.61.8",
     "@splinetool/react-spline": "^4.1.0",
     "@splinetool/runtime": "^1.12.39",
     "@supabase/supabase-js": "^2.98.0",

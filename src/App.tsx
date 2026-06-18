@@ -51,13 +51,173 @@ const DemoRedacted = lazy(() => import('./pages/DemoRedacted'));
 const DemoSignal = lazy(() => import('./pages/DemoSignal'));
 const DemoAperture = lazy(() => import('./pages/DemoAperture'));
 
-// Simple Auth Guard component
-const AdminGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+import { useAuth, useUser, useSignIn } from '@clerk/clerk-react';
+
+// Clerk Admin Guard component
+const ClerkAdminGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const { isLoaded, isSignedIn } = useAuth();
+    const { user } = useUser();
+
+    if (!isLoaded) {
+        return (
+            <div className="min-h-screen bg-[#08080a] flex items-center justify-center font-mono text-[#ff4655]">
+                <TacticalLoader />
+            </div>
+        );
+    }
+
+    if (!isSignedIn) {
+        return <Navigate to="/admin/login" replace />;
+    }
+
+    const allowedEmails = import.meta.env.VITE_ALLOWED_ADMIN_EMAILS?.split(',').map((e: string) => e.trim().toLowerCase()) || [];
+    const userEmail = user?.emailAddresses[0]?.emailAddress?.toLowerCase();
+    const isAllowedEmail = allowedEmails.length === 0 || (userEmail && allowedEmails.includes(userEmail));
+    const isAdminRole = user?.publicMetadata?.role === 'admin';
+
+    if (!isAllowedEmail && !isAdminRole) {
+        return (
+            <div className="min-h-screen bg-[#08080a] flex flex-col items-center justify-center font-mono text-white p-4 relative overflow-hidden">
+                <div className="fixed inset-0 pointer-events-none z-0 opacity-20"
+                    style={{
+                        backgroundImage: 'linear-gradient(#ff4655 1px, transparent 1px), linear-gradient(90deg, #ff4655 1px, transparent 1px)',
+                        backgroundSize: '40px 40px'
+                    }}
+                />
+                <div className="bg-[#0c0e1a] border border-[#ff4655] p-8 max-w-md w-full text-center space-y-6 relative z-10 rounded-sm shadow-[0_0_50px_rgba(255,70,85,0.15)]">
+                    <div className="w-16 h-16 bg-[#ff4655]/10 border border-[#ff4655] rounded-full flex items-center justify-center mx-auto animate-pulse">
+                        <span className="text-[#ff4655] text-2xl font-bold">⚠️</span>
+                    </div>
+                    <div>
+                        <h2 className="text-[#ff4655] font-teko text-4xl tracking-widest uppercase">ACCESS_DENIED</h2>
+                        <p className="text-[10px] text-white/30 tracking-[0.2em] uppercase mt-1">UNAUTHORIZED IDENTITY DETECTED</p>
+                    </div>
+                    <div className="text-left bg-black/40 border border-white/5 p-4 rounded-sm space-y-2 text-xs uppercase text-white/60">
+                        <div><span className="text-white/30">OPERATOR:</span> {user?.fullName || 'UNKNOWN'}</div>
+                        <div><span className="text-white/30">EMAIL:</span> {userEmail}</div>
+                        <div><span className="text-white/30">STATUS:</span> AUTHENTICATED // UNAUTHORIZED</div>
+                    </div>
+                    <p className="text-[10px] text-white/40 leading-relaxed uppercase">
+                        Your credentials are valid, but your account has not been cleared for administrative privileges. Please contact the Operations Director.
+                    </p>
+                    <button 
+                        onClick={() => window.location.href = '/'}
+                        className="bg-[#ff4655] hover:bg-white text-white hover:text-black font-teko text-xl py-3 px-6 tracking-widest transition-colors w-full clip-path-angled uppercase"
+                    >
+                        ABORT_MISSION
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+    return <>{children}</>;
+};
+
+// Mock Admin Guard component
+const MockAdminGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const session = localStorage.getItem('admin_session');
     if (!session) {
         return <Navigate to="/admin/login" replace />;
     }
     return <>{children}</>;
+};
+
+// Router Guard Selector
+const AdminGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const publishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+    if (publishableKey) {
+        return <ClerkAdminGuard>{children}</ClerkAdminGuard>;
+    } else {
+        return <MockAdminGuard>{children}</MockAdminGuard>;
+    }
+};
+
+// Clerk AdminLoginPage Wrapper
+const ClerkAdminLoginPageWrapper: React.FC = () => {
+    const { isLoaded, signIn, setActive } = useSignIn();
+    
+    const handleLogin = async (username: string, secret: string) => {
+        if (!isLoaded || !signIn || !setActive) return;
+        const result = await signIn.create({
+            identifier: username,
+            password: secret,
+        });
+        if (result.status === 'complete') {
+            await setActive({ session: result.createdSessionId });
+        } else {
+            throw new Error(`AUTH_INCOMPLETE: ${result.status?.toUpperCase() || 'UNKNOWN'}`);
+        }
+    };
+
+    return <AdminLoginPage onLogin={handleLogin} />;
+};
+
+// Mock AdminLoginPage Wrapper
+const MockAdminLoginPageWrapper: React.FC = () => {
+    const ADMIN_USERNAME = 'AscentAdmin';
+    const ADMIN_PASSWORD = 'ASCENT_7F9E23';
+
+    const handleLogin = async (username: string, secret: string) => {
+        await new Promise(resolve => setTimeout(resolve, 1500)); // simulate delay
+        if (username === ADMIN_USERNAME && secret === ADMIN_PASSWORD) {
+            localStorage.setItem('admin_session', 'active_' + Date.now());
+        } else {
+            throw new Error('ACCESS_DENIED: INVALID_CREDENTIALS');
+        }
+    };
+
+    return <AdminLoginPage onLogin={handleLogin} />;
+};
+
+// AdminLoginPage Selector Container
+const AdminLoginPageContainer: React.FC = () => {
+    const publishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+    return publishableKey ? <ClerkAdminLoginPageWrapper /> : <MockAdminLoginPageWrapper />;
+};
+
+// Clerk AdminPage Wrapper
+const ClerkAdminPageWrapper: React.FC = () => {
+    const { signOut } = useAuth();
+    const { user } = useUser();
+    const email = user?.emailAddresses[0]?.emailAddress;
+    return <AdminPage onSignOut={signOut} userEmail={email} />;
+};
+
+// Mock AdminPage Wrapper
+const MockAdminPageWrapper: React.FC = () => {
+    const signOut = async () => {
+        localStorage.removeItem('admin_session');
+    };
+    return <AdminPage onSignOut={signOut} userEmail="admin@ascentlk.com" />;
+};
+
+// AdminPage Selector Container
+const AdminPageContainer: React.FC = () => {
+    const publishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+    return publishableKey ? <ClerkAdminPageWrapper /> : <MockAdminPageWrapper />;
+};
+
+// Clerk AdminScanner Wrapper
+const ClerkAdminScannerWrapper: React.FC = () => {
+    const { signOut } = useAuth();
+    const { user } = useUser();
+    const email = user?.emailAddresses[0]?.emailAddress;
+    return <AdminScanner onSignOut={signOut} userEmail={email} />;
+};
+
+// Mock AdminScanner Wrapper
+const MockAdminScannerWrapper: React.FC = () => {
+    const signOut = async () => {
+        localStorage.removeItem('admin_session');
+    };
+    return <AdminScanner onSignOut={signOut} userEmail="admin@ascentlk.com" />;
+};
+
+// AdminScanner Selector Container
+const AdminScannerContainer: React.FC = () => {
+    const publishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+    return publishableKey ? <ClerkAdminScannerWrapper /> : <MockAdminScannerWrapper />;
 };
 
 import { supabase } from './lib/supabase';
@@ -209,20 +369,20 @@ const App: React.FC = () => {
                     <Route path="/admin" element={
                         <Suspense fallback={<TacticalLoader />}>
                             <AdminGuard>
-                                <AdminPage />
+                                <AdminPageContainer />
                             </AdminGuard>
                         </Suspense>
                     } />
                     <Route path="/admin/scanner" element={
                         <Suspense fallback={<TacticalLoader />}>
                             <AdminGuard>
-                                <AdminScanner />
+                                <AdminScannerContainer />
                             </AdminGuard>
                         </Suspense>
                     } />
                     <Route path="/admin/login" element={
                         <Suspense fallback={<TacticalLoader />}>
-                            <AdminLoginPage />
+                            <AdminLoginPageContainer />
                         </Suspense>
                     } />
                     <Route path="/register" element={

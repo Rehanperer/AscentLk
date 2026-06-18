@@ -9,5 +9,29 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 export const supabase = createClient(
     supabaseUrl || 'https://placeholder.supabase.co',
-    supabaseAnonKey || 'placeholder'
+    supabaseAnonKey || 'placeholder',
+    {
+        global: {
+            fetch: async (url, options = {}) => {
+                const clerk = (window as any).Clerk;
+                let clerkToken = '';
+                
+                if (clerk?.session) {
+                    try {
+                        // Use native Clerk session token (required for Supabase Third-Party Auth / JWKS)
+                        clerkToken = await clerk.session.getToken() || '';
+                    } catch (err) {
+                        console.error('Failed to retrieve Clerk session token:', err);
+                    }
+                }
+
+                const headers = new Headers(options?.headers);
+                if (clerkToken) {
+                    headers.set('Authorization', `Bearer ${clerkToken}`);
+                }
+
+                return fetch(url, { ...options, headers });
+            }
+        }
+    }
 );

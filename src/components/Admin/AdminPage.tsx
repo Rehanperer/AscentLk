@@ -181,7 +181,12 @@ const AlertItem = ({ type, text }: { type: 'warning' | 'info' | 'success', text:
 
 // ─── Main Admin Page ────────────────────────────────────────────────────────
 
-const AdminPage: React.FC = () => {
+interface AdminPageProps {
+    onSignOut: () => Promise<void>;
+    userEmail?: string;
+}
+
+const AdminPage: React.FC<AdminPageProps> = ({ onSignOut, userEmail }) => {
     const [stats, setStats] = useState<AdminStats>({
         totalRegistrations: 0,
         seatsBooked: 0,
@@ -193,6 +198,8 @@ const AdminPage: React.FC = () => {
     const [registrants, setRegistrants] = useState<any[]>([]);
     const [tournamentTeams, setTournamentTeams] = useState<any[]>([]);
     const [activeTab, setActiveTab] = useState<'overview' | 'registrations' | 'monitor' | 'tournament' | 'system' | 'traffic' | 'comms'>('overview');
+    const [userRole, setUserRole] = useState<'super_admin' | 'scanner' | null>(null);
+    const [roleError, setRoleError] = useState<string | null>(null);
 
     // Maintenance State
     const [maintenanceSettings, setMaintenanceSettings] = useState({
@@ -304,11 +311,67 @@ const AdminPage: React.FC = () => {
             if (maintData?.value) {
                 setMaintenanceSettings(maintData.value as any);
             }
+
+            // Fetch user role from database
+            if (userEmail) {
+                if (!import.meta.env.VITE_CLERK_PUBLISHABLE_KEY) {
+                    setUserRole('super_admin'); // local fallback for mock development
+                } else {
+                    try {
+                        const { data: roleData, error: queryError } = await supabase
+                            .rpc('get_my_admin_role', { check_email: userEmail.toLowerCase() });
+                        
+                        if (queryError) {
+                            console.error('[Admin] DB Query Error:', queryError);
+                            setRoleError(`DB Error: ${queryError.message} (Code: ${queryError.code})`);
+                            return;
+                        }
+
+                        if (roleData) {
+                            setUserRole(roleData as any);
+                            if (roleData === 'scanner') {
+                                window.location.href = '/admin/scanner';
+                                return;
+                            }
+                        } else {
+                            console.warn(`[Admin] User email not found in admin_users: ${userEmail}`);
+                            let debugInfo = '';
+                            try {
+                                const { data: dbgData, error: dbgErr } = await supabase.rpc('debug_jwt');
+                                if (dbgErr) {
+                                    debugInfo = `RPC Error: ${dbgErr.message}`;
+                                } else {
+                                    debugInfo = JSON.stringify(dbgData);
+                                }
+                            } catch (e: any) {
+                                debugInfo = `RPC Exception: ${e.message}`;
+                            }
+                            setRoleError(`Unauthorized: Email "${userEmail}" is authenticated with Clerk, but not found in the Supabase admin_users registry table. [Supabase Context: ${debugInfo}]`);
+                            return;
+                        }
+                    } catch (err: any) {
+                        console.error('[Admin] Exception fetching role:', err);
+                        setRoleError(`System Exception: ${err?.message || err || 'Unknown Error'}`);
+                        return;
+                    }
+                }
+            } else {
+                setUserRole('super_admin');
+            }
         };
 
         init();
+    }, [userEmail]);
 
-        // Subscribe to changes
+    // Enforce tab restrictions for scanners
+    useEffect(() => {
+        if (userRole === 'scanner' && ['traffic', 'comms', 'system'].includes(activeTab)) {
+            setActiveTab('overview');
+        }
+    }, [userRole, activeTab]);
+
+    // Subscribe to changes in realtime
+    useEffect(() => {
         const seatChannel = supabase.channel('admin_seats_v2')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'seats' }, () => fetchData())
             .subscribe();
@@ -633,12 +696,70 @@ const AdminPage: React.FC = () => {
         { id: 'registrations', icon: Database, label: 'REGISTRATIONS' },
         { id: 'tournament', icon: Gamepad2, label: 'TOURNAMENT' },
         { id: 'monitor', icon: Ticket, label: 'VENUE' },
-        { id: 'traffic', icon: Eye, label: 'TRAFFIC' },
-        { id: 'comms', icon: Mail, label: 'COMMUNICATIONS' },
-        { id: 'system', icon: Settings, label: 'SYSTEM' }
+        ...(userRole === 'super_admin' ? [
+            { id: 'traffic', icon: Eye, label: 'TRAFFIC' },
+            { id: 'comms', icon: Mail, label: 'COMMUNICATIONS' },
+            { id: 'system', icon: Settings, label: 'SYSTEM' }
+        ] : [])
     ];
 
     // ─── Render ──────────────────────────────────────────────────────────
+
+    if (userRole === null && import.meta.env.VITE_CLERK_PUBLISHABLE_KEY) {
+        if (roleError) {
+            return (
+                <div className="min-h-screen bg-[#08080a] flex flex-col items-center justify-center font-mono text-white p-4 relative overflow-hidden">
+                    <div className="fixed inset-0 pointer-events-none z-0 opacity-20"
+                        style={{
+                            backgroundImage: 'linear-gradient(#ff4655 1px, transparent 1px), linear-gradient(90deg, #ff4655 1px, transparent 1px)',
+                            backgroundSize: '40px 40px'
+                        }}
+                    />
+                    <div className="bg-[#0c0e1a] border border-[#ff4655] p-8 max-w-2xl w-full text-center space-y-6 relative z-10 rounded-sm shadow-[0_0_50px_rgba(255,70,85,0.15)]">
+                        <div className="w-16 h-16 bg-[#ff4655]/10 border border-[#ff4655] rounded-full flex items-center justify-center mx-auto animate-pulse">
+                            <span className="text-[#ff4655] text-2xl font-bold">⚠️</span>
+                        </div>
+                        <div>
+                            <h2 className="text-[#ff4655] font-teko text-4xl tracking-widest uppercase">CLEARANCE_CHECK_FAILED</h2>
+                            <p className="text-[10px] text-white/30 tracking-[0.2em] uppercase mt-1">OPERATOR AUTHORIZATION FAULT</p>
+                        </div>
+                        
+                        <div className="text-left bg-black/40 border border-white/5 p-4 rounded-sm space-y-3 text-xs uppercase text-white/60">
+                            <div><span className="text-[#ff4655] font-bold">ERROR DETAILS:</span> <span className="text-white">{roleError}</span></div>
+                            <div className="border-t border-white/10 my-2"></div>
+                            <div><span className="text-white/30">LOGGED EMAIL:</span> <span className="text-white">{userEmail || 'NULL'}</span></div>
+                            <div><span className="text-white/30">SUPABASE TARGET:</span> <span className="text-white">{import.meta.env.VITE_SUPABASE_URL || 'NULL'}</span></div>
+                            <div><span className="text-white/30">ALLOWED EMAILS (ENV):</span> <span className="text-white">{import.meta.env.VITE_ALLOWED_ADMIN_EMAILS || 'NULL'}</span></div>
+                        </div>
+
+                        <div className="flex gap-4">
+                            <button 
+                                onClick={onSignOut}
+                                className="bg-white/10 hover:bg-white/20 text-white font-teko text-xl py-3 px-6 tracking-widest transition-colors flex-1 clip-path-angled uppercase"
+                            >
+                                SIGN OUT
+                            </button>
+                            <button 
+                                onClick={() => window.location.href = '/admin/scanner'}
+                                className="bg-[#ff4655] hover:bg-white text-white hover:text-black font-teko text-xl py-3 px-6 tracking-widest transition-colors flex-1 clip-path-angled uppercase"
+                            >
+                                GO TO SCANNER
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        return (
+            <div className="min-h-screen bg-[#040814] flex items-center justify-center font-mono text-[#ff4655]">
+                <div className="text-center space-y-4">
+                    <div className="w-12 h-12 border-2 border-t-transparent border-[#ff4655] rounded-full animate-spin mx-auto" />
+                    <div className="text-xs uppercase tracking-widest text-[#ff4655]/60 animate-pulse">VERIFYING OPERATOR CLEARANCE...</div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen text-white p-3 md:p-6 font-inter relative">
@@ -663,8 +784,8 @@ const AdminPage: React.FC = () => {
                             LIVE SCANNER
                         </button>
                         <button
-                            onClick={() => {
-                                localStorage.removeItem('admin_session');
+                            onClick={async () => {
+                                await onSignOut();
                                 window.location.href = '/admin/login';
                             }}
                             className="flex items-center gap-2 px-4 py-2 border border-[#ff4655]/30 bg-[#ff4655]/10 font-mono text-[10px] md:text-xs hover:bg-[#ff4655]/20 transition-colors text-[#ff4655] rounded-sm"
@@ -789,12 +910,14 @@ const AdminPage: React.FC = () => {
                                 />
                             </div>
                             <div className="flex gap-2">
-                                <button
-                                    onClick={() => setIsCreateModalOpen(true)}
-                                    className="flex items-center gap-2 px-4 py-2.5 bg-[#64c8ff] hover:bg-[#78d2ff] text-black font-mono text-xs font-bold transition-colors rounded-sm"
-                                >
-                                    + CREATE TEST TICKET
-                                </button>
+                                {userRole === 'super_admin' && (
+                                    <button
+                                        onClick={() => setIsCreateModalOpen(true)}
+                                        className="flex items-center gap-2 px-4 py-2.5 bg-[#64c8ff] hover:bg-[#78d2ff] text-black font-mono text-xs font-bold transition-colors rounded-sm"
+                                    >
+                                        + CREATE TEST TICKET
+                                    </button>
+                                )}
                                 <button className="flex items-center gap-2 px-4 py-2.5 bg-white/5 hover:bg-white/10 font-mono text-xs transition-colors border border-white/10 rounded-sm">
                                     <Download size={14} /> EXPORT CSV
                                 </button>
@@ -840,13 +963,15 @@ const AdminPage: React.FC = () => {
                                                     >
                                                         <Ticket size={16} />
                                                     </a>
-                                                    <button
-                                                        onClick={() => handleDeleteRegistration(reg.id, reg.seat_id)}
-                                                        className="p-2 text-white/20 hover:text-[#ff4655] transition-colors"
-                                                        title="Delete Registration"
-                                                    >
-                                                        <Trash2 size={16} />
-                                                    </button>
+                                                    {userRole === 'super_admin' && (
+                                                        <button
+                                                            onClick={() => handleDeleteRegistration(reg.id, reg.seat_id)}
+                                                            className="p-2 text-white/20 hover:text-[#ff4655] transition-colors"
+                                                            title="Delete Registration"
+                                                        >
+                                                            <Trash2 size={16} />
+                                                        </button>
+                                                    )}
                                                 </div>
                                             </td>
                                         </tr>
@@ -919,16 +1044,18 @@ const AdminPage: React.FC = () => {
                                                     >
                                                         VIEW
                                                     </button>
-                                                    <button
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            handleDeleteTeam(team.id, team.school);
-                                                        }}
-                                                        className="p-2 text-white/20 hover:text-[#ff4655] hover:bg-[#ff4655]/10 transition-all rounded-sm"
-                                                        title="Delete Team"
-                                                    >
-                                                        <Trash2 size={14} />
-                                                    </button>
+                                                    {userRole === 'super_admin' && (
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleDeleteTeam(team.id, team.school);
+                                                            }}
+                                                            className="p-2 text-white/20 hover:text-[#ff4655] hover:bg-[#ff4655]/10 transition-all rounded-sm"
+                                                            title="Delete Team"
+                                                        >
+                                                            <Trash2 size={14} />
+                                                        </button>
+                                                    )}
                                                 </div>
                                             </td>
                                         </tr>

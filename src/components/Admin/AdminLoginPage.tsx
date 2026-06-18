@@ -3,11 +3,11 @@ import { motion } from 'framer-motion';
 import { Lock, User, ShieldAlert, ArrowLeft, Loader2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAudio } from '../../hooks/useAudio';
+interface AdminLoginPageProps {
+    onLogin: (username: string, secret: string) => Promise<void>;
+}
 
-const ADMIN_USERNAME = 'AscentAdmin';
-const ADMIN_PASSWORD = 'ASCENT_7F9E23'; // Randomly generated for this session
-
-const AdminLoginPage: React.FC = () => {
+const AdminLoginPage: React.FC<AdminLoginPageProps> = ({ onLogin }) => {
     const { playClick, playHover, playSuccess } = useAudio();
     const navigate = useNavigate();
     const [username, setUsername] = useState('');
@@ -15,22 +15,21 @@ const AdminLoginPage: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
 
-    const handleLogin = (e: React.FormEvent) => {
+    const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
         setError(null);
 
-        // Simulate network delay for HUD feel
-        setTimeout(() => {
-            if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
-                playSuccess();
-                localStorage.setItem('admin_session', 'active_' + Date.now());
-                navigate('/admin');
-            } else {
-                setError('ACCESS_DENIED: INVALID_CREDENTIALS');
-                setIsLoading(false);
-            }
-        }, 1500);
+        try {
+            await onLogin(username, password);
+            playSuccess();
+            navigate('/admin');
+        } catch (err: any) {
+            console.error('[Admin Login] Error:', err);
+            const errMsg = err.message || 'ACCESS_DENIED: AUTH_ERROR';
+            setError(errMsg.toUpperCase());
+            setIsLoading(false);
+        }
     };
 
     return (

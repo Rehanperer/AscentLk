@@ -139,13 +139,19 @@ interface AdmittedTicket {
     timestamp: string;
 }
 
-const AdminScanner: React.FC = () => {
+interface AdminScannerProps {
+    onSignOut?: () => Promise<void>;
+    userEmail?: string;
+}
+
+const AdminScanner: React.FC<AdminScannerProps> = ({ onSignOut, userEmail }) => {
     const webcamRef = useRef<Webcam>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const synthRef = useRef<ScannerAudio>(new ScannerAudio());
 
     const [isMuted, setIsMuted] = useState(false);
     const [cameraReady, setCameraReady] = useState(false);
+    const [userRole, setUserRole] = useState<'super_admin' | 'scanner' | null>(null);
     
     // UI Scanning statuses: 'searching' | 'processing' | 'success' | 'invalid'
     const [scanStatus, setScanStatus] = useState<'searching' | 'processing' | 'success' | 'invalid'>('searching');
@@ -175,6 +181,35 @@ const AdminScanner: React.FC = () => {
             } catch (e) {}
         }
     }, []);
+
+    // Fetch user role from database
+    useEffect(() => {
+        const fetchRole = async () => {
+            if (userEmail) {
+                if (!import.meta.env.VITE_CLERK_PUBLISHABLE_KEY) {
+                    setUserRole('super_admin'); // local fallback
+                } else {
+                    try {
+                        const { data } = await supabase
+                            .from('admin_users')
+                            .select('role')
+                            .eq('email', userEmail.toLowerCase())
+                            .maybeSingle();
+                        if (data && data.role) {
+                            setUserRole(data.role as any);
+                        } else {
+                            setUserRole('scanner');
+                        }
+                    } catch (err) {
+                        setUserRole('scanner');
+                    }
+                }
+            } else {
+                setUserRole('super_admin');
+            }
+        };
+        fetchRole();
+    }, [userEmail]);
 
     // Frame Analyzer loop
     useEffect(() => {
@@ -612,9 +647,23 @@ const AdminScanner: React.FC = () => {
             {/* HUD Header */}
             <header className="relative z-10 flex justify-between items-center border-b border-white/10 pb-4">
                 <div className="flex items-center gap-3">
-                    <Link to="/admin" className="p-2 border border-white/10 rounded hover:bg-white/5 transition duration-150 mr-2">
-                        <ArrowLeft size={16} />
-                    </Link>
+                    {userRole !== 'scanner' && (
+                        <Link to="/admin" className="p-2 border border-white/10 rounded hover:bg-white/5 transition duration-150 mr-2" title="Back to Dashboard">
+                            <ArrowLeft size={16} />
+                        </Link>
+                    )}
+                    <button
+                        onClick={async () => {
+                            if (onSignOut) {
+                                await onSignOut();
+                            }
+                            window.location.href = '/admin/login';
+                        }}
+                        className="px-3 py-1.5 border border-[#ff4655]/30 bg-[#ff4655]/10 text-[#ff4655] rounded mr-2 font-mono text-[10px] uppercase tracking-wider hover:bg-[#ff4655]/20 transition"
+                        title="Sign Out Operator"
+                    >
+                        Sign Out
+                    </button>
                     <div>
                         <span className="font-mono text-[10px] tracking-[0.2em] text-[#ff4655] uppercase block">
                             ASCENT GATE CONTROLLER
