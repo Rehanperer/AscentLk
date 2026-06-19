@@ -38,6 +38,7 @@ const PrivacyPolicy = lazy(() => import('./pages/Policies/PrivacyPolicy'));
 const TermsOfService = lazy(() => import('./pages/Policies/TermsOfService'));
 const Rulebook = lazy(() => import('./pages/Rulebook'));
 const SupportPage = lazy(() => import('./pages/SupportPage'));
+const ScoresPage = lazy(() => import('./pages/ScoresPage'));
 
 // Demos
 const AsciiDemoPage = lazy(() => import('./pages/AsciiDemoPage'));
@@ -463,6 +464,11 @@ const App: React.FC = () => {
                     <Route path="/support" element={
                         <Suspense fallback={<TacticalLoader />}>
                             <SupportPage />
+                        </Suspense>
+                    } />
+                    <Route path="/scores" element={
+                        <Suspense fallback={<TacticalLoader />}>
+                            <ScoresPage />
                         </Suspense>
                     } />
                     <Route path="/" element={
