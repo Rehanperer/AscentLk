@@ -111,7 +111,7 @@ const HeroSection: React.FC = () => {
                 />
 
                 {/* Sick Tech/Cyberpunk Elements at the split */}
-                <div className="absolute inset-y-0 left-[45%] lg:left-[50%] w-px z-10 hidden md:flex flex-col justify-center items-center pointer-events-none mix-blend-screen" style={{ transform: 'rotate(12deg) scaleY(1.5)' }}>
+                <div className="absolute inset-y-0 left-[55%] lg:left-[60%] w-px z-10 hidden md:flex flex-col justify-center items-center pointer-events-none mix-blend-screen" style={{ transform: 'rotate(15deg) scaleY(1.5)' }}>
                     <motion.div 
                         className="w-[2px] h-[60%] bg-[#ff4655] shadow-[0_0_20px_#ff4655,0_0_40px_#ff4655]"
                         initial={{ scaleY: 0 }}
@@ -127,7 +127,7 @@ const HeroSection: React.FC = () => {
                 </div>
 
                 <div 
-                    className="relative z-10 flex flex-col items-start w-full md:w-[50%] lg:w-[45%] ml-auto mt-24 md:mt-0 pl-4 md:pl-0"
+                    className="relative z-10 flex flex-col items-start w-full md:w-[45%] lg:w-[35%] ml-auto mt-24 md:mt-0 pl-4 md:pl-0"
                     style={{ transform: "translateZ(50px)" }}
                 >
                     <h1 className="font-teko text-[4.5rem] md:text-[6.5rem] lg:text-[8.5rem] leading-[0.80] font-bold tracking-widest text-left flex flex-col items-start w-full">
