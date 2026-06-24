@@ -66,18 +66,6 @@ const HeroSection: React.FC = () => {
             className="relative w-full min-h-[85vh] md:min-h-screen flex items-center justify-center overflow-hidden bg-[#08080a]"
             style={{ perspective: 1500 }}
         >
-            {/* Venom Distortion Filter */}
-            <svg className="absolute w-0 h-0 pointer-events-none">
-                <defs>
-                    <filter id="venom-distortion">
-                        <feTurbulence type="fractalNoise" baseFrequency="0.03 0.1" numOctaves="3" result="noise" seed="4">
-                            <animate attributeName="baseFrequency" values="0.03 0.1; 0.05 0.15; 0.03 0.1" dur="8s" repeatCount="indefinite" />
-                        </feTurbulence>
-                        <feDisplacementMap in="SourceGraphic" in2="noise" scale="25" xChannelSelector="R" yChannelSelector="G" />
-                    </filter>
-                </defs>
-            </svg>
-
             {/* Background Parallax Image */}
             <motion.div 
                 className="absolute inset-0 w-full h-full pointer-events-none"
@@ -123,14 +111,14 @@ const HeroSection: React.FC = () => {
                 />
 
                 <div 
-                    className="relative z-10 flex flex-col items-end w-full md:w-3/4 lg:w-2/3 mt-12 md:mt-0"
+                    className="relative z-10 flex flex-col items-end w-full lg:w-1/2 ml-auto mt-12 md:mt-0"
                     style={{ transform: "translateZ(50px)" }}
                 >
-                    <h1 className="font-teko text-[6rem] md:text-[10rem] lg:text-[13rem] leading-[0.80] font-bold tracking-widest text-right flex flex-col items-end">
+                    <h1 className="font-teko text-[5.5rem] md:text-[8rem] lg:text-[10.5rem] leading-[0.85] font-bold tracking-widest text-right flex flex-col items-end">
                         
                         {/* ASCENT (Cinematic Silver/White Gradient) */}
                         <motion.div 
-                            className="relative bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-white/40 drop-shadow-[0_10px_30px_rgba(255,70,85,0.15)] pb-4 -mb-4"
+                            className="relative bg-clip-text text-transparent bg-gradient-to-br from-white via-zinc-100 to-zinc-400 drop-shadow-[0_0_20px_rgba(255,255,255,0.15)] pb-4 -mb-4"
                             initial={{ y: 50, opacity: 0, filter: 'blur(10px)' }}
                             animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }}
                             transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
@@ -140,67 +128,29 @@ const HeroSection: React.FC = () => {
                         
 
                         
-                        {/* 2026 (Hollow stroke + Venom fill animation + Cursor) */}
+                        {/* 2026 (Clean Bold Aesthetic) */}
                         <motion.div 
-                            className="flex items-center gap-3 md:gap-5 -mt-2 md:-mt-6 relative z-10"
+                            className="flex items-center gap-3 md:gap-5 -mt-2 md:-mt-4 relative z-10"
                             initial={{ x: 50, opacity: 0 }}
                             animate={{ x: 0, opacity: 1 }}
                             transition={{ duration: 1, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
                         >
-                            <span className="text-[#ff4655] opacity-50 font-mono text-sm md:text-xl tracking-widest align-top mr-2 mt-4 hidden md:block">
+                            <span className="text-[#ff4655] opacity-60 font-mono text-sm md:text-xl tracking-widest align-top mr-2 mt-4 hidden md:block">
                                 [ YR ]
                             </span>
                             
-                            {/* Venom Text Container */}
-                            <div className="relative inline-block py-8 -my-8 px-4 -mx-4">
-                                {/* Base hollow outline */}
-                                <motion.span 
-                                    className="text-transparent absolute inset-0 flex items-center justify-center pointer-events-none"
-                                    style={{ 
-                                        WebkitTextStroke: '3px #ff4655',
-                                        textShadow: '0 0 40px rgba(255, 70, 85, 0.4)'
-                                    }}
-                                    animate={{ 
-                                        x: [0, -3, 3, -1, 0, 0, 0, 0],
-                                        skewX: [0, -10, 10, -5, 0, 0, 0, 0],
-                                    }}
-                                    transition={{
-                                        x: { duration: 0.6, repeat: Infinity, repeatDelay: 4, ease: "easeInOut" },
-                                        skewX: { duration: 0.6, repeat: Infinity, repeatDelay: 4, ease: "easeInOut" }
-                                    }}
-                                >
-                                    2026
-                                </motion.span>
-                                
-                                {/* Venom Fill Overlay */}
-                                <motion.span 
-                                    className="text-[#ff4655] relative z-10 flex items-center justify-center"
-                                    style={{ 
-                                        filter: 'url(#venom-distortion) drop-shadow(0 0 20px rgba(255,70,85,0.8))',
-                                        WebkitMaskImage: 'linear-gradient(to top, black 45%, transparent 55%)',
-                                        WebkitMaskSize: '100% 250%',
-                                        WebkitMaskRepeat: 'no-repeat',
-                                        padding: '20px', // Extra padding for distortion bleed
-                                        margin: '-20px'
-                                    }}
-                                    animate={{ 
-                                        WebkitMaskPosition: ['0% 120%', '0% -20%', '0% 120%'],
-                                        x: [0, -3, 3, -1, 0, 0, 0, 0],
-                                        skewX: [0, -10, 10, -5, 0, 0, 0, 0],
-                                    } as any}
-                                    transition={{
-                                        WebkitMaskPosition: { duration: 7, repeat: Infinity, ease: "easeInOut" },
-                                        x: { duration: 0.6, repeat: Infinity, repeatDelay: 4, ease: "easeInOut" },
-                                        skewX: { duration: 0.6, repeat: Infinity, repeatDelay: 4, ease: "easeInOut" }
-                                    } as any}
-                                >
-                                    2026
-                                </motion.span>
-                            </div>
+                            <motion.span 
+                                className="text-[#ff4655] relative z-10 font-bold"
+                                style={{ 
+                                    textShadow: '0 0 30px rgba(255, 70, 85, 0.6), 0 0 60px rgba(255, 70, 85, 0.2)'
+                                }}
+                            >
+                                2026
+                            </motion.span>
                             
                             {/* Blinking block cursor */}
                             <motion.div 
-                                className="w-4 md:w-6 lg:w-8 h-[4rem] md:h-[7.5rem] lg:h-[10rem] bg-[#ff4655] shadow-[0_0_30px_#ff4655] mb-2 md:mb-4"
+                                className="w-4 md:w-6 lg:w-8 h-[3.5rem] md:h-[5.5rem] lg:h-[7.5rem] bg-[#ff4655] shadow-[0_0_30px_#ff4655] mb-2 md:mb-4"
                                 animate={{ opacity: [1, 0, 1] }}
                                 transition={{ repeat: Infinity, duration: 1.2, ease: "easeInOut" }}
                             />
@@ -209,14 +159,14 @@ const HeroSection: React.FC = () => {
 
                     {/* Animated divider line */}
                     <motion.div 
-                        className="h-[2px] bg-gradient-to-l from-[#ff4655] to-transparent w-full md:w-[120%] mt-6 opacity-80"
+                        className="h-[1px] bg-gradient-to-l from-zinc-300 to-transparent w-[80%] md:w-[120%] mt-6 opacity-60"
                         initial={{ width: 0 }}
                         animate={{ width: "100%" }}
                         transition={{ duration: 1.5, ease: "easeOut", delay: 0.8 }}
                     />
                     
                     <motion.div 
-                        className="font-mono text-sm md:text-lg tracking-[0.4em] md:tracking-[0.6em] text-white/60 uppercase mt-4 mb-10 text-right"
+                        className="font-mono text-xs md:text-sm tracking-[0.6em] md:tracking-[0.8em] text-zinc-300 uppercase mt-4 mb-10 text-right font-bold drop-shadow-md"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ duration: 1, delay: 1.5 }}
