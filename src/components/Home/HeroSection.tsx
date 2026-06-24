@@ -70,6 +70,11 @@ const HeroSection: React.FC = () => {
             {/* The Black Void (revealed by the claw tear) */}
             <div className="absolute inset-0 bg-[#08080a] w-full h-full pointer-events-none z-0" />
 
+            {/* Deepest Red Ambient Glow for the Tear */}
+            <motion.div 
+                className="absolute inset-0 w-full h-full pointer-events-none bg-[#ff4655] opacity-40 blur-[40px] transform translate-x-[25px] [clip-path:polygon(0_0,100%_0,100%_100%,0_100%)] lg:[clip-path:polygon(0_0,69%_0,62%_15%,71%_30%,59%_48%,70%_65%,58%_80%,68%_92%,62%_100%,0_100%)] z-0"
+                style={{ scale: videoScale }}
+            />
             {/* Glowing Hot Edge Behind Tear */}
             <motion.div 
                 className="absolute inset-0 w-full h-full pointer-events-none bg-[#ff4655] opacity-80 blur-[10px] transform translate-x-[10px] [clip-path:polygon(0_0,100%_0,100%_100%,0_100%)] lg:[clip-path:polygon(0_0,69%_0,62%_15%,71%_30%,59%_48%,70%_65%,58%_80%,68%_92%,62%_100%,0_100%)] z-0"
@@ -126,39 +131,67 @@ const HeroSection: React.FC = () => {
                 />
 
                 <div 
-                    className="relative z-10 flex flex-row items-center justify-start w-full md:w-[55%] lg:w-[45%] ml-auto mt-24 md:mt-0 pl-8 lg:pl-12"
+                    className="relative z-10 flex flex-row items-center justify-start w-full md:w-[55%] lg:w-[40%] ml-auto mt-24 md:mt-0 pl-8 lg:pl-6 xl:pl-16"
                     style={{ transform: "translateZ(50px)" }}
                 >
+                    {/* Floating Embers emitting from the tear */}
+                    <div className="absolute inset-0 pointer-events-none z-0 hidden lg:block overflow-hidden transform -translate-x-[50%]">
+                        {[...Array(15)].map((_, i) => (
+                            <motion.div
+                                key={i}
+                                className="absolute w-1 h-1 md:w-1.5 md:h-1.5 bg-white rounded-full shadow-[0_0_15px_#ff4655,0_0_30px_#ff4655]"
+                                style={{
+                                    left: `${50 + Math.random() * 20}%`,
+                                    top: `${Math.random() * 100}%`,
+                                }}
+                                animate={{
+                                    y: [0, -100 - Math.random() * 300],
+                                    x: [0, (Math.random() - 0.5) * 150],
+                                    opacity: [0, 0.9, 0],
+                                    scale: [0, Math.random() * 1.5 + 0.5, 0]
+                                }}
+                                transition={{
+                                    duration: 3 + Math.random() * 5,
+                                    repeat: Infinity,
+                                    delay: Math.random() * 5,
+                                    ease: "easeOut"
+                                }}
+                            />
+                        ))}
+                    </div>
                     {/* The Text Lockup: Clean, Stacked, Cinematic */}
                     <motion.div 
-                        className="flex flex-col items-start w-full relative"
+                        className="flex flex-col items-start w-full relative z-10"
                         initial={{ x: 50, opacity: 0 }}
                         animate={{ x: 0, opacity: 1 }}
                         transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
                     >
+                        {/* Huge ambient red glow behind text */}
+                        <div className="absolute top-[40%] left-[20%] w-[400px] h-[300px] bg-[#ff4655] opacity-20 blur-[100px] rounded-full transform -translate-y-1/2 pointer-events-none mix-blend-screen z-0" />
+
                         {/* Tactical Overline */}
-                        <div className="font-mono text-[10px] md:text-xs text-[#ff4655] tracking-[0.3em] mb-3 flex items-center gap-3 drop-shadow-[0_0_5px_#ff4655]">
+                        <div className="font-mono text-[10px] md:text-xs text-[#ff4655] tracking-[0.3em] mb-3 flex items-center gap-3 drop-shadow-[0_0_5px_#ff4655] relative z-10">
                             <span className="w-10 h-[2px] bg-[#ff4655]"></span>
                             SYS_INIT_2026
                         </div>
 
-                        <h1 className="font-teko text-[5rem] md:text-[7.5rem] lg:text-[9.5rem] leading-[0.8] font-bold text-white tracking-widest drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)] uppercase">
+                        <h1 className="font-teko text-[5rem] md:text-[7.5rem] lg:text-[9.5rem] leading-[0.8] font-bold tracking-widest drop-shadow-[0_10px_30px_rgba(0,0,0,0.9)] uppercase bg-gradient-to-b from-white to-zinc-500 bg-clip-text text-transparent relative z-10">
                             ASCENT
                         </h1>
-                        <h1 className="font-teko text-[5rem] md:text-[7.5rem] lg:text-[9.5rem] leading-[0.8] font-bold text-[#ff4655] tracking-widest drop-shadow-[0_10px_30px_rgba(255,70,85,0.4)] uppercase flex items-center gap-4">
-                            2026
+                        <h1 className="font-teko text-[5rem] md:text-[7.5rem] lg:text-[9.5rem] leading-[0.8] font-bold tracking-widest uppercase flex items-center gap-4 relative z-10">
+                            <span className="text-[#ff4655] drop-shadow-[0_0_30px_rgba(255,70,85,0.6)]">2026</span>
                             {/* Valorant style cursor box */}
                             <div className="w-5 h-5 md:w-8 md:h-8 bg-transparent border-[3px] border-[#ff4655] shadow-[0_0_15px_#ff4655] animate-pulse hidden md:flex items-center justify-center">
                                 <div className="w-2 h-2 md:w-4 md:h-4 bg-[#ff4655]"></div>
                             </div>
                         </h1>
                         
-                        <div className="w-full max-w-[500px] h-[2px] bg-gradient-to-r from-zinc-500 to-transparent mt-6 md:mt-8 mb-4 md:mb-6 opacity-60 relative">
+                        <div className="w-full max-w-[500px] h-[2px] bg-gradient-to-r from-[#ff4655] to-transparent mt-6 md:mt-8 mb-4 md:mb-6 opacity-80 relative z-10">
                             {/* Tactical white notch */}
-                            <div className="absolute left-0 top-[-1px] w-12 h-[4px] bg-white shadow-[0_0_10px_white]"></div>
+                            <div className="absolute left-0 top-[0px] w-12 h-[2px] bg-white shadow-[0_0_10px_white]"></div>
                         </div>
 
-                        <h2 className="font-mono text-xs md:text-sm tracking-[0.6em] md:tracking-[0.8em] text-white uppercase font-bold drop-shadow-md">
+                        <h2 className="font-mono text-xs md:text-sm tracking-[0.6em] md:tracking-[0.8em] text-white uppercase font-bold drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)] relative z-10">
                             Where Legends Ascend
                         </h2>
                     </motion.div>
