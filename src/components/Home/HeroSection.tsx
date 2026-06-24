@@ -5,7 +5,6 @@ import { motion, useScroll, useTransform, useMotionValue, useSpring } from 'fram
 const HeroSection: React.FC = () => {
     const navigate = useNavigate();
     const containerRef = useRef<HTMLDivElement>(null);
-    const videoRef = useRef<HTMLVideoElement>(null);
 
     // Parallax on scroll
     const { scrollYProgress } = useScroll({
@@ -54,14 +53,7 @@ const HeroSection: React.FC = () => {
     };
 
     useEffect(() => {
-        // Delay fetching/playing the massive 24MB video to ensure initial LCP is incredibly fast
-        const timer = setTimeout(() => {
-            if (videoRef.current) {
-                videoRef.current.play().catch(e => console.log("Video autoplay blocked:", e));
-            }
-        }, 1500);
-        
-        return () => clearTimeout(timer);
+        // Any initial animations or logic can go here
     }, []);
 
     return (
@@ -86,22 +78,16 @@ const HeroSection: React.FC = () => {
                 </defs>
             </svg>
 
-            {/* Background Parallax Video */}
+            {/* Background Parallax Image */}
             <motion.div 
                 className="absolute inset-0 w-full h-full pointer-events-none"
                 style={{ scale: videoScale }}
             >
-                <video
-                    ref={videoRef}
-                    loop
-                    muted
-                    playsInline
-                    preload="none"
-                    aria-hidden="true"
-                    className="w-full h-full object-cover opacity-80"
-                >
-                    <source src="/ascent_vid.mp4" type="video/mp4" />
-                </video>
+                <img
+                    src="/coverImage.png"
+                    alt="Ascent 2026 Background"
+                    className="w-full h-full object-cover object-[75%_center] opacity-100 brightness-90"
+                />
             </motion.div>
 
             {/* Radial Vignette Mask */}
@@ -142,12 +128,12 @@ const HeroSection: React.FC = () => {
                 >
                     <h1 className="font-teko text-[6rem] md:text-[10rem] lg:text-[13rem] leading-[0.80] font-bold tracking-widest text-right flex flex-col items-end">
                         
-                        {/* ASCENT (Solid with glow) */}
+                        {/* ASCENT (Cinematic Silver/White Gradient) */}
                         <motion.div 
-                            className="text-white drop-shadow-[0_0_30px_rgba(255,255,255,0.15)] relative"
+                            className="relative bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-white/40 drop-shadow-[0_10px_30px_rgba(255,70,85,0.15)] pb-4 -mb-4"
                             initial={{ y: 50, opacity: 0, filter: 'blur(10px)' }}
                             animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }}
-                            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
                         >
                             ASCENT
                         </motion.div>
