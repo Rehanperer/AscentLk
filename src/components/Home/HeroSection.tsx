@@ -86,23 +86,23 @@ const HeroSection: React.FC = () => {
 
             {/* Deepest Red Ambient Glow for the Tear */}
             <motion.div 
-                className="absolute inset-0 w-full h-full pointer-events-none bg-[#ff4655] opacity-40 blur-[40px] transform translate-x-[25px] [clip-path:polygon(0_0,100%_0,100%_100%,0_100%)] lg:[clip-path:polygon(0_0,69%_0,62%_15%,71%_30%,59%_48%,70%_65%,58%_80%,68%_92%,62%_100%,0_100%)] z-0"
+                className="absolute inset-0 w-full h-full pointer-events-none bg-[#ff4655] opacity-40 blur-[40px] transform translate-x-[25px] [clip-path:polygon(0_0,100%_0,100%_100%,0_100%)] lg:[clip-path:polygon(0_0,69%_0,54%_15%,71%_30%,59%_48%,70%_65%,58%_80%,68%_92%,62%_100%,0_100%)] z-0"
                 style={{ scale: videoScale }}
             />
             {/* Glowing Hot Edge Behind Tear */}
             <motion.div 
-                className="absolute inset-0 w-full h-full pointer-events-none bg-[#ff4655] opacity-80 blur-[10px] transform translate-x-[10px] [clip-path:polygon(0_0,100%_0,100%_100%,0_100%)] lg:[clip-path:polygon(0_0,69%_0,62%_15%,71%_30%,59%_48%,70%_65%,58%_80%,68%_92%,62%_100%,0_100%)] z-0"
+                className="absolute inset-0 w-full h-full pointer-events-none bg-[#ff4655] opacity-80 blur-[10px] transform translate-x-[10px] [clip-path:polygon(0_0,100%_0,100%_100%,0_100%)] lg:[clip-path:polygon(0_0,69%_0,54%_15%,71%_30%,59%_48%,70%_65%,58%_80%,68%_92%,62%_100%,0_100%)] z-0"
                 style={{ scale: videoScale }}
             />
             {/* Sharper hot core of the tear edge */}
             <motion.div 
-                className="absolute inset-0 w-full h-full pointer-events-none bg-white opacity-90 blur-[3px] transform translate-x-[4px] [clip-path:polygon(0_0,100%_0,100%_100%,0_100%)] lg:[clip-path:polygon(0_0,69%_0,62%_15%,71%_30%,59%_48%,70%_65%,58%_80%,68%_92%,62%_100%,0_100%)] z-0"
+                className="absolute inset-0 w-full h-full pointer-events-none bg-white opacity-90 blur-[3px] transform translate-x-[4px] [clip-path:polygon(0_0,100%_0,100%_100%,0_100%)] lg:[clip-path:polygon(0_0,69%_0,54%_15%,71%_30%,59%_48%,70%_65%,58%_80%,68%_92%,62%_100%,0_100%)] z-0"
                 style={{ scale: videoScale }}
             />
 
             {/* The Claw-Torn Cover Image */}
             <motion.div 
-                className="absolute inset-0 w-full h-full pointer-events-none [clip-path:polygon(0_0,100%_0,100%_100%,0_100%)] lg:[clip-path:polygon(0_0,69%_0,62%_15%,71%_30%,59%_48%,70%_65%,58%_80%,68%_92%,62%_100%,0_100%)] z-0"
+                className="absolute inset-0 w-full h-full pointer-events-none [clip-path:polygon(0_0,100%_0,100%_100%,0_100%)] lg:[clip-path:polygon(0_0,69%_0,54%_15%,71%_30%,59%_48%,70%_65%,58%_80%,68%_92%,62%_100%,0_100%)] z-0"
                 style={{ scale: videoScale }}
             >
                 <img
