@@ -72,18 +72,18 @@ const HeroSection: React.FC = () => {
 
             {/* Glowing Hot Edge Behind Tear */}
             <motion.div 
-                className="absolute inset-0 w-full h-full pointer-events-none bg-[#ff4655] opacity-80 blur-[10px] transform translate-x-[10px] [clip-path:polygon(0_0,100%_0,100%_100%,0_100%)] lg:[clip-path:polygon(0_0,72%_0,65%_15%,74%_30%,62%_48%,73%_65%,61%_80%,71%_92%,65%_100%,0_100%)] z-0"
+                className="absolute inset-0 w-full h-full pointer-events-none bg-[#ff4655] opacity-80 blur-[10px] transform translate-x-[10px] [clip-path:polygon(0_0,100%_0,100%_100%,0_100%)] lg:[clip-path:polygon(0_0,69%_0,62%_15%,71%_30%,59%_48%,70%_65%,58%_80%,68%_92%,62%_100%,0_100%)] z-0"
                 style={{ scale: videoScale }}
             />
             {/* Sharper hot core of the tear edge */}
             <motion.div 
-                className="absolute inset-0 w-full h-full pointer-events-none bg-white opacity-90 blur-[3px] transform translate-x-[4px] [clip-path:polygon(0_0,100%_0,100%_100%,0_100%)] lg:[clip-path:polygon(0_0,72%_0,65%_15%,74%_30%,62%_48%,73%_65%,61%_80%,71%_92%,65%_100%,0_100%)] z-0"
+                className="absolute inset-0 w-full h-full pointer-events-none bg-white opacity-90 blur-[3px] transform translate-x-[4px] [clip-path:polygon(0_0,100%_0,100%_100%,0_100%)] lg:[clip-path:polygon(0_0,69%_0,62%_15%,71%_30%,59%_48%,70%_65%,58%_80%,68%_92%,62%_100%,0_100%)] z-0"
                 style={{ scale: videoScale }}
             />
 
             {/* The Claw-Torn Cover Image */}
             <motion.div 
-                className="absolute inset-0 w-full h-full pointer-events-none [clip-path:polygon(0_0,100%_0,100%_100%,0_100%)] lg:[clip-path:polygon(0_0,72%_0,65%_15%,74%_30%,62%_48%,73%_65%,61%_80%,71%_92%,65%_100%,0_100%)] z-0"
+                className="absolute inset-0 w-full h-full pointer-events-none [clip-path:polygon(0_0,100%_0,100%_100%,0_100%)] lg:[clip-path:polygon(0_0,69%_0,62%_15%,71%_30%,59%_48%,70%_65%,58%_80%,68%_92%,62%_100%,0_100%)] z-0"
                 style={{ scale: videoScale }}
             >
                 <img
