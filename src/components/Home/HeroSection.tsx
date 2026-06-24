@@ -72,18 +72,18 @@ const HeroSection: React.FC = () => {
 
             {/* Glowing Hot Edge Behind Tear */}
             <motion.div 
-                className="absolute inset-0 w-full h-full pointer-events-none bg-[#ff4655] opacity-80 blur-[10px] transform translate-x-[10px] [clip-path:polygon(0_0,100%_0,100%_100%,0_100%)] lg:[clip-path:polygon(0_0,65%_0,58%_15%,67%_30%,55%_48%,66%_65%,54%_80%,64%_92%,58%_100%,0_100%)] z-0"
+                className="absolute inset-0 w-full h-full pointer-events-none bg-[#ff4655] opacity-80 blur-[10px] transform translate-x-[10px] [clip-path:polygon(0_0,100%_0,100%_100%,0_100%)] lg:[clip-path:polygon(0%_0%,65%_0%,95%_5%,90%_25%,65%_30%,55%_48%,66%_65%,54%_80%,64%_92%,58%_100%,0%_100%)] z-0"
                 style={{ scale: videoScale }}
             />
             {/* Sharper hot core of the tear edge */}
             <motion.div 
-                className="absolute inset-0 w-full h-full pointer-events-none bg-white opacity-90 blur-[3px] transform translate-x-[4px] [clip-path:polygon(0_0,100%_0,100%_100%,0_100%)] lg:[clip-path:polygon(0_0,65%_0,58%_15%,67%_30%,55%_48%,66%_65%,54%_80%,64%_92%,58%_100%,0_100%)] z-0"
+                className="absolute inset-0 w-full h-full pointer-events-none bg-white opacity-90 blur-[3px] transform translate-x-[4px] [clip-path:polygon(0_0,100%_0,100%_100%,0_100%)] lg:[clip-path:polygon(0%_0%,65%_0%,95%_5%,90%_25%,65%_30%,55%_48%,66%_65%,54%_80%,64%_92%,58%_100%,0%_100%)] z-0"
                 style={{ scale: videoScale }}
             />
 
             {/* The Claw-Torn Cover Image */}
             <motion.div 
-                className="absolute inset-0 w-full h-full pointer-events-none [clip-path:polygon(0_0,100%_0,100%_100%,0_100%)] lg:[clip-path:polygon(0_0,65%_0,58%_15%,67%_30%,55%_48%,66%_65%,54%_80%,64%_92%,58%_100%,0_100%)] z-0"
+                className="absolute inset-0 w-full h-full pointer-events-none [clip-path:polygon(0_0,100%_0,100%_100%,0_100%)] lg:[clip-path:polygon(0%_0%,65%_0%,95%_5%,90%_25%,65%_30%,55%_48%,66%_65%,54%_80%,64%_92%,58%_100%,0%_100%)] z-0"
                 style={{ scale: videoScale }}
             >
                 <img
