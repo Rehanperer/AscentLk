@@ -66,7 +66,7 @@ const HeroSection: React.FC = () => {
             className="relative w-full min-h-[85vh] md:min-h-screen flex items-center justify-center overflow-hidden bg-[#08080a]"
             style={{ perspective: 1500 }}
         >
-            {/* Background Parallax Image */}
+            {/* Background Image */}
             <motion.div 
                 className="absolute inset-0 w-full h-full pointer-events-none"
                 style={{ scale: videoScale }}
@@ -74,7 +74,7 @@ const HeroSection: React.FC = () => {
                 <img
                     src="/coverImage.png"
                     alt="Ascent 2026 Background"
-                    className="w-full h-full object-cover object-[75%_center] opacity-100 brightness-90"
+                    className="w-full h-full object-cover md:object-cover object-left md:object-[60%_center] opacity-100 brightness-90"
                 />
             </motion.div>
 
@@ -110,63 +110,77 @@ const HeroSection: React.FC = () => {
                     }}
                 />
 
+                {/* Sick Tech/Cyberpunk Elements at the split */}
+                <div className="absolute inset-y-0 left-[45%] lg:left-[50%] w-px z-10 hidden md:flex flex-col justify-center items-center pointer-events-none mix-blend-screen" style={{ transform: 'rotate(12deg) scaleY(1.5)' }}>
+                    <motion.div 
+                        className="w-[2px] h-[60%] bg-[#ff4655] shadow-[0_0_20px_#ff4655,0_0_40px_#ff4655]"
+                        initial={{ scaleY: 0 }}
+                        animate={{ scaleY: 1 }}
+                        transition={{ duration: 1.5, ease: "circOut" }}
+                    />
+                    <motion.div 
+                        className="w-[1px] h-[40%] bg-white/40 mt-4"
+                        initial={{ scaleY: 0 }}
+                        animate={{ scaleY: 1 }}
+                        transition={{ duration: 1.5, delay: 0.3, ease: "circOut" }}
+                    />
+                </div>
+
                 <div 
-                    className="relative z-10 flex flex-col items-end w-full lg:w-1/2 ml-auto mt-12 md:mt-0"
+                    className="relative z-10 flex flex-col items-start w-full md:w-[50%] lg:w-[45%] ml-auto mt-24 md:mt-0 pl-4 md:pl-0"
                     style={{ transform: "translateZ(50px)" }}
                 >
-                    <h1 className="font-teko text-[5.5rem] md:text-[8rem] lg:text-[10.5rem] leading-[0.85] font-bold tracking-widest text-right flex flex-col items-end">
+                    <h1 className="font-teko text-[4.5rem] md:text-[6.5rem] lg:text-[8.5rem] leading-[0.80] font-bold tracking-widest text-left flex flex-col items-start w-full">
                         
-                        {/* ASCENT (Cinematic Silver/White Gradient) */}
+                        {/* ASCENT (Solid, aggressive, crisp) */}
                         <motion.div 
-                            className="relative bg-clip-text text-transparent bg-gradient-to-br from-white via-zinc-100 to-zinc-400 drop-shadow-[0_0_20px_rgba(255,255,255,0.15)] pb-4 -mb-4"
-                            initial={{ y: 50, opacity: 0, filter: 'blur(10px)' }}
-                            animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }}
+                            className="text-white drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)] pb-2 -mb-2"
+                            initial={{ x: 50, opacity: 0, filter: 'blur(10px)' }}
+                            animate={{ x: 0, opacity: 1, filter: 'blur(0px)' }}
                             transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
                         >
                             ASCENT
                         </motion.div>
                         
-
-                        
-                        {/* 2026 (Clean Bold Aesthetic) */}
+                        {/* 2026 (Aggressive Red, Solid) */}
                         <motion.div 
-                            className="flex items-center gap-3 md:gap-5 -mt-2 md:-mt-4 relative z-10"
+                            className="flex items-center gap-3 md:gap-4 -mt-1 md:-mt-2 relative z-10"
                             initial={{ x: 50, opacity: 0 }}
                             animate={{ x: 0, opacity: 1 }}
                             transition={{ duration: 1, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
                         >
-                            <span className="text-[#ff4655] opacity-60 font-mono text-sm md:text-xl tracking-widest align-top mr-2 mt-4 hidden md:block">
+                            <span className="text-[#ff4655] opacity-80 font-mono text-sm md:text-lg tracking-widest align-top mr-2 mt-4 hidden md:block drop-shadow-[0_0_10px_#ff4655]">
                                 [ YR ]
                             </span>
                             
                             <motion.span 
                                 className="text-[#ff4655] relative z-10 font-bold"
                                 style={{ 
-                                    textShadow: '0 0 30px rgba(255, 70, 85, 0.6), 0 0 60px rgba(255, 70, 85, 0.2)'
+                                    textShadow: '3px 3px 0px rgba(0,0,0,1), 0 0 30px rgba(255, 70, 85, 0.8)'
                                 }}
                             >
                                 2026
                             </motion.span>
                             
-                            {/* Blinking block cursor */}
+                            {/* Static Solid Block Cursor matching cover art's sharp edges */}
                             <motion.div 
-                                className="w-4 md:w-6 lg:w-8 h-[3.5rem] md:h-[5.5rem] lg:h-[7.5rem] bg-[#ff4655] shadow-[0_0_30px_#ff4655] mb-2 md:mb-4"
-                                animate={{ opacity: [1, 0, 1] }}
-                                transition={{ repeat: Infinity, duration: 1.2, ease: "easeInOut" }}
+                                className="w-4 md:w-5 lg:w-6 h-[3rem] md:h-[4.5rem] lg:h-[6.5rem] bg-[#ff4655] shadow-[0_0_20px_#ff4655] mb-2 md:mb-4"
+                                animate={{ opacity: [1, 0.5, 1] }}
+                                transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
                             />
                         </motion.div>
                     </h1>
 
                     {/* Animated divider line */}
                     <motion.div 
-                        className="h-[1px] bg-gradient-to-l from-zinc-300 to-transparent w-[80%] md:w-[120%] mt-6 opacity-60"
+                        className="h-[1px] bg-gradient-to-r from-[#ff4655] to-transparent w-[80%] md:w-[100%] mt-6 opacity-80"
                         initial={{ width: 0 }}
                         animate={{ width: "100%" }}
                         transition={{ duration: 1.5, ease: "easeOut", delay: 0.8 }}
                     />
                     
                     <motion.div 
-                        className="font-mono text-xs md:text-sm tracking-[0.6em] md:tracking-[0.8em] text-zinc-300 uppercase mt-4 mb-10 text-right font-bold drop-shadow-md"
+                        className="font-mono text-xs md:text-sm tracking-[0.4em] md:tracking-[0.6em] text-white/80 uppercase mt-4 mb-10 text-left font-bold drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ duration: 1, delay: 1.5 }}
