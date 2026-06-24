@@ -111,42 +111,94 @@ const HeroSection: React.FC = () => {
                 />
 
                 <div 
-                    className="relative z-10 flex flex-row items-center justify-start w-full md:w-[50%] lg:w-[45%] ml-auto mt-24 md:mt-0 pl-4 md:pl-0"
+                    className="relative z-10 flex flex-row items-center justify-start w-full md:w-[55%] lg:w-[50%] ml-auto mt-24 md:mt-0 pl-8 lg:pl-12"
                     style={{ transform: "translateZ(50px)" }}
                 >
-                    {/* The Sick Element: Tactical Esports Speed Stripes */}
-                    <motion.div 
-                        className="hidden md:flex gap-3 mr-8 lg:mr-12"
-                        initial={{ x: -50, opacity: 0 }}
-                        animate={{ x: 0, opacity: 1 }}
-                        transition={{ duration: 1, ease: "easeOut" }}
-                    >
-                        {/* Primary thick bar */}
-                        <div className="w-5 lg:w-8 h-[300px] lg:h-[450px] bg-gradient-to-b from-[#ff4655] to-[#8a1c25] shadow-[0_0_30px_#ff4655] transform skew-x-[-12deg]" />
-                        {/* Secondary thinner bar */}
-                        <div className="w-2 lg:w-3 h-[300px] lg:h-[450px] bg-[#ff4655] opacity-60 transform skew-x-[-12deg]" />
-                        {/* Tertiary accent line */}
-                        <div className="w-1 lg:w-1.5 h-[300px] lg:h-[450px] bg-[#ff4655] opacity-30 transform skew-x-[-12deg]" />
-                    </motion.div>
+                    {/* Valorant Themed Tactical Separator */}
+                    <div className="absolute inset-y-0 left-0 w-[80px] z-10 hidden md:flex flex-col justify-center items-center pointer-events-none transform -translate-x-full pr-8">
+                        
+                        {/* Top decorative lines */}
+                        <div className="flex gap-1 mb-8 opacity-80">
+                            <div className="w-1.5 h-10 bg-white transform skew-x-[-20deg] shadow-[0_0_10px_rgba(255,255,255,0.5)]"></div>
+                            <div className="w-1.5 h-10 bg-[#ff4655] transform skew-x-[-20deg] shadow-[0_0_10px_rgba(255,70,85,0.5)]"></div>
+                        </div>
+
+                        {/* Main separator body */}
+                        <div className="relative w-full flex items-center justify-center">
+                            {/* Glowing core line */}
+                            <motion.div 
+                                className="w-[2px] h-[45vh] bg-white shadow-[0_0_15px_#ff4655,0_0_30px_#ff4655]"
+                                initial={{ scaleY: 0 }}
+                                animate={{ scaleY: 1 }}
+                                transition={{ duration: 1, ease: "circOut" }}
+                            />
+                            {/* Thick red accent block overlay */}
+                            <motion.div 
+                                className="absolute left-1/2 w-5 h-40 bg-[#ff4655] shadow-[8px_8px_0_rgba(0,0,0,0.6)] transform -translate-x-1/2 flex flex-col justify-between py-2 items-center"
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: "10rem", opacity: 1 }}
+                                transition={{ duration: 0.8, delay: 0.5, ease: "backOut" }}
+                            >
+                                {/* Inner tech details inside the red block */}
+                                <div className="w-2 h-1 bg-white/80"></div>
+                                <div className="w-2 h-1 bg-white/80"></div>
+                            </motion.div>
+                            
+                            {/* Floating HUD brackets */}
+                            <motion.div 
+                                className="absolute left-[-10px] top-[15%] text-[#ff4655] font-mono text-2xl opacity-60 tracking-widest font-bold"
+                                animate={{ x: [0, -5, 0] }}
+                                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                            >
+                                [
+                            </motion.div>
+                            <motion.div 
+                                className="absolute right-[-10px] bottom-[15%] text-[#ff4655] font-mono text-2xl opacity-60 tracking-widest font-bold"
+                                animate={{ x: [0, 5, 0] }}
+                                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+                            >
+                                ]
+                            </motion.div>
+                        </div>
+
+                        {/* Bottom decorative diamonds */}
+                        <div className="flex flex-col gap-2 mt-8 opacity-80 items-center">
+                            <div className="w-3 h-3 bg-[#ff4655] transform rotate-45 shadow-[0_0_10px_#ff4655]"></div>
+                            <div className="w-3 h-3 bg-transparent border-2 border-[#ff4655] transform rotate-45"></div>
+                            <div className="w-[2px] h-20 bg-gradient-to-t from-transparent to-[#ff4655] mt-2"></div>
+                        </div>
+                    </div>
 
                     {/* The Text Lockup: Clean, Stacked, Cinematic */}
                     <motion.div 
-                        className="flex flex-col items-start"
+                        className="flex flex-col items-start w-full relative"
                         initial={{ x: 50, opacity: 0 }}
                         animate={{ x: 0, opacity: 1 }}
                         transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
                     >
-                        <h1 className="font-teko text-[5rem] md:text-[8rem] lg:text-[11rem] leading-[0.75] font-bold text-white tracking-widest drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)] uppercase">
+                        {/* Tactical Overline */}
+                        <div className="font-mono text-[10px] md:text-xs text-[#ff4655] tracking-[0.3em] mb-3 flex items-center gap-3 drop-shadow-[0_0_5px_#ff4655]">
+                            <span className="w-10 h-[2px] bg-[#ff4655]"></span>
+                            SYS_INIT_2026
+                        </div>
+
+                        <h1 className="font-teko text-[5rem] md:text-[7.5rem] lg:text-[9.5rem] leading-[0.8] font-bold text-white tracking-widest drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)] uppercase">
                             ASCENT
                         </h1>
-                        <h1 className="font-teko text-[5rem] md:text-[8rem] lg:text-[11rem] leading-[0.75] font-bold text-[#ff4655] tracking-widest drop-shadow-[0_10px_30px_rgba(255,70,85,0.4)] uppercase flex items-center gap-4">
+                        <h1 className="font-teko text-[5rem] md:text-[7.5rem] lg:text-[9.5rem] leading-[0.8] font-bold text-[#ff4655] tracking-widest drop-shadow-[0_10px_30px_rgba(255,70,85,0.4)] uppercase flex items-center gap-4">
                             2026
-                            <div className="w-4 h-4 md:w-6 md:h-6 bg-white rounded-full shadow-[0_0_15px_white] animate-pulse hidden md:block"></div>
+                            {/* Valorant style cursor box */}
+                            <div className="w-5 h-5 md:w-8 md:h-8 bg-transparent border-[3px] border-[#ff4655] shadow-[0_0_15px_#ff4655] animate-pulse hidden md:flex items-center justify-center">
+                                <div className="w-2 h-2 md:w-4 md:h-4 bg-[#ff4655]"></div>
+                            </div>
                         </h1>
                         
-                        <div className="w-full h-[1px] bg-gradient-to-r from-zinc-500 to-transparent mt-6 md:mt-8 mb-4 md:mb-6 opacity-60"></div>
+                        <div className="w-full max-w-[500px] h-[2px] bg-gradient-to-r from-zinc-500 to-transparent mt-6 md:mt-8 mb-4 md:mb-6 opacity-60 relative">
+                            {/* Tactical white notch */}
+                            <div className="absolute left-0 top-[-1px] w-12 h-[4px] bg-white shadow-[0_0_10px_white]"></div>
+                        </div>
 
-                        <h2 className="font-mono text-xs md:text-sm tracking-[0.6em] md:tracking-[0.8em] text-zinc-300 uppercase font-bold drop-shadow-md">
+                        <h2 className="font-mono text-xs md:text-sm tracking-[0.6em] md:tracking-[0.8em] text-white uppercase font-bold drop-shadow-md">
                             Where Legends Ascend
                         </h2>
                     </motion.div>
