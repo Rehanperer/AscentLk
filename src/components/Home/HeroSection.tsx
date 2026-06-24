@@ -79,48 +79,82 @@ const HeroSection: React.FC = () => {
                     backgroundPosition: 'center center'
                 }}
             />
-            {/* Giant watermark in the void */}
-            <div className="absolute right-[-10%] top-[20%] text-[20rem] lg:text-[30rem] font-teko font-black text-white opacity-[0.02] transform -rotate-90 pointer-events-none z-0 tracking-tighter mix-blend-overlay">
-                ASCENT
+            {/* The Full Cover Image (Base Layer for Desktop & Mobile) */}
+            <div 
+                className="absolute inset-0 w-full h-full pointer-events-none z-0"
+            >
+                <motion.img
+                    src="/coverImage.png"
+                    alt="Cover"
+                    className="w-full h-full object-cover object-[25%_center] lg:object-center"
+                    style={{ scale: videoScale }}
+                />
             </div>
 
-            {/* Deepest Red Ambient Glow for the Tear */}
-            <motion.div 
-                className="absolute inset-0 w-full h-full pointer-events-none bg-[#ff4655] opacity-40 blur-[40px] transform translate-x-[25px] [clip-path:polygon(0_0,100%_0,100%_100%,0_100%)] lg:[clip-path:polygon(0_0,69%_0,54%_15%,71%_30%,59%_48%,70%_65%,58%_80%,68%_92%,62%_100%,0_100%)] z-0"
-                style={{ scale: videoScale }}
-            />
-            {/* Glowing Hot Edge Behind Tear */}
-            <motion.div 
-                className="absolute inset-0 w-full h-full pointer-events-none bg-[#ff4655] opacity-80 blur-[10px] transform translate-x-[10px] [clip-path:polygon(0_0,100%_0,100%_100%,0_100%)] lg:[clip-path:polygon(0_0,69%_0,54%_15%,71%_30%,59%_48%,70%_65%,58%_80%,68%_92%,62%_100%,0_100%)] z-0"
-                style={{ scale: videoScale }}
-            />
-            {/* Sharper hot core of the tear edge */}
-            <motion.div 
-                className="absolute inset-0 w-full h-full pointer-events-none bg-white opacity-90 blur-[3px] transform translate-x-[4px] [clip-path:polygon(0_0,100%_0,100%_100%,0_100%)] lg:[clip-path:polygon(0_0,69%_0,54%_15%,71%_30%,59%_48%,70%_65%,58%_80%,68%_92%,62%_100%,0_100%)] z-0"
-                style={{ scale: videoScale }}
-            />
-
-            {/* The Claw-Torn Cover Image */}
-            <motion.div 
-                className="absolute inset-0 w-full h-full pointer-events-none [clip-path:polygon(0_0,100%_0,100%_100%,0_100%)] lg:[clip-path:polygon(0_0,69%_0,54%_15%,71%_30%,59%_48%,70%_65%,58%_80%,68%_92%,62%_100%,0_100%)] z-0"
-                style={{ scale: videoScale }}
+            {/* DESKTOP ONLY: The Wiper that draws the tear and void downwards */}
+            <motion.div
+                className="absolute inset-0 w-full h-full pointer-events-none hidden lg:block z-10"
+                initial={{ clipPath: "inset(0% 0% 100% 0%)" }}
+                animate={{ clipPath: "inset(0% 0% 0% 0%)" }}
+                transition={{ duration: 1.0, ease: [0.77, 0, 0.175, 1], delay: 0.2 }}
             >
-                <img
-                    src="/coverImage.png"
-                    alt="Ascent 2026 Background"
-                    className="w-full h-full object-cover md:object-[30%_center] opacity-100 brightness-90"
+                {/* 1. The Black Void (Covers the right side of the background image) */}
+                <div 
+                    className="absolute inset-0 w-full h-full bg-[#08080a]"
+                    style={{ clipPath: "polygon(55% 0%, 100% 0%, 100% 100%, 38% 100%, 42% 92%, 56% 82%, 50% 72%, 58% 62%, 54% 52%, 68% 40%, 54% 28%, 62% 18%, 55% 8%)" }}
                 />
+
+                {/* Giant watermark moved INSIDE the void */}
+                <div className="absolute right-[-10%] top-[20%] text-[20rem] lg:text-[30rem] font-teko font-black text-white opacity-[0.03] transform -rotate-90 pointer-events-none z-0 tracking-tighter mix-blend-overlay">
+                    ASCENT
+                </div>
+
+                {/* 2. Glow Layers (Left polygon shifted right, so they bleed into the void) */}
+                {/* Deepest Red Ambient Glow */}
+                <div 
+                    className="absolute inset-0 w-full h-full pointer-events-none bg-[#ff4655] opacity-60 blur-[40px] transform translate-x-[25px]"
+                    style={{ clipPath: "polygon(0_0,55%_0,55%_8%,62%_18%,54%_28%,68%_40%,54%_52%,58%_62%,50%_72%,56%_82%,42%_92%,38%_100%,0_100%)" }}
+                />
+                {/* Glowing Hot Edge */}
+                <div 
+                    className="absolute inset-0 w-full h-full pointer-events-none bg-[#ff4655] opacity-100 blur-[12px] transform translate-x-[10px]"
+                    style={{ clipPath: "polygon(0_0,55%_0,55%_8%,62%_18%,54%_28%,68%_40%,54%_52%,58%_62%,50%_72%,56%_82%,42%_92%,38%_100%,0_100%)" }}
+                />
+                {/* Sharper hot core */}
+                <div 
+                    className="absolute inset-0 w-full h-full pointer-events-none bg-white opacity-100 blur-[4px] transform translate-x-[4px]"
+                    style={{ clipPath: "polygon(0_0,55%_0,55%_8%,62%_18%,54%_28%,68%_40%,54%_52%,58%_62%,50%_72%,56%_82%,42%_92%,38%_100%,0_100%)" }}
+                />
+                {/* Intense white spark core */}
+                <div 
+                    className="absolute inset-0 w-full h-full pointer-events-none bg-white opacity-100 blur-[1px] transform translate-x-[1px]"
+                    style={{ clipPath: "polygon(0_0,55%_0,55%_8%,62%_18%,54%_28%,68%_40%,54%_52%,58%_62%,50%_72%,56%_82%,42%_92%,38%_100%,0_100%)" }}
+                />
+
+                {/* 3. Left Side Image (Perfectly covers the glow layers on the left side) */}
+                <div 
+                    className="absolute inset-0 w-full h-full pointer-events-none"
+                    style={{ clipPath: "polygon(0_0,55%_0,55%_8%,62%_18%,54%_28%,68%_40%,54%_52%,58%_62%,50%_72%,56%_82%,42%_92%,38%_100%,0_100%)" }}
+                >
+                    <motion.img
+                        src="/coverImage.png"
+                        alt="Cover Torn"
+                        className="w-full h-full object-cover"
+                        style={{ scale: videoScale }}
+                    />
+                </div>
             </motion.div>
 
-            {/* Radial Vignette Mask */}
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,#08080a_110%)] pointer-events-none z-10 opacity-90" />
+            {/* Radial Vignette Mask (Darker on mobile for text readability) */}
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,#08080a_110%)] md:bg-[radial-gradient(ellipse_at_center,transparent_0%,#08080a_110%)] pointer-events-none z-10 opacity-90" />
             
             {/* Darker gradient at the bottom to smoothly blend into the next section */}
-            <div className="absolute bottom-0 left-0 w-full h-48 bg-gradient-to-t from-[#0d121f] to-transparent pointer-events-none z-10" />
+            <div className="absolute bottom-0 left-0 w-full h-48 md:h-48 bg-gradient-to-t from-[#0d121f] to-transparent pointer-events-none z-10" />
+            <div className="absolute bottom-0 left-0 w-full h-80 bg-gradient-to-t from-[#0d121f] via-[#0d121f]/80 to-transparent pointer-events-none z-10 lg:hidden" />
 
             {/* Content Container */}
             <motion.div 
-                className="relative z-20 w-full max-w-7xl mx-auto px-8 md:px-16 lg:px-24 flex flex-col items-end justify-center h-full"
+                className="relative z-20 w-full max-w-7xl mx-auto px-6 md:px-16 lg:px-24 flex flex-col items-center lg:items-end justify-end lg:justify-center h-full pb-16 lg:pb-0"
                 style={{ 
                     y: textY, 
                     opacity: textOpacity,
@@ -132,82 +166,84 @@ const HeroSection: React.FC = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 }}
             >
-                {/* Localized Frost/Blur Panel pushed to the right side (Mobile Only since Desktop is black) */}
+                {/* Localized Frost/Blur Panel (Mobile Only) */}
                 <div 
                     className="absolute inset-[-40px] pointer-events-none z-0 mix-blend-hard-light lg:hidden"
                     style={{
-                        backdropFilter: 'blur(16px) brightness(0.6)',
-                        WebkitBackdropFilter: 'blur(16px) brightness(0.6)',
-                        maskImage: 'radial-gradient(ellipse at 85% 50%, black 40%, transparent 70%)',
-                        WebkitMaskImage: 'radial-gradient(ellipse at 85% 50%, black 40%, transparent 70%)',
+                        backdropFilter: 'blur(8px) brightness(0.8)',
+                        WebkitBackdropFilter: 'blur(8px) brightness(0.8)',
+                        maskImage: 'linear-gradient(to top, black 20%, transparent 60%)',
+                        WebkitMaskImage: 'linear-gradient(to top, black 20%, transparent 60%)',
                         transform: "translateZ(-50px)"
                     }}
                 />
 
                 <div 
-                    className="relative z-10 flex flex-row items-center justify-start w-full md:w-[55%] lg:w-[40%] ml-auto mt-24 md:mt-0 pl-8 lg:pl-6 xl:pl-16"
+                    className="relative z-10 flex flex-col lg:flex-row items-center lg:items-center justify-center lg:justify-start w-full md:w-[65%] lg:w-[45%] lg:ml-auto mt-auto lg:mt-0 pl-0 lg:pl-12 xl:pl-16"
                     style={{ transform: "translateZ(50px)" }}
                 >
-                    {/* Floating Embers emitting from the tear */}
-                    <div className="absolute inset-0 pointer-events-none z-0 hidden lg:block overflow-hidden transform -translate-x-[50%]">
-                        {[...Array(15)].map((_, i) => (
-                            <motion.div
-                                key={i}
-                                className="absolute w-1 h-1 md:w-1.5 md:h-1.5 bg-white rounded-full shadow-[0_0_15px_#ff4655,0_0_30px_#ff4655]"
-                                style={{
-                                    left: `${50 + Math.random() * 20}%`,
-                                    top: `${Math.random() * 100}%`,
-                                }}
-                                animate={{
-                                    y: [0, -100 - Math.random() * 300],
-                                    x: [0, (Math.random() - 0.5) * 150],
-                                    opacity: [0, 0.9, 0],
-                                    scale: [0, Math.random() * 1.5 + 0.5, 0]
-                                }}
-                                transition={{
-                                    duration: 3 + Math.random() * 5,
-                                    repeat: Infinity,
-                                    delay: Math.random() * 5,
-                                    ease: "easeOut"
-                                }}
-                            />
-                        ))}
-                    </div>
+
                     {/* The Text Lockup: Clean, Stacked, Cinematic */}
                     <motion.div 
-                        className="flex flex-col items-start w-full relative z-10"
+                        className="flex flex-col items-center lg:items-start w-full relative z-10"
                         initial={{ x: 50, opacity: 0 }}
                         animate={{ x: 0, opacity: 1 }}
-                        transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
+                        transition={{ duration: 1, delay: 0.8, ease: "easeOut" }}
                     >
                         {/* Huge ambient red glow behind text */}
-                        <div className="absolute top-[40%] left-[20%] w-[400px] h-[300px] bg-[#ff4655] opacity-20 blur-[100px] rounded-full transform -translate-y-1/2 pointer-events-none mix-blend-screen z-0" />
+                        <div className="absolute top-[40%] left-1/2 lg:left-[20%] w-[300px] lg:w-[400px] h-[300px] bg-[#ff4655] opacity-20 blur-[80px] lg:blur-[100px] rounded-full transform -translate-x-1/2 lg:-translate-x-0 -translate-y-1/2 pointer-events-none mix-blend-screen z-0" />
 
                         {/* Tactical Overline */}
-                        <div className="font-mono text-[10px] md:text-xs text-[#ff4655] tracking-[0.3em] mb-4 flex items-center gap-3 drop-shadow-[0_0_5px_#ff4655] relative z-10">
-                            <span className="w-10 h-[2px] bg-[#ff4655]"></span>
+                        <div className="font-mono text-[10px] md:text-xs text-[#ff4655] tracking-[0.3em] mb-2 lg:mb-4 flex items-center gap-3 drop-shadow-[0_0_5px_#ff4655] relative z-10">
+                            <span className="w-6 lg:w-10 h-[2px] bg-[#ff4655]"></span>
                             SYS_INIT_2026
+                            <span className="w-6 lg:hidden h-[2px] bg-[#ff4655]"></span>
                         </div>
 
                         {/* Shattered "ASCENT" text */}
-                        <div className="relative font-teko text-[5rem] md:text-[6rem] lg:text-[7.5rem] leading-[0.85] font-bold tracking-widest uppercase z-10 w-full">
-                            {/* Base drop shadow layer */}
-                            <span className="absolute inset-0 text-transparent bg-clip-text bg-gradient-to-b from-white to-zinc-500 drop-shadow-[0_10px_30px_rgba(0,0,0,0.9)] opacity-40">ASCENT</span>
-                            {/* Sliced Piece 1 */}
-                            <span className="absolute top-0 left-0 text-transparent bg-clip-text bg-gradient-to-b from-white to-zinc-300 [clip-path:polygon(0_0,35%_0,25%_100%,0_100%)] transform -translate-x-[2px] translate-y-[2px]">ASCENT</span>
-                            {/* Sliced Piece 2 */}
-                            <span className="absolute top-0 left-0 text-transparent bg-clip-text bg-gradient-to-b from-zinc-200 to-zinc-500 [clip-path:polygon(35%_0,70%_0,55%_100%,25%_100%)] transform translate-x-[3px] -translate-y-[1px]">ASCENT</span>
-                            {/* Sliced Piece 3 */}
-                            <span className="relative text-transparent bg-clip-text bg-gradient-to-b from-zinc-300 to-zinc-600 [clip-path:polygon(70%_0,100%_0,100%_100%,55%_100%)] transform -translate-x-[1px] translate-y-[3px] inline-block">ASCENT</span>
+                        <div className="relative font-teko text-[6rem] sm:text-[7rem] md:text-[8rem] lg:text-[10.5rem] leading-[0.8] font-black tracking-wider uppercase z-10 flex flex-col items-center lg:items-start w-full mb-2 lg:mb-4 group cursor-default">
+                            <div className="relative inline-block">
+                                {/* 3D Extrusion Shadow */}
+                                <span 
+                                    className="absolute inset-0 text-zinc-800"
+                                    style={{ textShadow: "0px 4px 0px #71717a, 0px 8px 0px #3f3f46, 0px 12px 0px #18181b, 0px 25px 40px rgba(0,0,0,1)" }}
+                                >
+                                    ASCENT
+                                </span>
+                                
+                                {/* Chromatic Aberration - Red Left */}
+                                <span className="absolute inset-0 text-[#ff4655] transform -translate-x-[4px] lg:-translate-x-[6px] translate-y-[2px] opacity-80 mix-blend-screen [clip-path:polygon(0_0,100%_0,100%_40%,0_30%)] group-hover:translate-x-[-12px] group-hover:-translate-y-[4px] transition-transform duration-300">ASCENT</span>
+                                {/* Chromatic Aberration - Cyan Right */}
+                                <span className="absolute inset-0 text-[#00ffcc] transform translate-x-[4px] lg:translate-x-[6px] -translate-y-[2px] opacity-80 mix-blend-screen [clip-path:polygon(0_60%,100%_50%,100%_100%,0_100%)] group-hover:translate-x-[12px] group-hover:translate-y-[4px] transition-transform duration-300">ASCENT</span>
+
+                                {/* Main Text Body with Metallic Gradient */}
+                                <span className="relative text-transparent bg-clip-text bg-gradient-to-b from-white via-zinc-300 to-zinc-700 [clip-path:polygon(0_0,100%_0,100%_100%,0_100%)] inline-block z-10">
+                                    ASCENT
+                                </span>
+                                
+                                {/* Texture Overlay (Diagonal scanlines) */}
+                                <span className="absolute inset-0 text-transparent bg-clip-text bg-[repeating-linear-gradient(45deg,transparent,transparent_2px,rgba(0,0,0,0.6)_2px,rgba(0,0,0,0.6)_5px)] z-20 pointer-events-none">ASCENT</span>
+                                
+                                {/* Glowing horizontal laser cut slice */}
+                                <span className="absolute inset-0 text-white opacity-80 blur-[2px] [clip-path:polygon(0_48%,100%_46%,100%_51%,0_53%)] z-30 pointer-events-none mix-blend-overlay">ASCENT</span>
+                                <span className="absolute inset-0 text-[#ff4655] opacity-100 blur-[8px] [clip-path:polygon(0_48%,100%_46%,100%_51%,0_53%)] z-30 pointer-events-none mix-blend-screen">ASCENT</span>
+                            </div>
                         </div>
 
                         {/* Shattered "2026" text */}
-                        <div className="relative font-teko text-[5rem] md:text-[6rem] lg:text-[7.5rem] leading-[0.85] font-bold tracking-widest uppercase flex items-center gap-6 z-10 w-full mb-2">
-                            <div className="relative inline-block">
-                                <span className="absolute inset-0 text-[#ff4655] drop-shadow-[0_0_30px_rgba(255,70,85,0.6)] opacity-40">2026</span>
-                                <span className="absolute top-0 left-0 text-[#ff4655] [clip-path:polygon(0_0,30%_0,40%_100%,0_100%)] transform translate-x-[2px] -translate-y-[2px]">2026</span>
-                                <span className="absolute top-0 left-0 text-[#ff5b68] [clip-path:polygon(30%_0,60%_0,70%_100%,40%_100%)] transform -translate-x-[2px] translate-y-[1px]">2026</span>
-                                <span className="relative text-[#e83b49] [clip-path:polygon(60%_0,100%_0,100%_100%,70%_100%)] transform translate-x-[1px] inline-block">2026</span>
+                        <div className="relative font-teko text-[5rem] sm:text-[6rem] md:text-[7rem] lg:text-[8rem] leading-[0.8] font-bold tracking-widest uppercase flex items-center justify-center lg:justify-start gap-4 lg:gap-6 z-10 w-full mb-2">
+                            <div className="relative inline-block group cursor-default">
+                                {/* Base Shadow Extrusion */}
+                                <span className="absolute inset-0 text-[#8a1c25]" style={{ textShadow: "0px 4px 0px #5e1118, 0px 8px 0px #38080d, 0px 20px 25px rgba(0,0,0,0.9)" }}>2026</span>
+                                
+                                {/* Main Red Core */}
+                                <span className="relative text-[#ff4655] z-10 inline-block [clip-path:polygon(0_0,100%_0,100%_100%,0_100%)] group-hover:scale-[1.02] transition-transform duration-300">
+                                    2026
+                                </span>
+
+                                {/* White hot center horizontal slash */}
+                                <span className="absolute inset-0 text-white z-20 [clip-path:polygon(0_50%,100%_48%,100%_52%,0_54%)] pointer-events-none">2026</span>
+                                <span className="absolute inset-0 text-[#ff4655] blur-[6px] z-20 [clip-path:polygon(0_50%,100%_48%,100%_52%,0_54%)] pointer-events-none mix-blend-screen opacity-80">2026</span>
                             </div>
                             
                             {/* Valorant style cursor box */}
