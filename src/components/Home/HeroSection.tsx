@@ -70,6 +70,20 @@ const HeroSection: React.FC = () => {
             {/* The Black Void (revealed by the claw tear) */}
             <div className="absolute inset-0 bg-[#08080a] w-full h-full pointer-events-none z-0" />
 
+            {/* Tech Grid in the Void */}
+            <div 
+                className="absolute right-0 top-0 w-1/2 h-full pointer-events-none z-0 opacity-[0.03]"
+                style={{
+                    backgroundImage: `linear-gradient(rgba(255, 255, 255, 1) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 1) 1px, transparent 1px)`,
+                    backgroundSize: '40px 40px',
+                    backgroundPosition: 'center center'
+                }}
+            />
+            {/* Giant watermark in the void */}
+            <div className="absolute right-[-10%] top-[20%] text-[20rem] lg:text-[30rem] font-teko font-black text-white opacity-[0.02] transform -rotate-90 pointer-events-none z-0 tracking-tighter mix-blend-overlay">
+                ASCENT
+            </div>
+
             {/* Deepest Red Ambient Glow for the Tear */}
             <motion.div 
                 className="absolute inset-0 w-full h-full pointer-events-none bg-[#ff4655] opacity-40 blur-[40px] transform translate-x-[25px] [clip-path:polygon(0_0,100%_0,100%_100%,0_100%)] lg:[clip-path:polygon(0_0,69%_0,62%_15%,71%_30%,59%_48%,70%_65%,58%_80%,68%_92%,62%_100%,0_100%)] z-0"
@@ -170,21 +184,37 @@ const HeroSection: React.FC = () => {
                         <div className="absolute top-[40%] left-[20%] w-[400px] h-[300px] bg-[#ff4655] opacity-20 blur-[100px] rounded-full transform -translate-y-1/2 pointer-events-none mix-blend-screen z-0" />
 
                         {/* Tactical Overline */}
-                        <div className="font-mono text-[10px] md:text-xs text-[#ff4655] tracking-[0.3em] mb-3 flex items-center gap-3 drop-shadow-[0_0_5px_#ff4655] relative z-10">
+                        <div className="font-mono text-[10px] md:text-xs text-[#ff4655] tracking-[0.3em] mb-4 flex items-center gap-3 drop-shadow-[0_0_5px_#ff4655] relative z-10">
                             <span className="w-10 h-[2px] bg-[#ff4655]"></span>
                             SYS_INIT_2026
                         </div>
 
-                        <h1 className="font-teko text-[5rem] md:text-[7.5rem] lg:text-[9.5rem] leading-[0.8] font-bold tracking-widest drop-shadow-[0_10px_30px_rgba(0,0,0,0.9)] uppercase bg-gradient-to-b from-white to-zinc-500 bg-clip-text text-transparent relative z-10">
-                            ASCENT
-                        </h1>
-                        <h1 className="font-teko text-[5rem] md:text-[7.5rem] lg:text-[9.5rem] leading-[0.8] font-bold tracking-widest uppercase flex items-center gap-4 relative z-10">
-                            <span className="text-[#ff4655] drop-shadow-[0_0_30px_rgba(255,70,85,0.6)]">2026</span>
-                            {/* Valorant style cursor box */}
-                            <div className="w-5 h-5 md:w-8 md:h-8 bg-transparent border-[3px] border-[#ff4655] shadow-[0_0_15px_#ff4655] animate-pulse hidden md:flex items-center justify-center">
-                                <div className="w-2 h-2 md:w-4 md:h-4 bg-[#ff4655]"></div>
+                        {/* Shattered "ASCENT" text */}
+                        <div className="relative font-teko text-[5rem] md:text-[6rem] lg:text-[7.5rem] leading-[0.85] font-bold tracking-widest uppercase z-10 w-full">
+                            {/* Base drop shadow layer */}
+                            <span className="absolute inset-0 text-transparent bg-clip-text bg-gradient-to-b from-white to-zinc-500 drop-shadow-[0_10px_30px_rgba(0,0,0,0.9)] opacity-40">ASCENT</span>
+                            {/* Sliced Piece 1 */}
+                            <span className="absolute top-0 left-0 text-transparent bg-clip-text bg-gradient-to-b from-white to-zinc-300 [clip-path:polygon(0_0,35%_0,25%_100%,0_100%)] transform -translate-x-[2px] translate-y-[2px]">ASCENT</span>
+                            {/* Sliced Piece 2 */}
+                            <span className="absolute top-0 left-0 text-transparent bg-clip-text bg-gradient-to-b from-zinc-200 to-zinc-500 [clip-path:polygon(35%_0,70%_0,55%_100%,25%_100%)] transform translate-x-[3px] -translate-y-[1px]">ASCENT</span>
+                            {/* Sliced Piece 3 */}
+                            <span className="relative text-transparent bg-clip-text bg-gradient-to-b from-zinc-300 to-zinc-600 [clip-path:polygon(70%_0,100%_0,100%_100%,55%_100%)] transform -translate-x-[1px] translate-y-[3px] inline-block">ASCENT</span>
+                        </div>
+
+                        {/* Shattered "2026" text */}
+                        <div className="relative font-teko text-[5rem] md:text-[6rem] lg:text-[7.5rem] leading-[0.85] font-bold tracking-widest uppercase flex items-center gap-6 z-10 w-full mb-2">
+                            <div className="relative inline-block">
+                                <span className="absolute inset-0 text-[#ff4655] drop-shadow-[0_0_30px_rgba(255,70,85,0.6)] opacity-40">2026</span>
+                                <span className="absolute top-0 left-0 text-[#ff4655] [clip-path:polygon(0_0,30%_0,40%_100%,0_100%)] transform translate-x-[2px] -translate-y-[2px]">2026</span>
+                                <span className="absolute top-0 left-0 text-[#ff5b68] [clip-path:polygon(30%_0,60%_0,70%_100%,40%_100%)] transform -translate-x-[2px] translate-y-[1px]">2026</span>
+                                <span className="relative text-[#e83b49] [clip-path:polygon(60%_0,100%_0,100%_100%,70%_100%)] transform translate-x-[1px] inline-block">2026</span>
                             </div>
-                        </h1>
+                            
+                            {/* Valorant style cursor box */}
+                            <div className="w-5 h-5 md:w-6 md:h-6 bg-transparent border-[3px] border-[#ff4655] shadow-[0_0_15px_#ff4655] animate-pulse hidden md:flex items-center justify-center relative mt-2">
+                                <div className="w-2 h-2 md:w-3 md:h-3 bg-[#ff4655]"></div>
+                            </div>
+                        </div>
                         
                         <div className="w-full max-w-[500px] h-[2px] bg-gradient-to-r from-[#ff4655] to-transparent mt-6 md:mt-8 mb-4 md:mb-6 opacity-80 relative z-10">
                             {/* Tactical white notch */}
