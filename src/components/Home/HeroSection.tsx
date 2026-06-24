@@ -110,61 +110,71 @@ const HeroSection: React.FC = () => {
                     }}
                 />
 
-                {/* Sick Tech/Cyberpunk Elements at the split */}
-                <div className="absolute inset-y-0 left-[60%] lg:left-[66%] w-px z-10 hidden md:flex flex-col justify-center items-center pointer-events-none mix-blend-screen" style={{ transform: 'rotate(15deg) scaleY(1.5)' }}>
+                {/* Massive Cinematic Flare Separator */}
+                <div 
+                    className="absolute inset-y-0 left-[55%] lg:left-[58%] w-[100px] z-10 hidden md:flex flex-col justify-center items-center pointer-events-none mix-blend-screen" 
+                    style={{ transform: 'rotate(15deg) scaleY(1.5) translateX(-50%)' }}
+                >
+                    {/* Core intense beam */}
                     <motion.div 
-                        className="w-[2px] h-[60%] bg-[#ff4655] shadow-[0_0_20px_#ff4655,0_0_40px_#ff4655]"
+                        className="absolute w-[3px] h-[100%] bg-white rounded-full shadow-[0_0_30px_10px_#ff4655,0_0_80px_20px_#ff4655]"
+                        initial={{ scaleY: 0, opacity: 0 }}
+                        animate={{ scaleY: 1, opacity: 1 }}
+                        transition={{ duration: 1.2, ease: "circOut" }}
+                    />
+                    {/* Vertical energy bleeds */}
+                    <motion.div 
+                        className="absolute w-[20px] h-[80%] bg-[#ff4655] opacity-50 blur-[15px]"
                         initial={{ scaleY: 0 }}
                         animate={{ scaleY: 1 }}
                         transition={{ duration: 1.5, ease: "circOut" }}
                     />
+                    {/* Traveling energy pulse */}
                     <motion.div 
-                        className="w-[1px] h-[40%] bg-white/40 mt-4"
-                        initial={{ scaleY: 0 }}
-                        animate={{ scaleY: 1 }}
-                        transition={{ duration: 1.5, delay: 0.3, ease: "circOut" }}
+                        className="absolute w-[60px] h-[300px] bg-white rounded-full blur-[40px] opacity-40"
+                        animate={{ 
+                            y: ['-100%', '100%']
+                        }}
+                        transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
                     />
                 </div>
 
                 <div 
-                    className="relative z-10 flex flex-col items-start w-full md:w-[40%] lg:w-[31%] ml-auto mt-24 md:mt-0 pl-4 md:pl-0"
+                    className="relative z-10 flex flex-col items-start w-full md:w-[45%] lg:w-[35%] ml-auto mt-24 md:mt-0 pl-4 md:pl-0"
                     style={{ transform: "translateZ(50px)" }}
                 >
-                    <h1 className="font-teko text-[4.5rem] md:text-[6.5rem] lg:text-[8.5rem] leading-[0.80] font-bold tracking-widest text-left flex flex-col items-start w-full">
+                    <h1 className="relative font-teko font-bold tracking-widest text-left flex flex-col items-start w-full uppercase pb-8">
                         
-                        {/* ASCENT (Solid, aggressive, crisp) */}
+                        {/* ASCENT - Large Hollow Background Text */}
                         <motion.div 
-                            className="text-white drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)] pb-2 -mb-2"
-                            initial={{ x: 50, opacity: 0, filter: 'blur(10px)' }}
-                            animate={{ x: 0, opacity: 1, filter: 'blur(0px)' }}
+                            className="text-[6rem] md:text-[9rem] lg:text-[12rem] leading-[0.75] text-transparent relative z-0"
+                            style={{ 
+                                WebkitTextStroke: '2px rgba(255, 70, 85, 0.9)',
+                                textShadow: '0 0 40px rgba(255, 70, 85, 0.5)'
+                            }}
+                            initial={{ x: 50, opacity: 0 }}
+                            animate={{ x: 0, opacity: 1 }}
                             transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
                         >
                             ASCENT
                         </motion.div>
                         
-                        {/* 2026 (Aggressive Red, Solid) */}
+                        {/* 2026 - Solid Foreground Text with Hard Shadow */}
                         <motion.div 
-                            className="flex items-center gap-3 md:gap-4 -mt-1 md:-mt-2 relative z-10"
+                            className="text-[4rem] md:text-[7rem] lg:text-[9.5rem] leading-[0.8] text-white absolute top-[40%] left-[8%] z-10 flex items-center gap-4"
+                            style={{ 
+                                textShadow: '6px 6px 0px #ff4655, 15px 15px 30px rgba(0,0,0,0.8)'
+                            }}
                             initial={{ x: 50, opacity: 0 }}
                             animate={{ x: 0, opacity: 1 }}
                             transition={{ duration: 1, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
                         >
-                            <span className="text-[#ff4655] opacity-80 font-mono text-sm md:text-lg tracking-widest align-top mr-2 mt-4 hidden md:block drop-shadow-[0_0_10px_#ff4655]">
-                                [ YR ]
-                            </span>
-                            
-                            <motion.span 
-                                className="text-[#ff4655] relative z-10 font-bold"
-                                style={{ 
-                                    textShadow: '3px 3px 0px rgba(0,0,0,1), 0 0 30px rgba(255, 70, 85, 0.8)'
-                                }}
-                            >
-                                2026
-                            </motion.span>
+                            2026
                             
                             {/* Static Solid Block Cursor matching cover art's sharp edges */}
                             <motion.div 
-                                className="w-4 md:w-5 lg:w-6 h-[3rem] md:h-[4.5rem] lg:h-[6.5rem] bg-[#ff4655] shadow-[0_0_20px_#ff4655] mb-2 md:mb-4"
+                                className="w-4 md:w-5 lg:w-6 h-[3.5rem] md:h-[5.5rem] lg:h-[7.5rem] bg-[#ff4655] shadow-[0_0_20px_#ff4655]"
+                                style={{ boxShadow: '6px 6px 0px rgba(0,0,0,0.5)' }}
                                 animate={{ opacity: [1, 0.5, 1] }}
                                 transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
                             />
