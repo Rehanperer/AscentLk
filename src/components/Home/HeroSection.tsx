@@ -150,8 +150,6 @@ const HeroSection: React.FC = () => {
                             Where Legends Ascend
                         </h2>
                     </motion.div>
-                </div>
-                    {/* Replaced by inline content above */}
 
                     {/* SEO: Visually hidden but crawlable description for search engines */}
                     <p className="sr-only">
