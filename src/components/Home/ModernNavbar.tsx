@@ -104,7 +104,7 @@ const ModernNavbar: React.FC = () => {
 
                         {/* Instagram Button */}
                         <a
-                            href="https://www.instagram.com/ethosalumniassociation/"
+                            href="https://www.instagram.com/ascent_2026/"
                             target="_blank"
                             rel="noopener noreferrer"
                             className={`group relative z-10 transition-opacity duration-300 cursor-pointer flex items-center justify-center pointer-events-auto ${mobileOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}

@@ -67,14 +67,29 @@ const HeroSection: React.FC = () => {
             style={{ perspective: 1500 }}
         >
             {/* Background Image */}
+            {/* The Black Void (revealed by the claw tear) */}
+            <div className="absolute inset-0 bg-[#08080a] w-full h-full pointer-events-none z-0" />
+
+            {/* Glowing Hot Edge Behind Tear */}
             <motion.div 
-                className="absolute inset-0 w-full h-full pointer-events-none"
+                className="absolute inset-0 w-full h-full pointer-events-none bg-[#ff4655] opacity-80 blur-[10px] transform translate-x-[10px] [clip-path:polygon(0_0,100%_0,100%_100%,0_100%)] lg:[clip-path:polygon(0_0,55%_0,48%_15%,57%_30%,45%_48%,56%_65%,44%_80%,54%_92%,48%_100%,0_100%)] z-0"
+                style={{ scale: videoScale }}
+            />
+            {/* Sharper hot core of the tear edge */}
+            <motion.div 
+                className="absolute inset-0 w-full h-full pointer-events-none bg-white opacity-90 blur-[3px] transform translate-x-[4px] [clip-path:polygon(0_0,100%_0,100%_100%,0_100%)] lg:[clip-path:polygon(0_0,55%_0,48%_15%,57%_30%,45%_48%,56%_65%,44%_80%,54%_92%,48%_100%,0_100%)] z-0"
+                style={{ scale: videoScale }}
+            />
+
+            {/* The Claw-Torn Cover Image */}
+            <motion.div 
+                className="absolute inset-0 w-full h-full pointer-events-none [clip-path:polygon(0_0,100%_0,100%_100%,0_100%)] lg:[clip-path:polygon(0_0,55%_0,48%_15%,57%_30%,45%_48%,56%_65%,44%_80%,54%_92%,48%_100%,0_100%)] z-0"
                 style={{ scale: videoScale }}
             >
                 <img
                     src="/coverImage.png"
                     alt="Ascent 2026 Background"
-                    className="w-full h-full object-cover md:object-cover object-left md:object-[60%_center] opacity-100 brightness-90"
+                    className="w-full h-full object-cover md:object-[30%_center] opacity-100 brightness-90"
                 />
             </motion.div>
 
@@ -98,9 +113,9 @@ const HeroSection: React.FC = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 }}
             >
-                {/* Localized Frost/Blur Panel pushed to the right side */}
+                {/* Localized Frost/Blur Panel pushed to the right side (Mobile Only since Desktop is black) */}
                 <div 
-                    className="absolute inset-[-40px] pointer-events-none z-0 mix-blend-hard-light"
+                    className="absolute inset-[-40px] pointer-events-none z-0 mix-blend-hard-light lg:hidden"
                     style={{
                         backdropFilter: 'blur(16px) brightness(0.6)',
                         WebkitBackdropFilter: 'blur(16px) brightness(0.6)',
@@ -111,64 +126,9 @@ const HeroSection: React.FC = () => {
                 />
 
                 <div 
-                    className="relative z-10 flex flex-row items-center justify-start w-full md:w-[55%] lg:w-[50%] ml-auto mt-24 md:mt-0 pl-8 lg:pl-12"
+                    className="relative z-10 flex flex-row items-center justify-start w-full md:w-[55%] lg:w-[45%] ml-auto mt-24 md:mt-0 pl-8 lg:pl-12"
                     style={{ transform: "translateZ(50px)" }}
                 >
-                    {/* Valorant Themed Tactical Separator */}
-                    <div className="absolute inset-y-0 left-0 w-[80px] z-10 hidden md:flex flex-col justify-center items-center pointer-events-none transform -translate-x-full pr-8">
-                        
-                        {/* Top decorative lines */}
-                        <div className="flex gap-1 mb-8 opacity-80">
-                            <div className="w-1.5 h-10 bg-white transform skew-x-[-20deg] shadow-[0_0_10px_rgba(255,255,255,0.5)]"></div>
-                            <div className="w-1.5 h-10 bg-[#ff4655] transform skew-x-[-20deg] shadow-[0_0_10px_rgba(255,70,85,0.5)]"></div>
-                        </div>
-
-                        {/* Main separator body */}
-                        <div className="relative w-full flex items-center justify-center">
-                            {/* Glowing core line */}
-                            <motion.div 
-                                className="w-[2px] h-[45vh] bg-white shadow-[0_0_15px_#ff4655,0_0_30px_#ff4655]"
-                                initial={{ scaleY: 0 }}
-                                animate={{ scaleY: 1 }}
-                                transition={{ duration: 1, ease: "circOut" }}
-                            />
-                            {/* Thick red accent block overlay */}
-                            <motion.div 
-                                className="absolute left-1/2 w-5 h-40 bg-[#ff4655] shadow-[8px_8px_0_rgba(0,0,0,0.6)] transform -translate-x-1/2 flex flex-col justify-between py-2 items-center"
-                                initial={{ height: 0, opacity: 0 }}
-                                animate={{ height: "10rem", opacity: 1 }}
-                                transition={{ duration: 0.8, delay: 0.5, ease: "backOut" }}
-                            >
-                                {/* Inner tech details inside the red block */}
-                                <div className="w-2 h-1 bg-white/80"></div>
-                                <div className="w-2 h-1 bg-white/80"></div>
-                            </motion.div>
-                            
-                            {/* Floating HUD brackets */}
-                            <motion.div 
-                                className="absolute left-[-10px] top-[15%] text-[#ff4655] font-mono text-2xl opacity-60 tracking-widest font-bold"
-                                animate={{ x: [0, -5, 0] }}
-                                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                            >
-                                [
-                            </motion.div>
-                            <motion.div 
-                                className="absolute right-[-10px] bottom-[15%] text-[#ff4655] font-mono text-2xl opacity-60 tracking-widest font-bold"
-                                animate={{ x: [0, 5, 0] }}
-                                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-                            >
-                                ]
-                            </motion.div>
-                        </div>
-
-                        {/* Bottom decorative diamonds */}
-                        <div className="flex flex-col gap-2 mt-8 opacity-80 items-center">
-                            <div className="w-3 h-3 bg-[#ff4655] transform rotate-45 shadow-[0_0_10px_#ff4655]"></div>
-                            <div className="w-3 h-3 bg-transparent border-2 border-[#ff4655] transform rotate-45"></div>
-                            <div className="w-[2px] h-20 bg-gradient-to-t from-transparent to-[#ff4655] mt-2"></div>
-                        </div>
-                    </div>
-
                     {/* The Text Lockup: Clean, Stacked, Cinematic */}
                     <motion.div 
                         className="flex flex-col items-start w-full relative"

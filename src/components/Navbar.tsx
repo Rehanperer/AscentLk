@@ -216,7 +216,7 @@ const Navbar: React.FC<NavbarProps> = ({ onRegister, onNavigate }) => {
                                 </p>
                                 <div className="flex justify-center gap-6">
                                     <a
-                                        href="https://www.instagram.com/ethosalumniassociation/"
+                                        href="https://www.instagram.com/ascent2026/"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="w-12 h-12 flex items-center justify-center opacity-40 hover:opacity-100 hover:text-[#ff4655] hover:-translate-y-1 transition-all"

@@ -1,7 +1,7 @@
 export const CONFIG = {
     tournamentDate: "2026-07-17T09:00:00",
     social: {
-        instagram: "https://www.instagram.com/ethosalumniassociation/",
+        instagram: "https://www.instagram.com/ascent_2026/",
         youtube: "https://www.youtube.com/@ascent.2026"
     }
 };
