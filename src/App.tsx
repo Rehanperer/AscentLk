@@ -276,6 +276,22 @@ const App: React.FC = () => {
     const location = useLocation();
     const isHomePage = location.pathname === '/';
 
+    const [scrolledPastHero, setScrolledPastHero] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            // Show the sticky text once we scroll past 80% of the viewport (mostly past the hero)
+            if (window.scrollY > window.innerHeight * 0.8) {
+                setScrolledPastHero(true);
+            } else {
+                setScrolledPastHero(false);
+            }
+        };
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        handleScroll(); // Initialize state
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
     // Scroll to top or specific hash on route change
     useEffect(() => {
         if (location.hash) {
@@ -481,6 +497,22 @@ const App: React.FC = () => {
                             />
                             {/* Global LoadingScreen is now at the root of App */}
                             <CustomCursor />
+
+                            {/* Sticky Left Text */}
+                            <div className={`fixed bottom-4 left-4 md:bottom-8 md:left-8 z-50 pointer-events-none flex items-end drop-shadow-md transition-opacity duration-500 ${scrolledPastHero ? 'opacity-100' : 'opacity-0'}`}>
+                                <p className="font-teko text-white/60 text-xl md:text-2xl tracking-[0.2em] uppercase">
+                                    GAME RESPONSIBLY
+                                </p>
+                            </div>
+
+                            {/* Sticky Right Image & Text */}
+                            <div className="fixed bottom-4 right-4 md:bottom-8 md:right-8 z-50 pointer-events-none flex items-center gap-3 md:gap-4 drop-shadow-md opacity-90 transition-opacity hover:opacity-100">
+                                <p className="font-mono text-white/50 text-[8px] md:text-[9px] tracking-[0.4em] uppercase font-medium">
+                                    PRESENTED BY
+                                </p>
+                                <div className="w-[1px] h-5 md:h-8 bg-white/20"></div>
+                                <img src="/dialog.png" alt="Dialog" className="w-14 md:w-20" />
+                            </div>
 
                             {/* Premium HUD Navigation */}
                             <ModernNavbar />

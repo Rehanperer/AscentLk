@@ -109,8 +109,20 @@ const ModernNavbar: React.FC = () => {
                             rel="noopener noreferrer"
                             className={`group relative z-10 transition-opacity duration-300 cursor-pointer flex items-center justify-center pointer-events-auto ${mobileOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
                         >
-                            <div className="relative flex items-center justify-center w-10 h-10 border border-white/30 rounded-full transition-all duration-300 group-hover:border-[#ff4655] group-hover:bg-[#ff4655]/10 group-hover:shadow-[0_0_15px_rgba(255,70,85,0.3)]">
-                                <Instagram className="w-4 h-4 text-white/80 group-hover:text-[#ff4655] transition-colors duration-300" />
+                            <div className="relative flex items-center justify-center w-8 h-8 md:w-10 md:h-10 border border-white/30 rounded-full transition-all duration-300 group-hover:border-[#ff4655] group-hover:bg-[#ff4655]/10 group-hover:shadow-[0_0_15px_rgba(255,70,85,0.3)]">
+                                <Instagram className="w-3.5 h-3.5 md:w-4 md:h-4 text-white/80 group-hover:text-[#ff4655] transition-colors duration-300" />
+                            </div>
+                        </a>
+
+                        {/* TikTok Button */}
+                        <a
+                            href="https://www.tiktok.com/@ascent_2026"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={`group relative z-10 transition-opacity duration-300 cursor-pointer flex items-center justify-center pointer-events-auto ${mobileOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+                        >
+                            <div className="relative flex items-center justify-center w-8 h-8 md:w-10 md:h-10 border border-white/30 rounded-full transition-all duration-300 group-hover:border-[#ff4655] group-hover:bg-[#ff4655]/10 group-hover:shadow-[0_0_15px_rgba(255,70,85,0.3)]">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="currentColor" className="w-3.5 h-3.5 md:w-4 md:h-4 text-white/80 group-hover:text-[#ff4655] transition-colors duration-300"><path d="M448 209.91a210.06 210.06 0 0 1-122.77-39.25V349.38A162.55 162.55 0 1 1 185 188.31V278.2a74.62 74.62 0 1 0 52.23 71.18V0l88 0a121.18 121.18 0 0 0 1.86 22.17h0A122.18 122.18 0 0 0 381 102.39a121.43 121.43 0 0 0 67 20.14Z"/></svg>
                             </div>
                         </a>
 

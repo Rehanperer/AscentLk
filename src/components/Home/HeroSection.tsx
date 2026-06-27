@@ -112,12 +112,12 @@ const HeroSection: React.FC = () => {
                 {/* 2. Glow Layers (Left polygon shifted right, so they bleed into the void) */}
                 {/* Deepest Red Ambient Glow */}
                 <div 
-                    className="absolute inset-0 w-full h-full pointer-events-none bg-[#ff4655] opacity-60 blur-[40px] transform translate-x-[25px]"
+                    className="absolute inset-0 w-full h-full pointer-events-none bg-[#00f0ff] opacity-60 blur-[40px] transform translate-x-[25px]"
                     style={{ clipPath: "polygon(0_0,55%_0,55%_8%,62%_18%,54%_28%,68%_40%,54%_52%,58%_62%,50%_72%,56%_82%,42%_92%,38%_100%,0_100%)" }}
                 />
                 {/* Glowing Hot Edge */}
                 <div 
-                    className="absolute inset-0 w-full h-full pointer-events-none bg-[#ff4655] opacity-100 blur-[12px] transform translate-x-[10px]"
+                    className="absolute inset-0 w-full h-full pointer-events-none bg-[#00f0ff] opacity-100 blur-[12px] transform translate-x-[10px]"
                     style={{ clipPath: "polygon(0_0,55%_0,55%_8%,62%_18%,54%_28%,68%_40%,54%_52%,58%_62%,50%_72%,56%_82%,42%_92%,38%_100%,0_100%)" }}
                 />
                 {/* Sharper hot core */}
@@ -183,81 +183,40 @@ const HeroSection: React.FC = () => {
                     style={{ transform: "translateZ(50px)" }}
                 >
 
-                    {/* The Text Lockup: Clean, Stacked, Cinematic */}
+                    {/* The Text Lockup: Clean, Stacked, Valorant UI Style */}
                     <motion.div 
-                        className="flex flex-col items-center lg:items-start w-full relative z-10"
+                        className="flex flex-col items-center w-full relative z-10"
                         initial={{ x: 50, opacity: 0 }}
                         animate={{ x: 0, opacity: 1 }}
                         transition={{ duration: 1, delay: 0.8, ease: "easeOut" }}
                     >
-                        {/* Huge ambient red glow behind text */}
-                        <div className="absolute top-[40%] left-1/2 lg:left-[20%] w-[300px] lg:w-[400px] h-[300px] bg-[#ff4655] opacity-20 blur-[80px] lg:blur-[100px] rounded-full transform -translate-x-1/2 lg:-translate-x-0 -translate-y-1/2 pointer-events-none mix-blend-screen z-0" />
+                        {/* Huge ambient blue glow behind text for contrast */}
+                        <div className="absolute top-1/2 left-1/2 w-[300px] lg:w-[500px] h-[300px] lg:h-[400px] bg-[#00f0ff] opacity-20 blur-[80px] lg:blur-[120px] rounded-full transform -translate-x-1/2 -translate-y-1/2 pointer-events-none mix-blend-screen z-0" />
 
-                        {/* Tactical Overline */}
-                        <div className="font-mono text-[10px] md:text-xs text-[#ff4655] tracking-[0.3em] mb-2 lg:mb-4 flex items-center gap-3 drop-shadow-[0_0_5px_#ff4655] relative z-10">
-                            <span className="w-6 lg:w-10 h-[2px] bg-[#ff4655]"></span>
-                            SYS_INIT_2026
-                            <span className="w-6 lg:hidden h-[2px] bg-[#ff4655]"></span>
+                        {/* Top: GAME RESPONSIBLY */}
+                        <div className="text-[#ff4655] font-sans font-bold tracking-[0.2em] md:tracking-[0.3em] text-sm md:text-base lg:text-lg mb-2 md:mb-4 relative z-10 drop-shadow-md uppercase">
+                            GAME RESPONSIBLY
                         </div>
 
-                        {/* Shattered "ASCENT" text */}
-                        <div className="relative font-teko text-[6rem] sm:text-[7rem] md:text-[8rem] lg:text-[10.5rem] leading-[0.8] font-black tracking-wider uppercase z-10 flex flex-col items-center lg:items-start w-full mb-2 lg:mb-4 group cursor-default">
-                            <div className="relative inline-block">
-                                {/* 3D Extrusion Shadow */}
-                                <span 
-                                    className="absolute inset-0 text-zinc-800"
-                                    style={{ textShadow: "0px 4px 0px #71717a, 0px 8px 0px #3f3f46, 0px 12px 0px #18181b, 0px 25px 40px rgba(0,0,0,1)" }}
-                                >
-                                    ASCENT
-                                </span>
-                                
-                                {/* Chromatic Aberration - Red Left */}
-                                <span className="absolute inset-0 text-[#ff4655] transform -translate-x-[4px] lg:-translate-x-[6px] translate-y-[2px] opacity-80 mix-blend-screen [clip-path:polygon(0_0,100%_0,100%_40%,0_30%)] group-hover:translate-x-[-12px] group-hover:-translate-y-[4px] transition-transform duration-300">ASCENT</span>
-                                {/* Chromatic Aberration - Cyan Right */}
-                                <span className="absolute inset-0 text-[#00ffcc] transform translate-x-[4px] lg:translate-x-[6px] -translate-y-[2px] opacity-80 mix-blend-screen [clip-path:polygon(0_60%,100%_50%,100%_100%,0_100%)] group-hover:translate-x-[12px] group-hover:translate-y-[4px] transition-transform duration-300">ASCENT</span>
-
-                                {/* Main Text Body with Metallic Gradient */}
-                                <span className="relative text-transparent bg-clip-text bg-gradient-to-b from-white via-zinc-300 to-zinc-700 [clip-path:polygon(0_0,100%_0,100%_100%,0_100%)] inline-block z-10">
-                                    ASCENT
-                                </span>
-                                
-                                {/* Texture Overlay (Diagonal scanlines) */}
-                                <span className="absolute inset-0 text-transparent bg-clip-text bg-[repeating-linear-gradient(45deg,transparent,transparent_2px,rgba(0,0,0,0.6)_2px,rgba(0,0,0,0.6)_5px)] z-20 pointer-events-none">ASCENT</span>
-                                
-                                {/* Glowing horizontal laser cut slice */}
-                                <span className="absolute inset-0 text-white opacity-80 blur-[2px] [clip-path:polygon(0_48%,100%_46%,100%_51%,0_53%)] z-30 pointer-events-none mix-blend-overlay">ASCENT</span>
-                                <span className="absolute inset-0 text-[#ff4655] opacity-100 blur-[8px] [clip-path:polygon(0_48%,100%_46%,100%_51%,0_53%)] z-30 pointer-events-none mix-blend-screen">ASCENT</span>
-                            </div>
+                        {/* Middle: ASCENT (The massive title) */}
+                        <div className="font-teko text-[5.5rem] sm:text-[7rem] md:text-[9rem] lg:text-[11rem] leading-[0.8] font-black tracking-normal uppercase text-[#ece8e1] z-10 drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)]">
+                            ASCENT
                         </div>
 
-                        {/* Shattered "2026" text */}
-                        <div className="relative font-teko text-[5rem] sm:text-[6rem] md:text-[7rem] lg:text-[8rem] leading-[0.8] font-bold tracking-widest uppercase flex items-center justify-center lg:justify-start gap-4 lg:gap-6 z-10 w-full mb-2">
-                            <div className="relative inline-block group cursor-default">
-                                {/* Base Shadow Extrusion */}
-                                <span className="absolute inset-0 text-[#8a1c25]" style={{ textShadow: "0px 4px 0px #5e1118, 0px 8px 0px #38080d, 0px 20px 25px rgba(0,0,0,0.9)" }}>2026</span>
-                                
-                                {/* Main Red Core */}
-                                <span className="relative text-[#ff4655] z-10 inline-block [clip-path:polygon(0_0,100%_0,100%_100%,0_100%)] group-hover:scale-[1.02] transition-transform duration-300">
-                                    2026
-                                </span>
-
-                                {/* White hot center horizontal slash */}
-                                <span className="absolute inset-0 text-white z-20 [clip-path:polygon(0_50%,100%_48%,100%_52%,0_54%)] pointer-events-none">2026</span>
-                                <span className="absolute inset-0 text-[#ff4655] blur-[6px] z-20 [clip-path:polygon(0_50%,100%_48%,100%_52%,0_54%)] pointer-events-none mix-blend-screen opacity-80">2026</span>
-                            </div>
-                            
-                            {/* Valorant style cursor box */}
-                            <div className="w-5 h-5 md:w-6 md:h-6 bg-transparent border-[3px] border-[#ff4655] shadow-[0_0_15px_#ff4655] animate-pulse hidden md:flex items-center justify-center relative mt-2">
-                                <div className="w-2 h-2 md:w-3 md:h-3 bg-[#ff4655]"></div>
-                            </div>
-                        </div>
-                        
-                        <div className="w-full max-w-[500px] h-[2px] bg-gradient-to-r from-[#ff4655] to-transparent mt-6 md:mt-8 mb-4 md:mb-6 opacity-80 relative z-10">
-                            {/* Tactical white notch */}
-                            <div className="absolute left-0 top-[0px] w-12 h-[2px] bg-white shadow-[0_0_10px_white]"></div>
+                        {/* Bottom: TOURNAMENT // 2026 */}
+                        <div className="font-mono text-[10px] md:text-sm tracking-[0.4em] md:tracking-[0.6em] text-white uppercase font-bold drop-shadow-lg relative z-10 mt-2 md:mt-0">
+                            TOURNAMENT // 2026
                         </div>
 
-                        <h2 className="font-mono text-xs md:text-sm tracking-[0.6em] md:tracking-[0.8em] text-white uppercase font-bold drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)] relative z-10">
+                        {/* Tiny Red Geometric Accents (Valorant V abstraction) */}
+                        <div className="mt-6 md:mt-8 flex gap-1.5 relative z-10 opacity-90">
+                            <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-[#ff4655] transform rotate-45"></div>
+                            <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-[#ff4655] transform rotate-45"></div>
+                        </div>
+
+                        <div className="w-full max-w-[200px] md:max-w-[300px] h-[1px] bg-white/20 mt-6 md:mt-8 mb-4 md:mb-6 relative z-10"></div>
+
+                        <h2 className="font-mono text-xs sm:text-sm md:text-base lg:text-lg tracking-[0.3em] md:tracking-[0.5em] text-white/60 uppercase font-medium drop-shadow-md relative z-10">
                             Where Legends Ascend
                         </h2>
                     </motion.div>
