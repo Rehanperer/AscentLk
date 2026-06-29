@@ -51,6 +51,7 @@ const DemoCountdown = lazy(() => import('./pages/DemoCountdown'));
 const DemoRedacted = lazy(() => import('./pages/DemoRedacted'));
 const DemoSignal = lazy(() => import('./pages/DemoSignal'));
 const DemoAperture = lazy(() => import('./pages/DemoAperture'));
+const ConceptSelectorPage = lazy(() => import('./pages/ConceptSelectorPage'));
 
 import { useAuth, useUser, useSignIn } from '@clerk/clerk-react';
 
@@ -492,6 +493,12 @@ const App: React.FC = () => {
                             <ScoresPage />
                         </Suspense>
                     } />
+                    <Route path="/concepts" element={
+                        <Suspense fallback={<div className="min-h-screen bg-[#08080a] flex items-center justify-center"><TacticalLoader /></div>}>
+                            <ConceptSelectorPage />
+                        </Suspense>
+                    } />
+
                     <Route path="/" element={
                         <div className="relative min-h-screen" style={{ background: 'var(--bg-gradient)' }}>
                             <SEO 
