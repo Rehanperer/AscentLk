@@ -277,6 +277,7 @@ const App: React.FC = () => {
     const isHomePage = location.pathname === '/';
 
     const [scrolledPastHero, setScrolledPastHero] = useState(false);
+    const [isAtFooter, setIsAtFooter] = useState(false);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -286,6 +287,10 @@ const App: React.FC = () => {
             } else {
                 setScrolledPastHero(false);
             }
+
+            // Hide the sticky text when we reach the footer (within ~150px of the bottom)
+            const isBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 150;
+            setIsAtFooter(isBottom);
         };
         window.addEventListener('scroll', handleScroll, { passive: true });
         handleScroll(); // Initialize state
@@ -499,7 +504,7 @@ const App: React.FC = () => {
                             <CustomCursor />
 
                             {/* Sticky Left Text */}
-                            <div className={`fixed bottom-4 left-4 md:bottom-8 md:left-8 z-50 pointer-events-none flex items-end drop-shadow-md transition-opacity duration-500 ${scrolledPastHero ? 'opacity-100' : 'opacity-0'}`}>
+                            <div className={`fixed bottom-4 left-4 md:bottom-8 md:left-8 z-50 pointer-events-none flex items-end drop-shadow-md transition-opacity duration-500 ${scrolledPastHero && !isAtFooter ? 'opacity-100' : 'opacity-0'}`}>
                                 <p className="font-teko text-white/60 text-xl md:text-2xl tracking-[0.2em] uppercase">
                                     GAME RESPONSIBLY
                                 </p>
