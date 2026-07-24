@@ -7,7 +7,6 @@ import React, { useState, useEffect, useRef } from 'react';
  */
 
 const partners = [
-    { name: "Cinnamon Life", logo: "/partners/1.webp" },
     { name: "Red Bull", logo: "/partners/2.webp" },
     { name: "Star Garments", logo: "/partners/3.webp" },
     { name: "Scope Cinemas", logo: "/partners/4.webp" },

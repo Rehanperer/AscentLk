@@ -517,14 +517,6 @@ const App: React.FC = () => {
                                 </p>
                             </div>
 
-                            {/* Sticky Right Image & Text */}
-                            <div className="fixed bottom-4 right-4 md:bottom-8 md:right-8 z-50 pointer-events-none flex items-center gap-3 md:gap-4 drop-shadow-md opacity-90 transition-opacity hover:opacity-100">
-                                <p className="font-mono text-white/50 text-[8px] md:text-[9px] tracking-[0.4em] uppercase font-medium">
-                                    PRESENTED BY
-                                </p>
-                                <div className="w-[1px] h-5 md:h-8 bg-white/20"></div>
-                                <img src="/dialog.png" alt="Dialog" className="w-14 md:w-20" />
-                            </div>
 
                             {/* Premium HUD Navigation */}
                             <ModernNavbar />
