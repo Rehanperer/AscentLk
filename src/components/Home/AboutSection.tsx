@@ -7,7 +7,7 @@ import { motion, useScroll, useTransform, useInView } from 'framer-motion';
  */
 
 const HIGHLIGHT_PHRASES = [
-    "LUMINA", "BALLROOM", "ASCENT", "2026", "SRI", "LANKA'S", "FIRSTEVER",
+    "ASCENT", "2026", "SRI", "LANKA'S", "FIRSTEVER",
     "HYBRID", "PRODUCTION", "STATEMENT", "GENERATION", "DEFINITIVE", "BLUEPRINT", "YOUTHLED", "STUDENTLED"
 ];
 
@@ -97,8 +97,8 @@ const StatCounter: React.FC<{ value: string; label: string; delay?: number }> = 
 const highlightItems = [
     {
         tag: "VENUE",
-        title: "Lumina Ballroom",
-        desc: "Cinnamon Life's premier event space — a world-class arena for the grand final and live concert.",
+        title: "Cinnamon Life",
+        desc: "Sri Lanka's premier event space — a world-class arena for the grand final and live concert.",
         icon: "◆",
     },
     {
@@ -288,7 +288,7 @@ const AboutSection: React.FC = () => {
                     <div className="max-w-5xl mx-auto w-full px-2 flex flex-col items-center">
                         {/* ── Paragraph 1 ── */}
                         <div className="max-w-4xl w-full">
-                            <ScrollText text="This November, the Lumina Ballroom at Cinnamon Life transforms into the epicenter of a new era. ASCENT 2026 is breaking the mold as Sri Lanka's first-ever student-led hybrid production of this scale." />
+                            <ScrollText text="This November, Cinnamon Life transforms into the epicenter of a new era. ASCENT 2026 is breaking the mold as Sri Lanka's first-ever student-led hybrid production of this scale." />
                         </div>
 
                         {/* ── Cinematic Pull-Quote Divider ── */}

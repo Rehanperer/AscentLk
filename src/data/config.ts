@@ -19,7 +19,6 @@ export const SCHOOLS_DATA: School[] = [
     { name: "Gateway College", status: 'Confirmed', logo: 'gateway' },
     { name: "St. Thomas' College", status: 'Confirmed', logo: 'st_thomas' },
     { name: "Ladies' College", status: 'Confirmed', logo: 'ladies' },
-    { name: "Ethos International", status: 'Confirmed', logo: 'ethos' },
     { name: "The British School", status: 'Confirmed', logo: 'british_school' },
     { name: "Ananda College", status: 'Confirmed', logo: 'ananda' },
     { name: "Nalanda College", status: 'Confirmed', logo: 'nalanda' },

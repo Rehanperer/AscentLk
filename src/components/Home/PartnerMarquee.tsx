@@ -7,11 +7,10 @@ import React, { useState, useEffect, useRef } from 'react';
  */
 
 const partners = [
+    { name: "Mastercard", logo: "/partners/mastercard.png" },
     { name: "Red Bull", logo: "/partners/2.webp" },
     { name: "Star Garments", logo: "/partners/3.webp" },
     { name: "Scope Cinemas", logo: "/partners/4.webp" },
-    { name: "Leo Club EIC", logo: "/partners/5.webp" },
-    { name: "Aivance", logo: "/partners/6.webp" },
     { name: "ASCENT", logo: "/img/SVG.svg" },
 ];
 
