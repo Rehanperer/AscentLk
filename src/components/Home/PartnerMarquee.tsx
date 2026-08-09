@@ -11,6 +11,7 @@ const partners = [
     { name: "Red Bull", logo: "/partners/2.webp" },
     { name: "Star Garments", logo: "/partners/3.webp" },
     { name: "Scope Cinemas", logo: "/partners/4.webp" },
+    { name: "ICSJC", logo: "/partners/Blue ICSJC svg.svg" },
     { name: "ASCENT", logo: "/img/SVG.svg" },
 ];
 
