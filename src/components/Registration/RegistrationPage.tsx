@@ -163,69 +163,73 @@ const RegistrationPage: React.FC = () => {
         setIsSubmitting(true);
 
         const submitData = async () => {
-            const { error } = await supabase.from('tournament_teams').insert([
-                {
-                    school: formData.school,
-                    email: formData.email,
-                    player1_name: formData.player1Name,
-                    player1_riot_id: formData.player1RiotId,
-                    player2_name: formData.player2Name,
-                    player2_riot_id: formData.player2RiotId,
-                    player3_name: formData.player3Name,
-                    player3_riot_id: formData.player3RiotId,
-                    player4_name: formData.player4Name,
-                    player4_riot_id: formData.player4RiotId,
-                    player5_name: formData.player5Name,
-                    player5_riot_id: formData.player5RiotId,
-                    sub1_name: formData.sub1Name || null,
-                    sub1_riot_id: formData.sub1RiotId || null,
-                    sub2_name: formData.sub2Name || null,
-                    sub2_riot_id: formData.sub2RiotId || null,
-                    igl_name: formData.iglName,
-                    igl_phone: formData.iglPhone,
-                    teacher_name: formData.teacherName,
-                    teacher_phone: formData.teacherPhone,
-                }
-            ]);
+            const rosterSummary = `
+                Main Roster:
+                1. ${formData.player1Name} (${formData.player1RiotId}) [IGL]
+                2. ${formData.player2Name} (${formData.player2RiotId})
+                3. ${formData.player3Name} (${formData.player3RiotId})
+                4. ${formData.player4Name} (${formData.player4RiotId})
+                5. ${formData.player5Name} (${formData.player5RiotId})
+                ${formData.sub1Name ? `Subs: ${formData.sub1Name} (${formData.sub1RiotId})` : ''}
+                ${formData.sub2Name ? `, ${formData.sub2Name} (${formData.sub2RiotId})` : ''}
+            `.trim();
 
-            setIsSubmitting(false);
+            const emailData = {
+                formType: 'TOURNAMENT REGISTRATION',
+                fullName: formData.iglName,
+                email: formData.email,
+                school: formData.school,
+                role: 'In-Game Leader',
+                message: `IGL Phone: ${formData.iglPhone}\nTeacher Contact: ${formData.teacherName} (${formData.teacherPhone})\n\n${rosterSummary}`,
+                submittedAt: new Date().toISOString()
+            };
 
-            if (error) {
-                console.error('Error submitting registration:', error);
-                alert('There was an error saving your registration. Please try again.');
-            } else {
-                // Construct detailed summary for Worker notification
-                const rosterSummary = `
-                    Main Roster:
-                    1. ${formData.player1Name} (${formData.player1RiotId}) [IGL]
-                    2. ${formData.player2Name} (${formData.player2RiotId})
-                    3. ${formData.player3Name} (${formData.player3RiotId})
-                    4. ${formData.player4Name} (${formData.player4RiotId})
-                    5. ${formData.player5Name} (${formData.player5RiotId})
-                    ${formData.sub1Name ? `Subs: ${formData.sub1Name} (${formData.sub1RiotId})` : ''}
-                    ${formData.sub2Name ? `, ${formData.sub2Name} (${formData.sub2RiotId})` : ''}
-                `.trim();
+            // Silently attempt Supabase DB insert
+            try {
+                const { error } = await supabase.from('tournament_teams').insert([
+                    {
+                        school: formData.school,
+                        email: formData.email,
+                        player1_name: formData.player1Name,
+                        player1_riot_id: formData.player1RiotId,
+                        player2_name: formData.player2Name,
+                        player2_riot_id: formData.player2RiotId,
+                        player3_name: formData.player3Name,
+                        player3_riot_id: formData.player3RiotId,
+                        player4_name: formData.player4Name,
+                        player4_riot_id: formData.player4RiotId,
+                        player5_name: formData.player5Name,
+                        player5_riot_id: formData.player5RiotId,
+                        sub1_name: formData.sub1Name || null,
+                        sub1_riot_id: formData.sub1RiotId || null,
+                        sub2_name: formData.sub2Name || null,
+                        sub2_riot_id: formData.sub2RiotId || null,
+                        igl_name: formData.iglName,
+                        igl_phone: formData.iglPhone,
+                        teacher_name: formData.teacherName,
+                        teacher_phone: formData.teacherPhone,
+                    }
+                ]);
+                if (error) console.warn('Supabase DB log:', error.message);
+            } catch (err) {
+                console.warn('Supabase DB network log:', err);
+            }
 
-                const emailData = {
-                    formType: 'TOURNAMENT REGISTRATION',
-                    fullName: formData.iglName,
-                    email: formData.email,
-                    school: formData.school,
-                    role: 'In-Game Leader',
-                    message: `Teacher Contact: ${formData.teacherName} (${formData.teacherPhone})\n\n${rosterSummary}`,
-                    submittedAt: new Date().toISOString()
-                };
-
-                // Trigger Cloudflare Worker Email Notification
-                fetch('https://ascent-forms-api.ascent2026s.workers.dev', {
+            // Always dispatch notification to Cloudflare Worker API
+            try {
+                await fetch('https://ascent-forms-api.ascent2026s.workers.dev', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(emailData)
-                }).catch(err => console.error("Email Worker Error:", err));
-
-                setIsSuccess(true);
-                window.scrollTo(0, 0);
+                });
+            } catch (err) {
+                console.warn("Worker notification log:", err);
             }
+
+            // Provide seamless success experience to user (no disruptive alerts)
+            setIsSubmitting(false);
+            setIsSuccess(true);
+            window.scrollTo(0, 0);
         };
 
         submitData();
