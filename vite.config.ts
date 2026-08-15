@@ -12,7 +12,7 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
-    prerender({
+    ...(!process.env.CI ? [prerender({
       routes: [
         '/',
         '/register',
@@ -28,7 +28,7 @@ export default defineConfig({
         renderAfterTime: 2000,
         injectProperty: '__PRERENDER_INJECTED',
         inject: { isPrerendering: true },
-        executablePath: process.env.CI ? undefined : '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+        executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
       }),
       postProcess (renderedRoute) {
         renderedRoute.html = renderedRoute.html.replace(
@@ -36,7 +36,7 @@ export default defineConfig({
           ''
         );
       }
-    }),
+    })] : []),
     VitePWA({
       registerType: 'autoUpdate',
       injectRegister: 'script-defer',
