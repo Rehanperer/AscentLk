@@ -321,11 +321,12 @@ const App: React.FC = () => {
     const hasIntroPlayed = sessionStorage.getItem('ascent_intro_played') === 'true';
     
     // Only show the full cinematic intro on homepage AND if it hasn't played yet AND we are not prerendering
-    const showCinematicIntro = !isPrerendering && isHomePage && !hasIntroPlayed;
+    // DISABLED: HeroSection now handles the cinematic intro/loader sequence!
+    const showCinematicIntro = false;
     // Show the quick tactical loader on homepage refreshes (intro already played)
-    const showTacticalReload = !isPrerendering && isHomePage && hasIntroPlayed;
+    const showTacticalReload = false;
     
-    const [isLoading, setIsLoading] = useState(showCinematicIntro || showTacticalReload);
+    const [isLoading, setIsLoading] = useState(false);
     const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
     const [ticketModalTitle, setTicketModalTitle] = useState('');
 
