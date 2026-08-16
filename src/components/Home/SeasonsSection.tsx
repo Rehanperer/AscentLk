@@ -1,8 +1,12 @@
 import React, { useRef, useEffect } from 'react';
-import { Lock } from 'lucide-react';
+import { motion, useInView } from 'framer-motion';
+import { Lock, ShieldAlert, Skull, Biohazard } from 'lucide-react';
 import ScrambleText from '../ScrambleText';
 
-const AsciiSnakeCanvas: React.FC = () => {
+/* ═══════════════════════════════════════════════
+   PARTICLE FIELD — floating toxic spores
+═══════════════════════════════════════════════ */
+const ToxicParticles: React.FC = () => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
     useEffect(() => {
@@ -11,174 +15,204 @@ const AsciiSnakeCanvas: React.FC = () => {
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
-        let w = canvas.width = canvas.offsetWidth;
-        let h = canvas.height = canvas.offsetHeight;
+        let w = (canvas.width = canvas.offsetWidth);
+        let h = (canvas.height = canvas.offsetHeight);
 
-        const chars = "TOXIC☠⚠✕".split("");
-        
-        // Setup snake segments
-        const segments: { x: number; y: number; c: string }[] = [];
-        const numSegments = 60;
-        for (let i = 0; i < numSegments; i++) {
-            segments.push({
-                x: -i * 20, // Start offscreen left
-                y: h / 2,
-                c: chars[i % chars.length]
-            });
+        interface Particle {
+            x: number; y: number; vx: number; vy: number;
+            size: number; alpha: number; decay: number;
         }
 
-        let time = 0;
-        let animId = 0;
+        const particles: Particle[] = [];
+        const MAX = 80;
 
+        const spawn = () => {
+            if (particles.length >= MAX) return;
+            particles.push({
+                x: Math.random() * w,
+                y: h + 10,
+                vx: (Math.random() - 0.5) * 0.4,
+                vy: -(0.3 + Math.random() * 0.6),
+                size: 1 + Math.random() * 2.5,
+                alpha: 0.15 + Math.random() * 0.35,
+                decay: 0.0005 + Math.random() * 0.001,
+            });
+        };
+
+        let animId = 0;
         const loop = () => {
             ctx.clearRect(0, 0, w, h);
-            
-            // Atmospheric toxic fog (very faint green)
-            ctx.fillStyle = "rgba(0, 255, 64, 0.05)";
-            ctx.font = "bold 14px monospace";
-            ctx.textAlign = "center";
-            ctx.textBaseline = "middle";
+            if (Math.random() < 0.3) spawn();
 
-            // Update head
-            const head = segments[0];
-            head.x += 2.5; // Move right
-            head.y = h / 2 + Math.sin(time * 0.03 + head.x * 0.01) * 150; // Sine wave
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.alpha -= p.decay;
+                if (p.alpha <= 0 || p.y < -10) { particles.splice(i, 1); continue; }
 
-            // Wrap around
-            if (head.x > w + 20) {
-                head.x = -20;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(0, 255, 64, ${p.alpha})`;
+                ctx.fill();
+
+                // Tiny glow
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size * 3, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(0, 255, 64, ${p.alpha * 0.15})`;
+                ctx.fill();
             }
-
-            // Follow the leader
-            for (let i = numSegments - 1; i > 0; i--) {
-                const cur = segments[i];
-                const prev = segments[i - 1];
-                
-                // Interpolate towards the previous segment's position from the previous frame
-                const dx = prev.x - cur.x;
-                const dy = prev.y - cur.y;
-                
-                cur.x += dx * 0.4;
-                cur.y += dy * 0.4;
-            }
-
-            // Draw line connecting them faint green
-            ctx.beginPath();
-            ctx.moveTo(segments[0].x, segments[0].y);
-            for (let i = 1; i < numSegments; i++) {
-                ctx.lineTo(segments[i].x, segments[i].y);
-            }
-            ctx.strokeStyle = "rgba(0, 255, 64, 0.1)";
-            ctx.lineWidth = 1;
-            ctx.stroke();
-
-            // Draw chars
-            for (let i = 0; i < numSegments; i++) {
-                const s = segments[i];
-                ctx.fillText(s.c, s.x, s.y);
-            }
-
-            time++;
             animId = requestAnimationFrame(loop);
         };
-
         loop();
 
-        const onResize = () => {
-            w = canvas.width = canvas.offsetWidth;
-            h = canvas.height = canvas.offsetHeight;
-        };
+        const onResize = () => { w = canvas.width = canvas.offsetWidth; h = canvas.height = canvas.offsetHeight; };
         window.addEventListener('resize', onResize);
-
-        return () => {
-            cancelAnimationFrame(animId);
-            window.removeEventListener('resize', onResize);
-        };
+        return () => { cancelAnimationFrame(animId); window.removeEventListener('resize', onResize); };
     }, []);
 
+    return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" />;
+};
+
+/* ═══════════════════════════════════════════════
+   LOCKED SEASON ROW — minimal, horizontal bar
+═══════════════════════════════════════════════ */
+const LockedSeasonRow: React.FC<{ num: string; delay: number }> = ({ num, delay }) => {
+    const ref = useRef(null);
+    const isInView = useInView(ref, { once: true, margin: "-5%" });
+
     return (
-        <canvas 
-            ref={canvasRef} 
-            className="absolute inset-0 w-full h-full pointer-events-none opacity-60 mix-blend-screen mix-blend-color-dodge"
-        />
+        <motion.div
+            ref={ref}
+            initial={{ opacity: 0, x: -30 }}
+            animate={isInView ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] }}
+            className="group relative flex items-center gap-4 md:gap-6 py-5 md:py-6 border-b border-white/[0.04] hover:border-white/10 transition-colors duration-500"
+        >
+            {/* Scan-line hover effect */}
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-r from-[#ff4655]/[0.03] via-transparent to-transparent" />
+                <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-[#ff4655]/40 via-[#ff4655]/10 to-transparent animate-pulse" />
+            </div>
+
+            {/* Season Number */}
+            <span className="font-mono text-[10px] md:text-xs text-white/15 tracking-[0.3em] w-16 md:w-20 flex-shrink-0">{num}</span>
+
+            {/* Lock Icon */}
+            <div className="w-8 h-8 md:w-10 md:h-10 border border-white/[0.06] flex items-center justify-center flex-shrink-0 group-hover:border-[#ff4655]/20 transition-colors">
+                <Lock size={14} strokeWidth={1.5} className="text-white/15 group-hover:text-[#ff4655]/40 transition-colors" />
+            </div>
+
+            {/* Redacted Title Bars */}
+            <div className="flex-1 flex flex-col gap-1.5">
+                <div className="h-4 md:h-5 w-32 md:w-48 bg-white/[0.04] rounded-[1px]" />
+                <div className="h-2.5 w-20 md:w-28 bg-white/[0.02] rounded-[1px]" />
+            </div>
+
+            {/* Status */}
+            <div className="flex items-center gap-2 flex-shrink-0">
+                <div className="w-1.5 h-1.5 rounded-full bg-white/10" />
+                <span className="font-mono text-[8px] md:text-[9px] text-white/15 tracking-[0.3em] uppercase hidden sm:inline">Classified</span>
+            </div>
+        </motion.div>
     );
 };
 
-const LockedSeason: React.FC<{ delay: string }> = ({ delay }) => (
-    <div 
-        className="relative group border border-white/5 bg-white/[0.01] overflow-hidden p-6 aspect-[4/3] flex flex-col justify-end"
-        style={{ animationDelay: delay }}
-    >
-        {/* Blurred background implying content */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#1a1a24] to-[#0a0a0f] opacity-50 filter blur-md pointer-events-none" />
-        
-        {/* Frost / Scanlines */}
-        <div className="absolute inset-0 bg-scanlines opacity-10 filter blur-[1px]" />
-        
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white/20 group-hover:text-white/40 transition-colors">
-            <Lock size={32} strokeWidth={1} />
-        </div>
-
-        <div className="relative z-10 flex flex-col items-center w-full opacity-30 select-none">
-            <div className="font-mono text-[9px] text-[#ff4655] tracking-[0.4em] uppercase mb-2">Classified Data</div>
-            {/* Redacted bar instead of readable text */}
-            <div className="w-24 h-6 bg-white/20 rounded-sm filter blur-[2px]" />
-        </div>
-    </div>
-);
-
+/* ═══════════════════════════════════════════════
+   MAIN SECTION
+═══════════════════════════════════════════════ */
 const SeasonsSection: React.FC = () => {
+    const heroRef = useRef(null);
+    const isHeroInView = useInView(heroRef, { once: true, margin: "-10%" });
+
     return (
-        <section id="seasons" className="relative py-24 md:py-32 bg-[#08080a] overflow-hidden">
-            
-            {/* Toxic Green Backlight */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#00ff40]/5 rounded-full blur-[150px] pointer-events-none" />
+        <section id="seasons" className="relative bg-[#08080a] overflow-hidden">
 
-            {/* ASCII Snake Canvas Container */}
-            <div className="absolute inset-0 z-0 h-[60%] top-0">
-                <AsciiSnakeCanvas />
-                {/* Fade edges */}
-                <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[#08080a] to-transparent" />
-                <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-[#08080a] to-transparent" />
-                <div className="absolute bottom-0 inset-x-0 h-32 bg-gradient-to-t from-[#08080a] to-transparent" />
-            </div>
-
-            <div className="max-w-7xl mx-auto px-6 relative z-10">
-                {/* Header Phase 01: TOXIC */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 border-b border-[#00ff40]/20 pb-8 relative">
-                    <div className="absolute left-0 bottom-[-1px] h-[1px] bg-[#00ff40] w-32 shadow-[0_0_10px_#00ff40]" />
-
-                    <div>
-                        <ScrambleText text="SEASON 01 // DEPLOYED" className="text-[#00ff40] font-mono tracking-[0.5em] text-[10px] uppercase font-bold mb-4 block drop-shadow-[0_0_8px_rgba(0,255,64,0.5)]" />
-                        <h2 className="font-teko text-7xl md:text-9xl font-bold uppercase leading-[0.8] text-white">
-                            TOXIC
-                        </h2>
-                    </div>
-                    
-                    <div className="mt-8 md:mt-0 max-w-sm text-left md:text-right">
-                        <p className="text-white/60 font-mono text-xs tracking-widest uppercase leading-relaxed text-[#00ff40]/80">
-                            The initial perimeter breach. 
-                            Bio-hazards unleashed in the arena. Only the immune survive the first purge of the Gauntlet.
-                        </p>
-                    </div>
+            {/* ── TOXIC HERO BLOCK ── */}
+            <div ref={heroRef} className="relative min-h-[80vh] md:min-h-[90vh] flex items-center justify-center overflow-hidden">
+                
+                {/* Atmospheric layers */}
+                <div className="absolute inset-0 pointer-events-none">
+                    {/* Deep green radial glow */}
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120vw] h-[120vh] bg-[radial-gradient(ellipse_at_center,rgba(0,255,64,0.08)_0%,rgba(0,255,64,0.02)_40%,transparent_70%)]" />
+                    {/* Top vignette */}
+                    <div className="absolute top-0 inset-x-0 h-48 bg-gradient-to-b from-[#08080a] to-transparent" />
+                    {/* Bottom vignette */}
+                    <div className="absolute bottom-0 inset-x-0 h-48 bg-gradient-to-t from-[#08080a] to-transparent" />
+                    {/* Scanlines */}
+                    <div className="absolute inset-0 bg-scanlines opacity-[0.06]" />
                 </div>
 
-                {/* Sub-seasons Grid (Locked) */}
-                <div className="mt-32">
-                    <div className="flex items-center gap-4 mb-8">
-                        <div className="w-1.5 h-1.5 bg-white/20" />
-                        <span className="font-mono text-[10px] text-white/40 tracking-[0.4em] uppercase">Upcoming Operatives</span>
-                        <div className="h-[1px] flex-1 bg-white/5" />
-                    </div>
-                    
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-                        <LockedSeason delay="0ms" />
-                        <LockedSeason delay="10ms" />
-                        <LockedSeason delay="200ms" />
-                        <LockedSeason delay="300ms" />
-                    </div>
+                {/* Floating toxic particles */}
+                <ToxicParticles />
+
+                {/* ── CONTENT ── */}
+                <div className="relative z-10 w-full max-w-7xl mx-auto px-6 flex flex-col items-center text-center">
+
+                    {/* Season Tag */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={isHeroInView ? { opacity: 1, y: 0 } : {}}
+                        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                        className="flex items-center gap-3 mb-6"
+                    >
+                        <div className="w-2 h-2 bg-[#00ff40] shadow-[0_0_12px_#00ff40,0_0_24px_rgba(0,255,64,0.4)]" />
+                        <span className="font-mono text-[10px] md:text-xs tracking-[0.5em] text-[#00ff40] uppercase font-bold drop-shadow-[0_0_8px_rgba(0,255,64,0.5)]">
+                            Season 01 // Deployed
+                        </span>
+                    </motion.div>
+
+                    {/* Massive TOXIC Title */}
+                    <motion.h2
+                        initial={{ opacity: 0, scale: 0.9, y: 30 }}
+                        animate={isHeroInView ? { opacity: 1, scale: 1, y: 0 } : {}}
+                        transition={{ duration: 1, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+                        className="font-teko text-[22vw] md:text-[16rem] font-bold uppercase leading-[0.75] text-white relative"
+                    >
+                        {/* Green glow behind text */}
+                        <span className="absolute inset-0 text-[#00ff40] blur-[60px] opacity-30 select-none pointer-events-none" aria-hidden="true">TOXIC</span>
+                        TOXIC
+                    </motion.h2>
+
+                    {/* Subtitle / Lore */}
+                    <motion.p
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={isHeroInView ? { opacity: 1, y: 0 } : {}}
+                        transition={{ duration: 0.8, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                        className="mt-8 md:mt-10 max-w-lg font-mono text-xs md:text-sm tracking-widest uppercase leading-relaxed text-white/40"
+                    >
+                        The initial perimeter breach. Bio-hazards unleashed in the arena. Only the immune survive the first purge of the Gauntlet.
+                    </motion.p>
+
+                    {/* Biohazard Icon */}
+                    <motion.div
+                        initial={{ opacity: 0, rotate: -90 }}
+                        animate={isHeroInView ? { opacity: 1, rotate: 0 } : {}}
+                        transition={{ duration: 1.2, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                        className="mt-10 md:mt-14"
+                    >
+                        <Biohazard size={40} strokeWidth={1} className="text-[#00ff40]/30" />
+                    </motion.div>
                 </div>
             </div>
+
+            {/* ── UPCOMING SEASONS (Locked) ── */}
+            <div className="relative z-10 max-w-4xl mx-auto px-6 pb-24 md:pb-32">
+                
+                {/* Section Label */}
+                <div className="flex items-center gap-4 mb-2 pt-8">
+                    <ShieldAlert size={14} strokeWidth={1.5} className="text-white/15" />
+                    <span className="font-mono text-[9px] md:text-[10px] text-white/25 tracking-[0.4em] uppercase">Upcoming Operations</span>
+                    <div className="h-[1px] flex-1 bg-white/[0.04]" />
+                </div>
+
+                {/* Locked Season Rows */}
+                <LockedSeasonRow num="SZN_02" delay={0} />
+                <LockedSeasonRow num="SZN_03" delay={0.1} />
+                <LockedSeasonRow num="SZN_04" delay={0.2} />
+                <LockedSeasonRow num="SZN_05" delay={0.3} />
+            </div>
+
         </section>
     );
 };

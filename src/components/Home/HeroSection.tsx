@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, useScroll, useTransform, useMotionValue, useSpring, AnimatePresence } from 'framer-motion';
+import { motion, useScroll, useTransform, useMotionValue, useSpring, AnimatePresence, useInView } from 'framer-motion';
+import { Volume2, VolumeX } from 'lucide-react';
 
 const HeroSection: React.FC = () => {
     const navigate = useNavigate();
@@ -11,6 +12,9 @@ const HeroSection: React.FC = () => {
     const [heroState, setHeroState] = useState<'curtain' | 'step1' | 'step2' | 'active'>('curtain');
     const [isVideoLoaded, setIsVideoLoaded] = useState(false);
     const [isVideoError, setIsVideoError] = useState(false);
+    const [isMuted, setIsMuted] = useState(false);
+
+    const isInView = useInView(containerRef, { amount: 0.3 }); // Mute when less than 30% visible
 
     // Scroll depth parallax
     const { scrollYProgress } = useScroll({
@@ -60,13 +64,10 @@ const HeroSection: React.FC = () => {
             return () => clearTimeout(t);
         }
         if (heroState === 'step1') {
-            // The curtain slide-up animation takes 1.2s. 
-            // We hold step1 for 2.2s total so the user sees the small box for 1 full second after the curtain opens.
             const t = setTimeout(() => setHeroState('step2'), 2200);
             return () => clearTimeout(t);
         }
         if (heroState === 'step2') {
-            // Hold medium box for 1s
             const t = setTimeout(() => setHeroState('active'), 1000);
             return () => clearTimeout(t);
         }
@@ -77,6 +78,17 @@ const HeroSection: React.FC = () => {
             videoRef.current.play().catch(() => {});
         }
     }, [heroState]);
+
+    useEffect(() => {
+        if (videoRef.current) {
+            videoRef.current.muted = !isInView || isMuted;
+        }
+    }, [isInView, isMuted]);
+
+    const toggleMute = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setIsMuted(!isMuted);
+    };
 
     return (
         <motion.section
@@ -136,7 +148,7 @@ const HeroSection: React.FC = () => {
                     ref={videoRef}
                     autoPlay
                     loop
-                    muted
+                    muted={isMuted || !isInView}
                     playsInline
                     preload="auto"
                     onLoadedData={() => setIsVideoLoaded(true)}
@@ -199,8 +211,24 @@ const HeroSection: React.FC = () => {
                 transition={{ duration: 1 }}
             />
 
-            {/* ── PHASE 3: ACTIVE HERO STATE (Exact NoArt Size & Glassmorphism Text Effect) ── */}
+            {/* ── PHASE 3: ACTIVE HERO STATE ── */}
             <>
+                {/* Audio Toggle Button */}
+                <motion.button
+                    onClick={toggleMute}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: heroState === 'active' ? 1 : 0 }}
+                    transition={{ duration: 1, delay: 0.5 }}
+                    className="absolute bottom-6 right-6 md:bottom-12 md:right-12 z-30 p-3 rounded-full bg-black/40 backdrop-blur-md border border-white/10 text-white/70 hover:text-white hover:bg-black/60 transition-all cursor-pointer group"
+                    aria-label={isMuted ? "Unmute video" : "Mute video"}
+                >
+                    {isMuted ? (
+                        <VolumeX className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                    ) : (
+                        <Volume2 className="w-5 h-5 group-hover:scale-110 transition-transform text-[#00f0ff]" />
+                    )}
+                </motion.button>
+
                 {/* ── BOTTOM-LEFT HERO CONTENT: GLASSMORPHISM TITLE ── */}
                 <motion.div
                     className="absolute bottom-16 left-4 md:bottom-12 md:left-12 z-20 flex flex-col items-start pointer-events-none"
