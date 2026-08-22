@@ -278,6 +278,7 @@ const App: React.FC = () => {
     const isHomePage = location.pathname === '/';
 
     const [scrolledPastHero, setScrolledPastHero] = useState(false);
+    const [scrolledPastPartners, setScrolledPastPartners] = useState(false);
     const [isAtFooter, setIsAtFooter] = useState(false);
 
     useEffect(() => {
@@ -288,6 +289,9 @@ const App: React.FC = () => {
             } else {
                 setScrolledPastHero(false);
             }
+
+            // Show partner logos after scrolling past the partner section (~4x viewport height)
+            setScrolledPastPartners(window.scrollY > window.innerHeight * 4);
 
             // Hide the sticky text when we reach the footer (within ~150px of the bottom)
             const isBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 150;
@@ -518,6 +522,14 @@ const App: React.FC = () => {
                                 </p>
                             </div>
 
+                            {/* Sticky Bottom-Right Partner Logos — appears after partner section */}
+                            <div className={`fixed bottom-4 right-4 md:bottom-8 md:right-8 z-50 pointer-events-none flex items-center gap-3 md:gap-4 transition-all duration-700 ${scrolledPastPartners && !isAtFooter ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+                                <img src="/partners/mastercard.png" alt="Mastercard" className="h-5 md:h-7 object-contain opacity-50 brightness-[1.2]" />
+                                <div className="w-px h-4 bg-white/10" />
+                                <img src="/partners/2.webp" alt="Red Bull" className="h-5 md:h-7 object-contain opacity-50 brightness-[1.2]" />
+                                <div className="w-px h-4 bg-white/10" />
+                                <img src="/partners/4.webp" alt="Scope Cinemas" className="h-5 md:h-7 object-contain opacity-50 brightness-[1.2]" />
+                            </div>
 
                             {/* Premium HUD Navigation */}
                             <ModernNavbar />

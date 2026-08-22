@@ -79,10 +79,42 @@ const HeroSection: React.FC = () => {
         }
     }, [heroState]);
 
+    // Smooth volume fade instead of instant mute/unmute
+    const fadeRef = useRef<number | null>(null);
+    
     useEffect(() => {
-        if (videoRef.current) {
-            videoRef.current.muted = !isInView || isMuted;
-        }
+        const video = videoRef.current;
+        if (!video) return;
+        
+        // Target volume: 1 if in view & not muted, 0 otherwise
+        const targetVol = (isInView && !isMuted) ? 1 : 0;
+        
+        // Make sure the video element is unmuted so we can control via volume
+        video.muted = false;
+        
+        // Cancel any existing fade
+        if (fadeRef.current) cancelAnimationFrame(fadeRef.current);
+        
+        const fade = () => {
+            const current = video.volume;
+            const diff = targetVol - current;
+            
+            // If close enough, snap to target
+            if (Math.abs(diff) < 0.02) {
+                video.volume = targetVol;
+                return;
+            }
+            
+            // Ease toward target (~400ms fade)
+            video.volume = current + diff * 0.08;
+            fadeRef.current = requestAnimationFrame(fade);
+        };
+        
+        fadeRef.current = requestAnimationFrame(fade);
+        
+        return () => {
+            if (fadeRef.current) cancelAnimationFrame(fadeRef.current);
+        };
     }, [isInView, isMuted]);
 
     const toggleMute = (e: React.MouseEvent) => {
@@ -148,7 +180,7 @@ const HeroSection: React.FC = () => {
                     ref={videoRef}
                     autoPlay
                     loop
-                    muted={isMuted || !isInView}
+                    muted
                     playsInline
                     preload="auto"
                     onLoadedData={() => setIsVideoLoaded(true)}

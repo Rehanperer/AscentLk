@@ -152,7 +152,7 @@ const PathSection: React.FC = () => {
                         date="Oct 2nd"
                         title="Qualifiers"
                         desc="Hundreds of units battle in a ruthless single-elimination bracket. Only the most disciplined tacticians survive the initial purge."
-                        imgSrc="/img/phase_01.png"
+                        imgSrc="/img/qualifiers.jpg"
                         scrollYProgress={scrollYProgress}
                     />
 
@@ -162,7 +162,7 @@ const PathSection: React.FC = () => {
                         date="Oct 9th"
                         title="Playoffs"
                         desc="The surviving elite clash in high-stakes, broadcasted best-of-threes. The pressure mounts as the nation watches."
-                        imgSrc="/img/phase_02.png"
+                        imgSrc="/img/playoffs.png"
                         scrollYProgress={scrollYProgress}
                     />
 
@@ -172,7 +172,7 @@ const PathSection: React.FC = () => {
                         date="Nov 13th"
                         title="Redemption"
                         desc="A second chance for fallen squads. Fight through the brutal lower bracket crucible to earn a final spot."
-                        imgSrc="/img/phase_01.png"
+                        imgSrc="/img/redemption.png"
                         scrollYProgress={scrollYProgress}
                     />
 
@@ -182,7 +182,7 @@ const PathSection: React.FC = () => {
                         date="Nov 14th"
                         title="Grand Finals"
                         desc="Live from the Lumina Ballroom. Two titans remain. A state-of-the-art arena, roaring crowds, and absolute immortality on the line."
-                        imgSrc="/img/phase_03.png"
+                        imgSrc="/img/grand-finals.jpg"
                         scrollYProgress={scrollYProgress}
                     />
 

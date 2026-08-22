@@ -524,6 +524,16 @@ body.cursor-hover #cursor-ring {
     }
 }
 
+/* Partner Strip — infinite horizontal scroll */
+@keyframes partner-scroll {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
 .animate-marquee-left {
     animation: marquee-left var(--marquee-speed, 30s) linear infinite;
     will-change: transform;

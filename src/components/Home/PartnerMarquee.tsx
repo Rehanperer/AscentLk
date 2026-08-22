@@ -1,10 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-
-/**
- * PartnerStrip — Clean, premium single-row partner display.
- * 1. Sequential boot decrypt reveal on scroll
- * 2. After reveal: stationary logos with a slow-moving light shimmer across the strip
- */
+import React, { useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 
 const partners = [
     { name: "Mastercard", logo: "/partners/mastercard.png" },
@@ -15,179 +10,110 @@ const partners = [
     { name: "ASCENT", logo: "/img/SVG.svg" },
 ];
 
-const GLITCH_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
-
-const BootLogo: React.FC<{
-    partner: typeof partners[0];
-    shouldDecrypt: boolean;
-    index: number;
-    allRevealed: boolean;
-}> = React.memo(({ partner, shouldDecrypt, index, allRevealed }) => {
-    const [phase, setPhase] = useState<'glitch' | 'flash' | 'revealed'>('glitch');
-    const [glitchText, setGlitchText] = useState('');
-    const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-    useEffect(() => {
-        let t = '';
-        for (let i = 0; i < 5; i++) t += GLITCH_CHARS[Math.floor(Math.random() * GLITCH_CHARS.length)];
-        setGlitchText(t);
-        if (phase !== 'glitch') return;
-        intervalRef.current = setInterval(() => {
-            let newT = '';
-            for (let i = 0; i < 5; i++) newT += GLITCH_CHARS[Math.floor(Math.random() * GLITCH_CHARS.length)];
-            setGlitchText(newT);
-        }, 80);
-        return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
-    }, [phase]);
-
-    useEffect(() => {
-        if (!shouldDecrypt || phase !== 'glitch') return;
-        if (intervalRef.current) clearInterval(intervalRef.current);
-        setPhase('flash');
-        const t = setTimeout(() => setPhase('revealed'), 200);
-        return () => clearTimeout(t);
-    }, [shouldDecrypt]);
-
-    const isAscent = partner.name === "ASCENT";
-    const imgClasses = isAscent
-        ? 'max-h-[16px] md:max-h-[30px] max-w-[40px] md:max-w-[75px]'
-        : 'max-h-[24px] md:max-h-[46px] max-w-[52px] md:max-w-[130px]';
-
-    return (
-        <div className="flex items-center justify-center shrink-0 relative flex-1 p-0 h-[45px] md:h-full min-w-0">
-            {phase === 'glitch' && (
-                <span className="font-mono text-[8px] md:text-[11px] text-[#ff4655]/40 tracking-[0.3em] font-bold select-none">
-                    {glitchText}
-                </span>
-            )}
-
-            {phase === 'flash' && (
-                <div className="flex items-center justify-center w-full h-full relative">
-                    <div className="absolute inset-0 bg-white/[0.06] rounded-sm"
-                        style={{ animation: 'partner-flash 0.2s ease-out forwards' }}
-                    />
-                    <img src={partner.logo} alt={partner.name}
-                        className={`object-contain relative z-10 brightness-200 ${imgClasses}`}
-                    />
-                </div>
-            )}
-
-            {phase === 'revealed' && (
-                <div
-                    className="flex items-center justify-center w-full h-full"
-                    style={{ animation: 'partner-pop 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards' }}
-                >
-                    <img
-                        src={partner.logo}
-                        alt={partner.name}
-                        className={`object-contain opacity-[0.85] brightness-[1.15] ${imgClasses}`}
-                        loading="lazy"
-                        onError={(e) => {
-                            e.currentTarget.style.display = 'none';
-                            if (e.currentTarget.nextElementSibling)
-                                (e.currentTarget.nextElementSibling as HTMLElement).classList.remove('hidden');
-                        }}
-                    />
-                    <span className="hidden font-mono text-[9px] tracking-widest text-white/50 uppercase whitespace-nowrap">
-                        {partner.name}
-                    </span>
-                </div>
-            )}
-
-            {/* Clean separator line (Desktop only) */}
-            {index < partners.length - 1 && (
-                <div className="hidden md:block absolute right-0 top-1/2 -translate-y-1/2 w-px h-5 bg-white/[0.06]" />
-            )}
-        </div>
-    );
-});
-
 const PartnerMarquee: React.FC = () => {
-    const sectionRef = useRef<HTMLElement>(null);
-    const [isVisible, setIsVisible] = useState(false);
-    const [decryptedIndices, setDecryptedIndices] = useState<Set<number>>(new Set());
-    const [allRevealed, setAllRevealed] = useState(false);
+    const wrapperRef = useRef<HTMLDivElement>(null);
 
-    useEffect(() => {
-        const el = sectionRef.current;
-        if (!el) return;
-        const observer = new IntersectionObserver(
-            ([entry]) => { if (entry.isIntersecting && !isVisible) setIsVisible(true); },
-            { threshold: 0.4 }
-        );
-        observer.observe(el);
-        return () => observer.disconnect();
-    }, [isVisible]);
+    // Track scroll through the tall wrapper — this is 100% stable because
+    // the wrapper height never changes (fixed at 300vh)
+    const { scrollYProgress } = useScroll({
+        target: wrapperRef,
+        offset: ["start start", "end end"]
+    });
 
-    useEffect(() => {
-        if (!isVisible) return;
-        const timers: ReturnType<typeof setTimeout>[] = [];
-        partners.forEach((_, i) => {
-            const timer = setTimeout(() => {
-                setDecryptedIndices(prev => { const next = new Set(prev); next.add(i); return next; });
-                if (i === partners.length - 1) setTimeout(() => setAllRevealed(true), 600);
-            }, 500 + i * 350);
-            timers.push(timer);
-        });
-        return () => timers.forEach(t => clearTimeout(t));
-    }, [isVisible]);
+    // Horizontal pan: logos slide from right to left as you scroll down
+    const x = useTransform(scrollYProgress, [0, 1], ["5%", "-65%"]);
+
+    // Subtle opacity fade for the glow
+    const glowOpacity = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0, 1, 1, 0]);
+
+    // Duplicate logos enough times so the strip is wide enough to pan through
+    const extendedPartners = [...partners, ...partners, ...partners, ...partners];
 
     return (
-        <section
-            ref={sectionRef}
-            className="relative w-full py-6 md:py-7 bg-[#08080a] border-y border-white/[0.04] overflow-hidden"
-        >
-            <div className="relative flex flex-col md:flex-row items-center w-full max-w-[1400px] mx-auto z-10 gap-4 md:gap-0">
+        // Tall wrapper — creates the scroll distance. Background matches site bg so no visible "gap"
+        <div ref={wrapperRef} className="relative bg-[#08080a]" style={{ height: '300vh' }}>
+            
+            {/* Sticky container — pins the visual content in the center of the viewport */}
+            <div className="sticky top-0 h-screen flex flex-col items-center justify-center overflow-hidden">
+                
+                {/* Subtle background red glow */}
+                <motion.div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                        opacity: glowOpacity,
+                        background: 'radial-gradient(ellipse 80% 60% at 50% 50%, rgba(255,70,85,0.08) 0%, transparent 70%)',
+                    }}
+                />
 
-                {/* Left Label */}
-                <div className="shrink-0 flex items-center gap-2 md:gap-3 w-full md:w-auto justify-center md:justify-start md:pl-10 md:pr-8">
-                    <div className="w-1 h-1 bg-[#ff4655] rounded-full shadow-[0_0_4px_#ff4655]" />
-                    <span className="font-mono text-[9px] md:text-[10px] tracking-[0.3em] md:tracking-[0.4em] text-white/30 uppercase whitespace-nowrap font-semibold">
-                        Partners
-                    </span>
-                    <div className="hidden md:block w-10 h-px bg-gradient-to-r from-white/10 to-transparent" />
-                </div>
+                {/* Scan line effect — subtle horizontal line that sweeps */}
+                <motion.div
+                    className="absolute left-0 right-0 h-px pointer-events-none z-30"
+                    style={{
+                        top: useTransform(scrollYProgress, [0, 1], ['30%', '70%']),
+                        background: 'linear-gradient(90deg, transparent 0%, rgba(255,70,85,0.15) 20%, rgba(255,70,85,0.3) 50%, rgba(255,70,85,0.15) 80%, transparent 100%)',
+                    }}
+                />
 
-                {/* Logo Row/Grid */}
-                <div className="relative flex-1 w-full md:h-[70px]">
-                    <div className="flex flex-nowrap items-center justify-between h-full w-full px-1 md:px-0 gap-0">
-                        {partners.map((p, i) => (
-                            <BootLogo
-                                key={i}
-                                partner={p}
-                                shouldDecrypt={decryptedIndices.has(i)}
-                                index={i}
-                                allRevealed={allRevealed}
-                            />
-                        ))}
+                {/* PARTNERS label */}
+                <div className="flex items-center gap-3 mb-10 md:mb-14 z-10">
+                    <div className="w-8 md:w-16 h-px bg-gradient-to-r from-transparent to-[#ff4655]/40" />
+                    <div className="flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 bg-[#ff4655] rounded-full shadow-[0_0_6px_#ff4655]" />
+                        <span className="font-mono text-[10px] md:text-xs tracking-[0.4em] text-white/40 uppercase font-semibold">
+                            Partners
+                        </span>
+                        <div className="w-1.5 h-1.5 bg-[#ff4655] rounded-full shadow-[0_0_6px_#ff4655]" />
                     </div>
-
-                    {/* Slow shimmer light that glides across the logos */}
-                    {allRevealed && (
-                        <div className="absolute inset-0 pointer-events-none partner-shimmer overflow-hidden">
-                            <div
-                                className="absolute top-0 bottom-0 w-[250px] md:w-[400px]"
-                                style={{
-                                    background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.04) 40%, rgba(255,255,255,0.07) 50%, rgba(255,255,255,0.04) 60%, transparent 100%)',
-                                    animation: 'partner-shimmer-move 8s ease-in-out infinite',
-                                }}
-                            />
-                        </div>
-                    )}
-
-                    {/* Boot progress bar */}
-                    {!allRevealed && isVisible && (
-                        <div className="absolute bottom-0 left-0 h-[1px] bg-[#ff4655]/50 transition-all duration-300 ease-out shadow-[0_0_3px_#ff4655]"
-                            style={{ width: `${(decryptedIndices.size / partners.length) * 100}%` }}
-                        />
-                    )}
+                    <div className="w-8 md:w-16 h-px bg-gradient-to-l from-transparent to-[#ff4655]/40" />
                 </div>
-            </div>
 
-            {/* Edge accents */}
-            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/[0.03] to-transparent" />
-            <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/[0.03] to-transparent" />
-        </section>
+                {/* Logo strip */}
+                <div className="relative w-full z-10">
+                    {/* Left edge fade */}
+                    <div className="absolute inset-y-0 left-0 w-20 md:w-40 bg-gradient-to-r from-[#08080a] via-[#08080a]/80 to-transparent z-20 pointer-events-none" />
+                    {/* Right edge fade */}
+                    <div className="absolute inset-y-0 right-0 w-20 md:w-40 bg-gradient-to-l from-[#08080a] via-[#08080a]/80 to-transparent z-20 pointer-events-none" />
+
+                    {/* The horizontally panning track */}
+                    <motion.div
+                        className="flex items-center gap-12 md:gap-20 w-max will-change-transform px-8"
+                        style={{ x }}
+                    >
+                        {extendedPartners.map((partner, i) => (
+                            <div
+                                key={i}
+                                className="flex items-center justify-center shrink-0"
+                            >
+                                <img
+                                    src={partner.logo}
+                                    alt={partner.name}
+                                    className={`object-contain brightness-[1.1] opacity-90 ${
+                                        partner.name === "ASCENT"
+                                            ? 'h-8 md:h-14'
+                                            : 'h-10 md:h-16 lg:h-20'
+                                    }`}
+                                    loading="lazy"
+                                    onError={(e) => {
+                                        e.currentTarget.style.display = 'none';
+                                    }}
+                                />
+                            </div>
+                        ))}
+                    </motion.div>
+                </div>
+
+                {/* Bottom decorative line */}
+                <div className="mt-10 md:mt-14 flex items-center gap-4 z-10">
+                    <div className="w-12 md:w-24 h-px bg-white/[0.06]" />
+                    <div className="w-1 h-1 rounded-full bg-white/10" />
+                    <div className="w-12 md:w-24 h-px bg-white/[0.06]" />
+                </div>
+
+                {/* Top/bottom section borders */}
+                <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/[0.04] to-transparent" />
+                <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/[0.04] to-transparent" />
+            </div>
+        </div>
     );
 };
 
