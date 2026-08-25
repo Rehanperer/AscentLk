@@ -7,7 +7,7 @@ const partners = [
     { name: "Star Garments", logo: "/partners/3.webp", role: "Official Partner" },
     { name: "Scope Cinemas", logo: "/partners/4.webp", role: "Official Partner" },
     { name: "ICSJC", logo: "/partners/Blue ICSJC svg.svg", role: "Official Partner" },
-    { name: "ASCENT", logo: "/img/SVG.svg", role: "Official Partner" },
+    { name: "Student Ventures Group", logo: "/img/SVG.svg", role: "Official Partner" },
 ];
 
 /* ═══════════════════════════════════════════════
@@ -22,7 +22,7 @@ const StaircaseStep: React.FC<{
     const ref = useRef(null);
     const isInView = useInView(ref, { once: true, margin: "-10%" });
     const isEven = index % 2 === 0;
-    const isAscent = partner.name === "ASCENT";
+    const isAscent = partner.name === "Student Ventures Group";
 
     return (
         <motion.div
