@@ -10,6 +10,8 @@ import PathSection from './components/Home/PathSection';
 import SeasonsSection from './components/Home/SeasonsSection';
 import CinematicDoors from './components/Home/CinematicDoors';
 import PartnerMarquee from './components/Home/PartnerMarquee';
+import PartnerStaircase from './components/Home/PartnerStaircase';
+import PartnerSpotlight from './components/Home/PartnerSpotlight';
 import CustomCursor from './components/CustomCursor';
 import Footer from './components/Footer';
 import RegisterSection from './components/PartnerSection';
@@ -537,7 +539,7 @@ const App: React.FC = () => {
                             {/* Phase 1: Modern Hero Block */}
                             <HeroSection />
 
-                            {/* Partner logo marquee */}
+                            {/* Partner Section — Staircase */}
                             <PartnerMarquee />
 
                             {/* Cinematic door reveal transition */}
