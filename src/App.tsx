@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Suspense, lazy } from 'react';
+import React, { useState, useEffect, useRef, Suspense, lazy } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { Routes, Route, Navigate } from 'react-router-dom';
 
@@ -283,21 +283,43 @@ const App: React.FC = () => {
     const [scrolledPastPartners, setScrolledPastPartners] = useState(false);
     const [isAtFooter, setIsAtFooter] = useState(false);
 
+    const prevHeroRef = useRef(false);
+    const prevPartnersRef = useRef(false);
+    const prevFooterRef = useRef(false);
+
     useEffect(() => {
+        let ticking = false;
         const handleScroll = () => {
-            // Show the sticky text once we scroll past 80% of the viewport (mostly past the hero)
-            if (window.scrollY > window.innerHeight * 0.8) {
-                setScrolledPastHero(true);
-            } else {
-                setScrolledPastHero(false);
+            if (!ticking) {
+                requestAnimationFrame(() => {
+                    const scrollY = window.scrollY;
+                    const innerHeight = window.innerHeight;
+
+                    // Show the sticky text once we scroll past 80% of the viewport (mostly past the hero)
+                    const heroVal = scrollY > innerHeight * 0.8;
+                    if (heroVal !== prevHeroRef.current) {
+                        prevHeroRef.current = heroVal;
+                        setScrolledPastHero(heroVal);
+                    }
+
+                    // Show partner logos after scrolling past the partner section (~4x viewport height)
+                    const partnersVal = scrollY > innerHeight * 4;
+                    if (partnersVal !== prevPartnersRef.current) {
+                        prevPartnersRef.current = partnersVal;
+                        setScrolledPastPartners(partnersVal);
+                    }
+
+                    // Hide the sticky text when we reach the footer (within ~150px of the bottom)
+                    const isBottom = innerHeight + scrollY >= document.body.offsetHeight - 150;
+                    if (isBottom !== prevFooterRef.current) {
+                        prevFooterRef.current = isBottom;
+                        setIsAtFooter(isBottom);
+                    }
+
+                    ticking = false;
+                });
+                ticking = true;
             }
-
-            // Show partner logos after scrolling past the partner section (~4x viewport height)
-            setScrolledPastPartners(window.scrollY > window.innerHeight * 4);
-
-            // Hide the sticky text when we reach the footer (within ~150px of the bottom)
-            const isBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 150;
-            setIsAtFooter(isBottom);
         };
         window.addEventListener('scroll', handleScroll, { passive: true });
         handleScroll(); // Initialize state

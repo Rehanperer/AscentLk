@@ -39,12 +39,15 @@ const HeroSection: React.FC = () => {
 
     const rectRef = useRef<DOMRect | null>(null);
 
+    const isFinePointer = useRef(typeof window !== 'undefined' && window.matchMedia("(pointer: fine)").matches);
+
     const handleMouseEnter = (e: React.MouseEvent<HTMLElement>) => {
+        if (!isFinePointer.current) return;
         rectRef.current = e.currentTarget.getBoundingClientRect();
     };
 
     const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
-        if (!rectRef.current) return;
+        if (!isFinePointer.current || !rectRef.current) return;
         const rect = rectRef.current;
         const x = (e.clientX - rect.left) / rect.width - 0.5;
         const y = (e.clientY - rect.top) / rect.height - 0.5;
@@ -73,11 +76,18 @@ const HeroSection: React.FC = () => {
         }
     }, [heroState]);
 
+    // Handle video play/pause based on visibility and active state
     useEffect(() => {
-        if (videoRef.current) {
-            videoRef.current.play().catch(() => {});
+        const video = videoRef.current;
+        if (!video) return;
+
+        if (isInView) {
+            video.play().catch(() => {});
+        } else {
+            // Pause video to free up GPU decoder when scrolled away
+            video.pause();
         }
-    }, [heroState]);
+    }, [isInView, heroState]);
 
     // Smooth volume fade instead of instant mute/unmute
     const fadeRef = useRef<number | null>(null);
@@ -102,6 +112,9 @@ const HeroSection: React.FC = () => {
             // If close enough, snap to target
             if (Math.abs(diff) < 0.02) {
                 video.volume = targetVol;
+                if (!isInView && targetVol === 0) {
+                    video.pause();
+                }
                 return;
             }
             

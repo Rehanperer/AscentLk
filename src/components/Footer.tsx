@@ -160,6 +160,9 @@ const MagneticButton = React.forwardRef<HTMLElement, MagneticButtonProps>(
 
     useEffect(() => {
       if (typeof window === "undefined") return;
+      const isFinePointer = window.matchMedia("(pointer: fine)").matches;
+      if (!isFinePointer) return;
+      
       const element = localRef.current;
       if (!element) return;
 
@@ -194,7 +197,7 @@ const MagneticButton = React.forwardRef<HTMLElement, MagneticButtonProps>(
           });
         };
 
-        element.addEventListener("mousemove", handleMouseMove as any);
+        element.addEventListener("mousemove", handleMouseMove as any, { passive: true });
         element.addEventListener("mouseleave", handleMouseLeave);
 
         return () => {
@@ -204,7 +207,7 @@ const MagneticButton = React.forwardRef<HTMLElement, MagneticButtonProps>(
       }, element);
 
       return () => ctx.revert();
-    },[]);
+    }, []);
 
     return (
       <Component
@@ -298,7 +301,7 @@ const Footer: React.FC = () => {
       
       <div
         ref={wrapperRef}
-        className="relative h-[80vh] md:h-screen w-full mt-20"
+        className="relative h-[80vh] md:h-screen w-full mt-20 content-auto"
         style={{ clipPath: "polygon(0% 0, 100% 0%, 100% 100%, 0 100%)" }}
       >
         <footer className="fixed bottom-0 left-0 flex h-[80vh] md:h-screen w-full flex-col justify-between overflow-hidden bg-[#0d121f] text-white cinematic-footer-wrapper">

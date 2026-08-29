@@ -5,19 +5,24 @@ import { Lock, ShieldAlert, Biohazard, Eye } from 'lucide-react';
 /* ═══════════════════════════════════════════════
    DUAL PARTICLE FIELD — morphs from green to gray
 ═══════════════════════════════════════════════ */
-const SeasonParticles: React.FC<{ progress: number }> = ({ progress }) => {
+const SeasonParticles: React.FC<{ progress: number; isVisible: boolean }> = ({ progress, isVisible }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const progressRef = useRef(progress);
     progressRef.current = progress;
+    const isVisibleRef = useRef(isVisible);
+    isVisibleRef.current = isVisible;
 
     useEffect(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;
-        const ctx = canvas.getContext('2d');
+        const ctx = canvas.getContext('2d', { alpha: true });
         if (!ctx) return;
 
         let w = (canvas.width = canvas.offsetWidth);
         let h = (canvas.height = canvas.offsetHeight);
+
+        const isMobile = window.innerWidth < 768;
+        const MAX = isMobile ? 22 : 45;
 
         interface Particle {
             x: number; y: number; vx: number; vy: number;
@@ -25,26 +30,36 @@ const SeasonParticles: React.FC<{ progress: number }> = ({ progress }) => {
         }
 
         const particles: Particle[] = [];
-        const MAX = 70;
 
         const spawn = () => {
             if (particles.length >= MAX) return;
             particles.push({
                 x: Math.random() * w,
                 y: h + 10,
-                vx: (Math.random() - 0.5) * 0.4,
-                vy: -(0.3 + Math.random() * 0.6),
-                size: 1 + Math.random() * 2.5,
-                alpha: 0.15 + Math.random() * 0.35,
-                decay: 0.0005 + Math.random() * 0.001,
+                vx: (Math.random() - 0.5) * 0.35,
+                vy: -(0.3 + Math.random() * 0.5),
+                size: 1 + Math.random() * (isMobile ? 1.5 : 2),
+                alpha: 0.15 + Math.random() * 0.3,
+                decay: 0.0006 + Math.random() * 0.001,
             });
         };
 
         let animId = 0;
+        let isRunning = false;
+
         const loop = () => {
+            if (!isVisibleRef.current) {
+                isRunning = false;
+                return;
+            }
+
             ctx.clearRect(0, 0, w, h);
-            if (Math.random() < 0.3) spawn();
+            if (Math.random() < 0.25) spawn();
             const p2 = progressRef.current; // 0 = fully green, 1 = fully gray
+
+            const r = Math.round(0 + p2 * 160);
+            const g = Math.round(255 - p2 * 65);
+            const b = Math.round(64 + p2 * 146);
 
             for (let i = particles.length - 1; i >= 0; i--) {
                 const p = particles[i];
@@ -53,31 +68,33 @@ const SeasonParticles: React.FC<{ progress: number }> = ({ progress }) => {
                 p.alpha -= p.decay;
                 if (p.alpha <= 0 || p.y < -10) { particles.splice(i, 1); continue; }
 
-                // Interpolate color: green(0,255,64) → silver(160,190,210)
-                const r = Math.round(0 + p2 * 160);
-                const g = Math.round(255 - p2 * 65);
-                const b = Math.round(64 + p2 * 146);
-
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
                 ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${p.alpha})`;
                 ctx.fill();
-
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.size * 3, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${p.alpha * 0.12})`;
-                ctx.fill();
             }
             animId = requestAnimationFrame(loop);
         };
-        loop();
 
-        const onResize = () => { w = canvas.width = canvas.offsetWidth; h = canvas.height = canvas.offsetHeight; };
-        window.addEventListener('resize', onResize);
-        return () => { cancelAnimationFrame(animId); window.removeEventListener('resize', onResize); };
-    }, []);
+        if (isVisible) {
+            isRunning = true;
+            loop();
+        }
 
-    return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" />;
+        const onResize = () => {
+            if (!canvas) return;
+            w = canvas.width = canvas.offsetWidth;
+            h = canvas.height = canvas.offsetHeight;
+        };
+        window.addEventListener('resize', onResize, { passive: true });
+
+        return () => {
+            cancelAnimationFrame(animId);
+            window.removeEventListener('resize', onResize);
+        };
+    }, [isVisible]);
+
+    return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none transform-gpu" />;
 };
 
 /* ═══════════════════════════════════════════════
@@ -120,6 +137,7 @@ const LockedSeasonRow: React.FC<{ num: string; delay: number }> = ({ num, delay 
 ═══════════════════════════════════════════════ */
 const SeasonsSection: React.FC = () => {
     const wrapperRef = useRef<HTMLDivElement>(null);
+    const isSectionInView = useInView(wrapperRef, { margin: "100px" });
     const [particleProgress, setParticleProgress] = useState(0);
 
     // Scroll progress through the tall wrapper
@@ -196,8 +214,8 @@ const SeasonsSection: React.FC = () => {
                     <div className="absolute bottom-0 inset-x-0 h-48 bg-gradient-to-t from-[#08080a] to-transparent pointer-events-none" />
                     <div className="absolute inset-0 scanlines opacity-[0.05] pointer-events-none" />
 
-                    {/* Morphing particles */}
-                    <SeasonParticles progress={particleProgress} />
+                    {/* Morphing particles — only active when in view */}
+                    <SeasonParticles progress={particleProgress} isVisible={isSectionInView} />
 
                     {/* Horizontal wipe line during transition */}
                     <motion.div

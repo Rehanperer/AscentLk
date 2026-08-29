@@ -23,14 +23,55 @@ const CustomCursor: React.FC = React.memo(() => {
 
         mounted.current = true;
 
+        let isLoopRunning = false;
+
+        const animate = () => {
+            if (!mounted.current) {
+                isLoopRunning = false;
+                return;
+            }
+
+            const dx = mousePos.current.x - ringPos.current.x;
+            const dy = mousePos.current.y - ringPos.current.y;
+
+            // If settled within 0.1px, stop the loop to save CPU
+            if (Math.abs(dx) < 0.1 && Math.abs(dy) < 0.1) {
+                ringPos.current.x = mousePos.current.x;
+                ringPos.current.y = mousePos.current.y;
+                if (ringRef.current) {
+                    ringRef.current.style.transform = `translate(${ringPos.current.x - 16}px, ${ringPos.current.y - 16}px)`;
+                }
+                isLoopRunning = false;
+                return;
+            }
+
+            ringPos.current.x += dx * 0.15;
+            ringPos.current.y += dy * 0.15;
+
+            if (ringRef.current) {
+                ringRef.current.style.transform = `translate(${ringPos.current.x - 16}px, ${ringPos.current.y - 16}px)`;
+            }
+
+            rafId.current = requestAnimationFrame(animate);
+        };
+
+        const startLoop = () => {
+            if (!isLoopRunning) {
+                isLoopRunning = true;
+                rafId.current = requestAnimationFrame(animate);
+            }
+        };
+
         const handleMouseMove = (e: MouseEvent) => {
             mousePos.current.x = e.clientX;
             mousePos.current.y = e.clientY;
 
-            // Move dot immediately (no lerp needed)
+            // Move dot immediately
             if (dotRef.current) {
                 dotRef.current.style.transform = `translate(${e.clientX - 2}px, ${e.clientY - 2}px)`;
             }
+
+            startLoop();
         };
 
         const handleMouseOver = (e: MouseEvent) => {
@@ -56,26 +97,13 @@ const CustomCursor: React.FC = React.memo(() => {
             }
         };
 
-        // Ring lerp animation — pure DOM, no React state
-        const animate = () => {
-            if (!mounted.current) return;
-
-            ringPos.current.x += (mousePos.current.x - ringPos.current.x) * 0.15;
-            ringPos.current.y += (mousePos.current.y - ringPos.current.y) * 0.15;
-
-            if (ringRef.current) {
-                ringRef.current.style.transform = `translate(${ringPos.current.x - 16}px, ${ringPos.current.y - 16}px)`;
-            }
-
-            rafId.current = requestAnimationFrame(animate);
-        };
-
         window.addEventListener('mousemove', handleMouseMove, { passive: true });
         window.addEventListener('mouseover', handleMouseOver, { passive: true });
-        rafId.current = requestAnimationFrame(animate);
+        startLoop();
 
         return () => {
             mounted.current = false;
+            isLoopRunning = false;
             window.removeEventListener('mousemove', handleMouseMove);
             window.removeEventListener('mouseover', handleMouseOver);
             cancelAnimationFrame(rafId.current);

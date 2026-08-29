@@ -192,7 +192,7 @@ const AboutSection: React.FC = () => {
         <section 
             ref={sectionRef} 
             id="about" 
-            className="relative py-32 md:py-56 px-4 sm:px-6 bg-[#080b13] overflow-x-clip overflow-y-visible flex flex-col justify-center items-center"
+            className="relative py-32 md:py-56 px-4 sm:px-6 bg-[#080b13] overflow-x-clip overflow-y-visible flex flex-col justify-center items-center content-auto"
         >
             {/* ── HORIZON TEXT & SMUDGE (Bridging CinematicDoors and About) ── */}
             <motion.div 

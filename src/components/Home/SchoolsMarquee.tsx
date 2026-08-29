@@ -28,24 +28,9 @@ const MarqueeRow: React.FC<{
             <div className="absolute left-0 top-0 w-24 md:w-48 h-full bg-gradient-to-r from-[#08080a] to-transparent z-20 pointer-events-none" />
             <div className="absolute right-0 top-0 w-24 md:w-48 h-full bg-gradient-to-l from-[#08080a] to-transparent z-20 pointer-events-none" />
 
-            {/* 
-                Center spotlight: A grayscale overlay with a transparent hole in the middle.
-                Everything under the overlay appears grayscale.
-                The center gap reveals the true full-color logos underneath.
-            */}
-            <div 
-                className="absolute inset-0 z-10 pointer-events-none"
-                style={{
-                    backdropFilter: 'grayscale(100%) brightness(0.6)',
-                    WebkitBackdropFilter: 'grayscale(100%) brightness(0.6)',
-                    maskImage: 'linear-gradient(to right, black 0%, black 35%, transparent 45%, transparent 55%, black 65%, black 100%)',
-                    WebkitMaskImage: 'linear-gradient(to right, black 0%, black 35%, transparent 45%, transparent 55%, black 65%, black 100%)',
-                }}
-            />
-
             {/* Scrolling strip */}
             <div
-                className="flex items-center gap-4 md:gap-6 will-change-transform"
+                className="flex items-center gap-4 md:gap-6 will-change-transform transform-gpu"
                 style={{
                     animation: `${direction === 'right' ? 'marqueeRight' : 'marqueeLeft'} ${duration}s linear infinite`,
                     width: 'max-content',

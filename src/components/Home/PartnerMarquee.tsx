@@ -66,6 +66,8 @@ const StaircaseStep: React.FC<{
                         <img
                             src={partner.logo}
                             alt={partner.name}
+                            loading="lazy"
+                            decoding="async"
                             className={`object-contain brightness-[1.15] shrink-0 ${
                                 isAscent
                                     ? 'h-8 sm:h-10 md:h-14'
@@ -107,7 +109,7 @@ const StaircaseStep: React.FC<{
 ═══════════════════════════════════════════════ */
 const PartnerMarquee: React.FC = () => {
     return (
-        <section className="relative bg-[#08080a] py-20 md:py-32 overflow-hidden">
+        <section className="relative bg-[#08080a] py-20 md:py-32 overflow-hidden content-auto">
 
             {/* Background diagonal lines — depth perspective */}
             <div className="absolute inset-0 pointer-events-none opacity-[0.025]">

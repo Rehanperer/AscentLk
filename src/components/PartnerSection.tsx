@@ -55,7 +55,7 @@ const RegisterSection: React.FC = () => {
     const isHeaderInView = useInView(headerRef, { once: true, margin: "-100px" });
 
     return (
-        <section ref={sectionRef} id="register" className="relative bg-[#08080a] overflow-hidden py-24 md:py-40">
+        <section ref={sectionRef} id="register" className="relative bg-[#08080a] overflow-hidden py-24 md:py-40 content-auto">
             
             {/* Background atmosphere */}
             <div className="absolute inset-0 pointer-events-none">

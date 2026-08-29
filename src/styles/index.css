@@ -17,6 +17,17 @@
         font-family: 'Inter', sans-serif;
     }
 
+    .content-auto {
+        content-visibility: auto;
+        contain-intrinsic-size: auto 600px;
+    }
+
+    .gpu-accel {
+        transform: translateZ(0);
+        backface-visibility: hidden;
+        perspective: 1000px;
+    }
+
     .glass-panel {
         background: var(--glass-bg);
         backdrop-filter: blur(var(--glass-blur));

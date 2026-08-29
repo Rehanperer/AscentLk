@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Instagram } from 'lucide-react';
 
@@ -12,12 +12,26 @@ const NAV_LINKS = [
 ];
 
 const ModernNavbar: React.FC = () => {
+    const navigate = useNavigate();
     const [scrolled, setScrolled] = useState(false);
     const [mobileOpen, setMobileOpen] = useState(false);
-    const navigate = useNavigate();
+    const prevScrolledRef = useRef(false);
 
     useEffect(() => {
-        const onScroll = () => setScrolled(window.scrollY > 50);
+        let ticking = false;
+        const onScroll = () => {
+            if (!ticking) {
+                requestAnimationFrame(() => {
+                    const isScrolled = window.scrollY > 50;
+                    if (isScrolled !== prevScrolledRef.current) {
+                        prevScrolledRef.current = isScrolled;
+                        setScrolled(isScrolled);
+                    }
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        };
         window.addEventListener('scroll', onScroll, { passive: true });
         
         return () => {

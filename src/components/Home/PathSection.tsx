@@ -52,11 +52,13 @@ const CinematicSlide: React.FC<{
     return (
         <div className="w-screen h-screen flex-shrink-0 relative flex items-center justify-center overflow-hidden snap-center">
             {/* Background Texture / Image */}
-            <motion.div className="absolute inset-0 w-[130%] h-full -left-[15%]" style={{ x: bgX }}>
+            <motion.div className="absolute inset-0 w-[130%] h-full -left-[15%] transform-gpu will-change-transform" style={{ x: bgX }}>
                 <img 
                     src={imgSrc} 
                     alt={title}
                     className="w-full h-full object-cover opacity-30 mix-blend-luminosity"
+                    loading="lazy"
+                    decoding="async"
                 />
             </motion.div>
             <div className="absolute inset-0 bg-gradient-to-r from-black via-black/50 to-black/80 pointer-events-none" />
@@ -143,7 +145,7 @@ const PathSection: React.FC = () => {
 
                 {/* ── THE HORIZONTAL TRACK ── */}
                 <motion.div 
-                    className="flex h-full w-[500vw]"
+                    className="flex h-full w-[500vw] transform-gpu will-change-transform"
                     style={{ x: xTransform }}
                 >
                     {/* SLIDE 1: Qualifiers */}
